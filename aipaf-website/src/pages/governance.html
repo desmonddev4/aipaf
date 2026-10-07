@@ -1,86 +1,209 @@
 <!--{"title":"Governance and Standards | AIPAF","description":"How AIPAF is governed: the General Assembly, Council and Secretariat, standing committees, independence safeguards, the code of professional conduct, and the establishment roadmap.","nav":"governance"}-->
+<style>
+  .cx {
+    --cx-ink: #10231c; --cx-text: #2b3b34; --cx-muted: #5e6f67;
+    --cx-green: #02521d; --cx-green-dark: #013a14; --cx-green-text: #02521d;
+    --cx-gold: #d28503; --cx-gold-soft: #f0b84a;
+    --cx-glass: rgba(255, 255, 255, .62); --cx-glass-border: rgba(255, 255, 255, .78);
+    --cx-solid: #f4f8f5; --cx-line: rgba(16, 35, 28, .12); --cx-row: rgba(2, 82, 29, .06);
+    --cx-shadow: 0 24px 60px -26px rgba(2, 50, 20, .38);
+    --cx-ease: cubic-bezier(.22, .8, .3, 1);
+    color: var(--cx-text); font-size: 1.0625rem; line-height: 1.65;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .cx {
+      --cx-ink: #f1f6f3; --cx-text: #d3ded8; --cx-muted: #9db0a6; --cx-green-text: #6fdcaa;
+      --cx-glass: rgba(18, 38, 30, .55); --cx-glass-border: rgba(255, 255, 255, .12);
+      --cx-solid: #14271f; --cx-line: rgba(255, 255, 255, .14); --cx-row: rgba(255, 255, 255, .05);
+      --cx-shadow: 0 24px 60px -26px rgba(0, 0, 0, .65);
+    }
+  }
+  :root[data-theme="dark"] .cx {
+    --cx-ink: #f1f6f3; --cx-text: #d3ded8; --cx-muted: #9db0a6; --cx-green-text: #6fdcaa;
+    --cx-glass: rgba(18, 38, 30, .55); --cx-glass-border: rgba(255, 255, 255, .12);
+    --cx-solid: #14271f; --cx-line: rgba(255, 255, 255, .14); --cx-row: rgba(255, 255, 255, .05);
+    --cx-shadow: 0 24px 60px -26px rgba(0, 0, 0, .65);
+  }
+  .cx *, .cx *::before, .cx *::after { box-sizing: border-box; }
+  .cx .wrap { width: min(1160px, 100% - 2.5rem); margin-inline: auto; }
+  .cx h1, .cx h2, .cx h3 { font-family: Georgia, "Times New Roman", serif; color: var(--cx-ink); }
+  .cx a:focus-visible { outline: 3px solid var(--cx-gold); outline-offset: 3px; }
+
+  /* Hero */
+  .cx .page-hero { position: relative; isolation: isolate; overflow: hidden; color: #fff; padding: clamp(4.5rem, 12vw, 8.5rem) 0 clamp(5rem, 11vw, 8rem); }
+  .cx .page-hero-bg { position: absolute; inset: 0; z-index: -2; }
+  .cx .page-hero-bg img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); animation: cx-drift 24s ease-in-out infinite alternate; }
+  .cx .page-hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(3, 32, 14, .78), rgba(3, 32, 14, .55) 55%, rgba(3, 32, 14, .92)); }
+  .cx .hero-panel { max-width: 52rem; padding: clamp(1.5rem, 4vw, 2.6rem); border-radius: 24px; background: rgba(255, 255, 255, .09); border: 1px solid rgba(255, 255, 255, .22); -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%); box-shadow: 0 30px 70px -30px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .25); animation: cx-rise .9s var(--cx-ease) both; }
+  .cx .crumbs { margin: 0 0 1.25rem; font-size: .9rem; color: rgba(255, 255, 255, .78); }
+  .cx .crumbs a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, .35); transition: color .2s, border-color .2s; }
+  .cx .crumbs a:hover { color: #fff; border-color: var(--cx-gold-soft); }
+  .cx .page-hero .eyebrow { color: var(--cx-gold-soft); }
+  .cx .page-hero h1 { margin: 0 0 1rem; color: #fff; font-weight: 600; font-size: clamp(2rem, 4.6vw, 3.2rem); line-height: 1.14; letter-spacing: -.012em; }
+  .cx .page-hero .lead { color: rgba(255, 255, 255, .88); }
+  .cx .ruler { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: linear-gradient(90deg, var(--cx-green), var(--cx-gold) 50%, var(--cx-green)); }
+  .cx .eyebrow { margin: 0 0 .7rem; font-size: .95rem; font-weight: 600; letter-spacing: .02em; color: var(--cx-green-text); }
+  .cx .lead { margin: 0; max-width: 40rem; font-size: clamp(1.08rem, 1.5vw, 1.25rem); line-height: 1.6; }
+
+  /* Sections */
+  .cx .section { position: relative; isolation: isolate; overflow: hidden; padding: clamp(3.5rem, 8vw, 6rem) 0; }
+  .cx .section-tint { background: linear-gradient(180deg, rgba(2, 82, 29, .06), rgba(210, 133, 3, .06)); }
+  .cx .section::before { content: ""; position: absolute; z-index: -1; width: 420px; height: 420px; top: -120px; right: -100px; border-radius: 50%; background: rgba(210, 133, 3, .26); filter: blur(80px); pointer-events: none; }
+  .cx .section-tint::before { right: auto; left: -120px; background: rgba(2, 82, 29, .25); }
+  .cx .section-head { max-width: 48rem; margin-bottom: clamp(1.75rem, 4vw, 2.75rem); }
+  .cx .h2 { margin: 0 0 1rem; font-size: clamp(1.7rem, 3.2vw, 2.35rem); line-height: 1.2; letter-spacing: -.01em; }
+
+  /* Dark section: re-theme tokens so shared components adapt */
+  .cx .section-dark {
+    --cx-ink: #fff; --cx-text: rgba(255, 255, 255, .88); --cx-green-text: var(--cx-gold-soft);
+    --cx-glass: rgba(255, 255, 255, .07); --cx-glass-border: rgba(255, 255, 255, .16);
+    background: linear-gradient(145deg, #03280f, #0a3a1d 55%, #06210f); color: var(--cx-text);
+  }
+  .cx .section-dark::before { background: rgba(210, 133, 3, .3); }
+
+  .cx .glass { background: var(--cx-glass); border: 1px solid var(--cx-glass-border); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); box-shadow: var(--cx-shadow), inset 0 1px 0 rgba(255, 255, 255, .5); }
+  .cx .section-dark .glass { box-shadow: 0 20px 40px -24px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .12); }
+
+  /* Cards */
+  .cx .card-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr)); align-items: stretch; }
+  .cx .card, .cx .phase, .cx .check-list li { position: relative; overflow: hidden; border-radius: 22px; transition: transform .35s var(--cx-ease), box-shadow .35s var(--cx-ease), border-color .35s; }
+  .cx .card::before, .cx .phase::before, .cx .check-list li::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .35s; background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgba(210, 133, 3, .2), transparent 60%); }
+  .cx .card:hover::before, .cx .phase:hover::before, .cx .check-list li:hover::before { opacity: 1; }
+  .cx .card { display: flex; flex-direction: column; gap: .75rem; min-height: 14rem; padding: 2rem 1.75rem 1.9rem; }
+  .cx .card::after, .cx .phase::after { content: ""; position: absolute; left: 0; top: 0; height: 4px; width: var(--p, 3.5rem); background: var(--cx-gold); border-radius: 0 4px 4px 0; transition: width .5s var(--cx-ease); }
+  .cx .card:hover::after, .cx .phase:hover::after { width: 100%; }
+  .cx .card:hover, .cx .phase:hover, .cx .check-list li:hover { transform: translateY(-6px); border-color: rgba(210, 133, 3, .6); box-shadow: 0 30px 50px -24px rgba(2, 50, 20, .5), inset 0 1px 0 rgba(255, 255, 255, .4); }
+  .cx .card h3 { position: relative; margin: 0; font-size: 1.3rem; line-height: 1.25; }
+  .cx .card p { position: relative; margin: 0; }
+
+  /* Two-column feature layout + check list */
+  .cx .mandate-grid { display: grid; gap: clamp(2rem, 5vw, 4rem); grid-template-columns: 1fr; align-items: start; }
+  @media (min-width: 960px) { .cx .mandate-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } .cx .mandate-grid > div:first-child { position: sticky; top: 6rem; } }
+  .cx .check-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  .cx .check-list li { padding: 1.4rem 1.5rem 1.4rem 4.1rem; }
+  .cx .check-list li::after { content: ""; position: absolute; left: 1.4rem; top: 1.5rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--cx-green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fff' stroke-width='2.6'/%3E%3C/svg%3E") center / 80% no-repeat; box-shadow: 0 0 0 4px rgba(210, 133, 3, .3); transition: transform .35s var(--cx-ease); }
+  .cx .check-list li:hover::after { transform: scale(1.15) rotate(-8deg); }
+  .cx .check-list strong { position: relative; display: block; margin-bottom: .25rem; font-size: 1.1rem; color: var(--cx-ink); }
+  .cx .section-dark .check-list li { color: var(--cx-text); }
+
+  /* Prose */
+  .cx .prose { max-width: 46rem; padding-left: clamp(1.1rem, 3vw, 2rem); border-left: 4px solid var(--cx-gold); }
+  .cx .prose p { margin: 0 0 1.25rem; font-size: 1.125rem; line-height: 1.75; }
+  .cx .prose p:first-child { font-size: 1.25rem; color: var(--cx-ink); }
+  .cx .prose p:last-child { margin-bottom: 0; }
+
+  /* Timeline: top bar shows progress through the roadmap */
+  .cx .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); align-items: stretch; }
+  .cx .phase { padding: 2.1rem 1.8rem 1.9rem; }
+  .cx .phase:nth-child(1) { --p: 33%; } .cx .phase:nth-child(2) { --p: 66%; } .cx .phase:nth-child(3) { --p: 100%; }
+  .cx .phase h3 { position: relative; margin: 0 0 .5rem; font-size: 1.55rem; }
+  .cx .phase-tag { position: relative; display: inline-block; margin: 0 0 1.1rem; padding: .25rem .8rem; border-radius: 999px; font-size: .92rem; font-weight: 600; color: var(--cx-green-text); background: var(--cx-row); border: 1px solid var(--cx-line); }
+  .cx .phase ul { position: relative; margin: 0; padding-left: 1.15rem; display: grid; gap: .65rem; }
+  .cx .phase li::marker { color: var(--cx-gold); }
+  .cx .form-note { margin: 1.8rem 0 0; max-width: 48rem; padding: 1.1rem 1.4rem; border-radius: 18px; border-left: 5px solid var(--cx-gold); font-size: 1rem; }
+
+  /* Motion */
+  .cx [data-reveal] { opacity: 0; transform: translateY(26px); transition: opacity .8s var(--cx-ease), transform .8s var(--cx-ease); transition-delay: var(--d, 0ms); }
+  .cx [data-reveal].in { opacity: 1; transform: none; }
+  .cx .card[data-reveal].in, .cx .phase[data-reveal].in, .cx .check-list li[data-reveal].in { transition: opacity .8s var(--cx-ease) var(--d, 0ms), transform .35s var(--cx-ease), box-shadow .35s var(--cx-ease), border-color .35s; }
+  @keyframes cx-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  @keyframes cx-drift { to { transform: scale(1.14) translate(-1.5%, -1%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .cx *, .cx *::before, .cx *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
+    .cx [data-reveal] { opacity: 1; transform: none; }
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .cx .glass { background: var(--cx-solid); }
+    .cx .section-dark .glass { background: rgba(255, 255, 255, .1); }
+    .cx .hero-panel { background: rgba(3, 32, 14, .6); }
+  }
+</style>
+
+<div class="cx">
     <section class="page-hero">
       <div class="page-hero-bg" aria-hidden="true"><img src="/img/bridge.jpg" alt="" width="1280" height="720"></div>
       <div class="wrap">
-        <p class="crumbs"><a href="/">Home</a> / Governance</p>
-        <p class="eyebrow">Governance and Standards</p>
-        <h1>A body that certifies others is governed to at least the standard it demands of them.</h1>
-        <p class="lead">Independence, discipline, and public standing rest on a structure that separates those who set standards from those who are judged against them.</p>
+        <div class="hero-panel">
+          <p class="crumbs"><a href="/">Home</a> / Governance</p>
+          <p class="eyebrow">Governance and Standards</p>
+          <h1>A body that certifies others is governed to at least the standard it demands of them.</h1>
+          <p class="lead">Independence, discipline, and public standing rest on a structure that separates those who set standards from those who are judged against them.</p>
+        </div>
       </div>
       <div class="ruler" aria-hidden="true"></div>
     </section>
 
     <section class="section" aria-labelledby="struct-title">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <p class="eyebrow">Governance structure</p>
           <h2 class="h2" id="struct-title">Three bodies, each with a distinct job.</h2>
         </div>
-        <div class="card-grid">
-          <article class="card"><h3>The General Assembly</h3><p>The membership in general meeting is the Institute's ultimate authority. It elects the Governing Council, receives the annual report and accounts, adopts and amends the constitution, and holds the Council to account.</p></article>
-          <article class="card"><h3>The Governing Council</h3><p>The Institute's board. It sets strategy, oversees finances and management, and carries ultimate responsibility for the standards the Institute upholds. It is elected by the membership and chaired by an elected President.</p></article>
-          <article class="card"><h3>The Secretariat</h3><p>Led by a Chief Executive or Registrar appointed by the Council, it runs the Institute day to day: examinations, the register, education and CPD, and operations. It executes; it does not set the standards it administers.</p></article>
+        <div class="card-grid" data-stagger>
+          <article class="card glass" data-reveal><h3>The General Assembly</h3><p>The membership in general meeting is the Institute's ultimate authority. It elects the Governing Council, receives the annual report and accounts, adopts and amends the constitution, and holds the Council to account.</p></article>
+          <article class="card glass" data-reveal><h3>The Governing Council</h3><p>The Institute's board. It sets strategy, oversees finances and management, and carries ultimate responsibility for the standards the Institute upholds. It is elected by the membership and chaired by an elected President.</p></article>
+          <article class="card glass" data-reveal><h3>The Secretariat</h3><p>Led by a Chief Executive or Registrar appointed by the Council, it runs the Institute day to day: examinations, the register, education and CPD, and operations. It executes; it does not set the standards it administers.</p></article>
         </div>
       </div>
     </section>
 
     <section class="section section-tint" aria-labelledby="comm-title">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <p class="eyebrow">Standing committees</p>
           <h2 class="h2" id="comm-title">Separate hands let the Institute certify credibly and discipline fairly.</h2>
         </div>
-        <div class="card-grid">
-          <article class="card"><h3>Standards and Ethics</h3><p>Owns the body of knowledge, the technical standards, and the code of professional conduct, and keeps them current.</p></article>
-          <article class="card"><h3>Education and Examinations</h3><p>Owns the syllabus, the examinations, and the quality of assessment across all routes and tracks.</p></article>
-          <article class="card"><h3>Membership and Credentials</h3><p>Governs admission, grading, certification, CPD compliance, and the integrity of the public register.</p></article>
-          <article class="card"><h3>Professional Conduct and Disciplinary</h3><p>Investigates and adjudicates complaints against members, at arm's length from the Council, with a separate appeals route.</p></article>
-          <article class="card"><h3>Research and Publications</h3><p>Directs the Institute's research into project failure, assurance, and forensic method, and oversees what it publishes.</p></article>
-          <article class="card"><h3>Finance and Audit</h3><p>Oversees the Institute's finances and controls, and its own accountability to the standards it asks of others.</p></article>
+        <div class="card-grid" data-stagger>
+          <article class="card glass" data-reveal><h3>Standards and Ethics</h3><p>Owns the body of knowledge, the technical standards, and the code of professional conduct, and keeps them current.</p></article>
+          <article class="card glass" data-reveal><h3>Education and Examinations</h3><p>Owns the syllabus, the examinations, and the quality of assessment across all routes and tracks.</p></article>
+          <article class="card glass" data-reveal><h3>Membership and Credentials</h3><p>Governs admission, grading, certification, CPD compliance, and the integrity of the public register.</p></article>
+          <article class="card glass" data-reveal><h3>Professional Conduct and Disciplinary</h3><p>Investigates and adjudicates complaints against members, at arm's length from the Council, with a separate appeals route.</p></article>
+          <article class="card glass" data-reveal><h3>Research and Publications</h3><p>Directs the Institute's research into project failure, assurance, and forensic method, and oversees what it publishes.</p></article>
+          <article class="card glass" data-reveal><h3>Finance and Audit</h3><p>Oversees the Institute's finances and controls, and its own accountability to the standards it asks of others.</p></article>
         </div>
       </div>
     </section>
 
     <section class="section" aria-labelledby="safe-title">
       <div class="wrap mandate-grid">
-        <div>
+        <div data-reveal>
           <p class="eyebrow">Independence safeguards</p>
           <h2 class="h2" id="safe-title">The Institute's value rests entirely on trust in its impartiality.</h2>
           <p class="lead">Three safeguards are built into its governance from the outset.</p>
         </div>
-        <ul class="check-list">
-          <li><strong>Separation of powers</strong>Those who set standards, those who certify against them, and those who discipline breaches sit in distinct committees with distinct memberships.</li>
-          <li><strong>Conflict-of-interest discipline</strong>Council and committee members declare interests and recuse themselves from any matter in which they are conflicted, under a published policy.</li>
-          <li><strong>Transparency</strong>The register of members, the code of conduct, the standards, and the outcomes of disciplinary process are matters of public record, subject only to due process and fairness to individuals.</li>
+        <ul class="check-list" data-stagger>
+          <li class="glass" data-reveal><strong>Separation of powers</strong>Those who set standards, those who certify against them, and those who discipline breaches sit in distinct committees with distinct memberships.</li>
+          <li class="glass" data-reveal><strong>Conflict-of-interest discipline</strong>Council and committee members declare interests and recuse themselves from any matter in which they are conflicted, under a published policy.</li>
+          <li class="glass" data-reveal><strong>Transparency</strong>The register of members, the code of conduct, the standards, and the outcomes of disciplinary process are matters of public record, subject only to due process and fairness to individuals.</li>
         </ul>
       </div>
     </section>
 
     <section class="section section-dark" aria-labelledby="code-title">
       <div class="wrap mandate-grid">
-        <div>
+        <div data-reveal>
           <p class="eyebrow">Code of professional conduct</p>
           <h2 class="h2" id="code-title">What it means to practise under the Institute's name.</h2>
           <p class="lead">The code binds every member. Membership is conditional on adherence to it and to the Institute's technical standards, which set out how assurance and forensic work should be planned, conducted, evidenced, and reported.</p>
         </div>
-        <ul class="check-list" style="color:rgba(255,255,255,.88)">
-          <li>Act with independence, and decline or withdraw from work where independence cannot be maintained.</li>
-          <li>Opine only on what the evidence supports, and state honestly the limits of that evidence.</li>
-          <li>Hold the public interest above private advantage where the two conflict.</li>
-          <li>Maintain competence, and practise only within it.</li>
-          <li>Handle confidential and sensitive information with the care it demands.</li>
-          <li>Bring no discredit on the profession by conduct inside or outside professional work.</li>
+        <ul class="check-list" data-stagger>
+          <li class="glass" data-reveal>Act with independence, and decline or withdraw from work where independence cannot be maintained.</li>
+          <li class="glass" data-reveal>Opine only on what the evidence supports, and state honestly the limits of that evidence.</li>
+          <li class="glass" data-reveal>Hold the public interest above private advantage where the two conflict.</li>
+          <li class="glass" data-reveal>Maintain competence, and practise only within it.</li>
+          <li class="glass" data-reveal>Handle confidential and sensitive information with the care it demands.</li>
+          <li class="glass" data-reveal>Bring no discredit on the profession by conduct inside or outside professional work.</li>
         </ul>
       </div>
     </section>
 
     <section class="section" aria-labelledby="disc-title">
       <div class="wrap prose-wide">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <p class="eyebrow">Discipline</p>
           <h2 class="h2" id="disc-title">A credential is only as strong as the willingness to withdraw it.</h2>
         </div>
-        <div class="prose">
+        <div class="prose" data-reveal>
           <p>The Institute investigates complaints through the Professional Conduct and Disciplinary Committee, under a published procedure that guarantees a fair hearing and a right of appeal. Sanctions range from advice and reprimand to suspension and, in the gravest cases, removal from the register and loss of the right to practise under the Institute's designations. Outcomes are, subject to fairness, a matter of record.</p>
           <p>As membership grows in a country or region, the Institute will establish chapters to deliver CPD, convene members, and adapt engagement to national procurement and legal contexts, all within one continental standard. The certification, the code, and the register remain continental and central.</p>
         </div>
@@ -89,12 +212,12 @@
 
     <section class="section section-tint" id="roadmap" aria-labelledby="road-title">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <p class="eyebrow">Establishment roadmap</p>
           <h2 class="h2" id="road-title">The standard and the governance come first, then the credential, then scale.</h2>
         </div>
-        <ol class="timeline">
-          <li class="phase">
+        <ol class="timeline" data-stagger>
+          <li class="phase glass" data-reveal>
             <h3>Phase One</h3><p class="phase-tag">Foundation</p>
             <ul>
               <li>Incorporate the Institute and adopt its constitution and governing instruments.</li>
@@ -103,7 +226,7 @@
               <li>Design the three-track credential, the syllabus, and the examination framework.</li>
             </ul>
           </li>
-          <li class="phase">
+          <li class="phase glass" data-reveal>
             <h3>Phase Two</h3><p class="phase-tag">Credential and founding cohort</p>
             <ul>
               <li>Open founding membership and admit a first cohort by assessed experience and examination.</li>
@@ -112,7 +235,7 @@
               <li>Begin the research and publication programme.</li>
             </ul>
           </li>
-          <li class="phase">
+          <li class="phase glass" data-reveal>
             <h3>Phase Three</h3><p class="phase-tag">Recognition and reach</p>
             <ul>
               <li>Pursue formal recognition and partnership with governments, financiers, and cognate professional bodies.</li>
@@ -122,6 +245,35 @@
             </ul>
           </li>
         </ol>
-        <p class="form-note" style="max-width:48rem;margin-top:1.8rem">The Institute is a not-for-profit professional body, funded by membership subscriptions, examination and certification fees, accredited education and CPD, research and publication, and partnership. Surpluses are applied to its objects, not distributed.</p>
+        <p class="form-note glass" data-reveal>The Institute is a not-for-profit professional body, funded by membership subscriptions, examination and certification fees, accredited education and CPD, research and publication, and partnership. Surpluses are applied to its objects, not distributed.</p>
       </div>
     </section>
+</div>
+
+<script>
+(function () {
+  var root = document.querySelector('.cx');
+  if (!root) return;
+
+  /* Stagger siblings inside grids, then reveal each element once on scroll */
+  root.querySelectorAll('[data-stagger]').forEach(function (g) {
+    g.querySelectorAll(':scope > [data-reveal]').forEach(function (el, i) { el.style.setProperty('--d', ((i % 3) * 110) + 'ms'); });
+  });
+  var items = root.querySelectorAll('[data-reveal]');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: .12, rootMargin: '0px 0px -40px 0px' });
+    items.forEach(function (el) { io.observe(el); });
+  } else { items.forEach(function (el) { el.classList.add('in'); }); }
+
+  /* Pointer glow on cards */
+  root.querySelectorAll('.card, .phase, .check-list li').forEach(function (el) {
+    el.addEventListener('pointermove', function (e) {
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+})();
+</script>
