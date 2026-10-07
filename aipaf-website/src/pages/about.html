@@ -1,6 +1,220 @@
 <!--{"title":"The Mandate | AIPAF","description":"Why AIPAF exists: the problem of project failure in Africa, the Institute's vision, mission and values, and the scholars and practitioners who founded it.","nav":"about"}-->
+<style>
+/* ==========================================================
+   AIPAF · The Mandate — embedded, scoped styles
+   Everything lives under .mp so it can't clash with site CSS.
+   Adjust the colour tokens below to match the logo exactly.
+   ========================================================== */
+.mp{
+  --green-900:#06281c; --green-800:#0a3b29; --green-700:#0f5338; --green-600:#14684a; --green-100:#e4f1ea;
+  --gold-500:#c9a227; --gold-400:#dcb94a; --gold-200:#f3e7bb;
+  --ink:#10201a; --muted:#4b5c54; --line:rgba(16,32,26,.12);
+  --paper:#ffffff; --tint:#f4f7f5;
+  --radius:18px; --shadow:0 1px 2px rgba(6,40,28,.06),0 8px 24px rgba(6,40,28,.07);
+  --shadow-lg:0 2px 4px rgba(6,40,28,.08),0 24px 48px rgba(6,40,28,.16);
+  --ease:cubic-bezier(.22,.8,.24,1);
+  --pad:clamp(1.25rem,4vw,2.5rem);
+  color:var(--ink); background:var(--paper); overflow-x:clip;
+}
+@media (prefers-color-scheme:dark){
+  .mp.mp-auto-dark{--ink:#e8f0ec;--muted:#a9bbb2;--line:rgba(255,255,255,.12);--paper:#08150f;--tint:#0d1f17;--green-100:#12301f}
+}
+.mp *,.mp *::before,.mp *::after{box-sizing:border-box}
+.mp img{max-width:100%;height:auto;display:block}
+.mp a{color:inherit}
+.mp .wrap{width:min(1180px,100% - 2*var(--pad));margin-inline:auto}
+
+/* ---------- scroll progress ---------- */
+.mp-progress{position:fixed;inset:0 0 auto 0;height:3px;z-index:100;background:transparent;pointer-events:none}
+.mp-progress span{display:block;height:100%;width:100%;transform-origin:left;transform:scaleX(0);
+  background:linear-gradient(90deg,var(--green-600),var(--gold-400))}
+
+/* ---------- typography ---------- */
+.mp .eyebrow{display:inline-flex;align-items:center;gap:.7rem;margin:0 0 1rem;font-size:.78rem;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--green-600)}
+.mp .eyebrow::before{content:"";width:2rem;height:2px;background:var(--gold-500);border-radius:2px}
+.mp .h2,.mp h1,.mp h3{font-family:inherit;line-height:1.15;margin:0}
+.mp .h2{font-size:clamp(1.7rem,3.4vw,2.6rem);letter-spacing:-.02em;color:var(--green-800);text-wrap:balance}
+.mp .h2-wide{max-width:22ch}
+.mp .lead{font-size:clamp(1.05rem,1.6vw,1.25rem);line-height:1.65;color:var(--muted);max-width:60ch;margin:1.1rem 0 0}
+.mp .prose p{line-height:1.8;color:var(--muted);margin:0 0 1.15rem;font-size:1.05rem}
+.mp .prose strong{color:var(--green-800)}
+.mp .section{padding-block:clamp(3.5rem,8vw,7rem);position:relative}
+.mp .section-tint{background:var(--tint)}
+.mp .section-head{margin-bottom:clamp(2rem,4vw,3.25rem)}
+.mp .prose-wide .prose{max-width:70ch}
+
+/* ---------- hero ---------- */
+.mp .page-hero{position:relative;isolation:isolate;color:#fff;overflow:hidden;
+  padding-block:clamp(6rem,16vw,11rem) clamp(5rem,10vw,8rem);background:var(--green-900)}
+.mp .page-hero-bg{position:absolute;inset:-8% 0;z-index:-2}
+.mp .page-hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.55;transform:scale(1.08);
+  animation:mp-kb 24s ease-in-out infinite alternate;will-change:transform}
+.mp .page-hero::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(115deg,rgba(6,40,28,.94) 8%,rgba(6,40,28,.7) 55%,rgba(6,40,28,.35)),
+             radial-gradient(60% 80% at 85% 10%,rgba(201,162,39,.22),transparent 60%)}
+@keyframes mp-kb{to{transform:scale(1.18) translate3d(-1.5%,1%,0)}}
+.mp .crumbs{font-size:.88rem;margin:0 0 2rem;color:rgba(255,255,255,.72)}
+.mp .crumbs a{text-decoration:none;border-bottom:1px solid transparent;transition:border-color .3s,color .3s}
+.mp .crumbs a:hover{color:var(--gold-400);border-color:var(--gold-400)}
+.mp .page-hero .eyebrow{color:var(--gold-400)}
+.mp .page-hero h1{font-size:clamp(2rem,5.6vw,4rem);letter-spacing:-.025em;max-width:20ch;text-wrap:balance}
+.mp .page-hero .lead{color:rgba(255,255,255,.82);max-width:56ch}
+.mp .ruler{position:absolute;left:0;right:0;bottom:0;height:6px;
+  background:repeating-linear-gradient(90deg,var(--gold-500) 0 2px,transparent 2px 14px);opacity:.55}
+.mp .page-hero .wrap>*{animation:mp-rise .9s var(--ease) both}
+.mp .page-hero .wrap>*:nth-child(2){animation-delay:.08s}
+.mp .page-hero .wrap>*:nth-child(3){animation-delay:.16s}
+.mp .page-hero .wrap>*:nth-child(4){animation-delay:.28s}
+@keyframes mp-rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+
+/* ---------- layout grids ---------- */
+.mp .mandate-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(2rem,6vw,5rem);align-items:start}
+.mp .mandate-grid>div:first-child{position:sticky;top:6rem}
+.mp .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,6vw,5rem);align-items:center}
+.mp .stack{display:grid;gap:1.1rem}
+
+/* ---------- cards ---------- */
+.mp .card{position:relative;padding:1.6rem 1.6rem 1.6rem 1.9rem;border-radius:var(--radius);background:var(--paper);
+  border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden;
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .3s}
+.mp .card-tinted{background:linear-gradient(180deg,var(--paper),var(--tint))}
+.mp .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(var(--gold-400),var(--green-600));transform:scaleY(.35);transform-origin:top;
+  transition:transform .5s var(--ease)}
+.mp .card:hover{transform:translateY(-6px) translateX(4px);box-shadow:var(--shadow-lg);border-color:rgba(20,104,74,.35)}
+.mp .card:hover::before{transform:scaleY(1)}
+.mp .card h3{font-size:1.15rem;color:var(--green-800);margin-bottom:.55rem}
+.mp .card p{margin:0;line-height:1.7;color:var(--muted)}
+
+/* ---------- media ---------- */
+.mp .split-media{position:relative;border-radius:calc(var(--radius) + 6px);overflow:hidden;box-shadow:var(--shadow-lg)}
+.mp .split-media::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
+.mp .split-media img{width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform 1.2s var(--ease)}
+.mp .split-media:hover img{transform:scale(1.06)}
+
+/* ---------- buttons ---------- */
+.mp .btn{position:relative;display:inline-flex;align-items:center;gap:.6rem;padding:.95rem 1.7rem;border-radius:999px;
+  font-weight:600;text-decoration:none;overflow:hidden;isolation:isolate;border:1px solid transparent;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .3s,color .3s,border-color .3s}
+.mp .btn::before{content:"";position:absolute;inset:0;z-index:-1;transform:translateX(-110%) skewX(-18deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transition:transform .7s var(--ease)}
+.mp .btn:hover::before{transform:translateX(110%) skewX(-18deg)}
+.mp .btn::after{content:"→";transition:transform .35s var(--ease)}
+.mp .btn:hover::after{transform:translateX(5px)}
+.mp .btn:hover{transform:translateY(-3px)}
+.mp .btn:active{transform:translateY(-1px) scale(.98)}
+.mp .btn:focus-visible,.mp a:focus-visible{outline:3px solid var(--gold-400);outline-offset:3px}
+.mp .btn-green{background:var(--green-700);color:#fff;box-shadow:0 8px 20px rgba(15,83,56,.3)}
+.mp .btn-green:hover{background:var(--green-600);box-shadow:0 14px 28px rgba(15,83,56,.38)}
+.mp .btn-gold{background:var(--gold-500);color:var(--green-900);box-shadow:0 8px 20px rgba(201,162,39,.35)}
+.mp .btn-gold:hover{background:var(--gold-400);box-shadow:0 14px 30px rgba(201,162,39,.45)}
+.mp .btn-glass{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.35);backdrop-filter:blur(8px)}
+.mp .btn-glass:hover{background:rgba(255,255,255,.2);border-color:#fff}
+.mp .split .btn{margin-top:.75rem}
+
+/* ---------- vision ---------- */
+.mp .vision{position:relative;margin:0;padding:clamp(1.75rem,4vw,3rem) clamp(1.5rem,4vw,3.25rem);border-radius:calc(var(--radius) + 6px);
+  background:linear-gradient(135deg,var(--green-900),var(--green-700));color:#fff;
+  font-size:clamp(1.2rem,2.4vw,1.75rem);line-height:1.5;letter-spacing:-.01em;box-shadow:var(--shadow-lg);overflow:hidden}
+.mp .vision::before{content:"“";position:absolute;top:-.15em;left:.2em;font-size:9rem;line-height:1;color:var(--gold-500);opacity:.35;font-family:Georgia,serif}
+.mp .vision::after{content:"";position:absolute;right:-10%;bottom:-40%;width:50%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,162,39,.3),transparent 65%)}
+
+/* ---------- values ---------- */
+.mp .value-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem}
+.mp .value{position:relative;padding:1.8rem;border-radius:var(--radius);background:var(--paper);border:1px solid var(--line);
+  overflow:hidden;transition:transform .45s var(--ease),box-shadow .45s var(--ease),background .4s,color .4s,border-color .4s}
+.mp .value::after{content:"";position:absolute;left:1.8rem;bottom:0;height:3px;width:2.5rem;background:var(--gold-500);
+  transition:width .5s var(--ease)}
+.mp .value h3{font-size:1.2rem;color:var(--green-800);margin-bottom:.65rem;transition:color .4s}
+.mp .value p{margin:0 0 .6rem;line-height:1.7;color:var(--muted);transition:color .4s}
+.mp .value:hover{transform:translateY(-8px);background:var(--green-800);border-color:var(--green-800);box-shadow:var(--shadow-lg)}
+.mp .value:hover h3{color:var(--gold-400)}
+.mp .value:hover p{color:rgba(255,255,255,.85)}
+.mp .value:hover::after{width:calc(100% - 3.6rem)}
+
+/* ---------- numbered objects ---------- */
+.mp .num-list{list-style:none;margin:0;padding:0;counter-reset:obj;display:grid;gap:.75rem}
+.mp .num-list li{counter-increment:obj;display:flex;gap:1.1rem;align-items:flex-start;padding:1.1rem 1.25rem;border-radius:14px;
+  border:1px solid transparent;transition:background .35s,border-color .35s,transform .4s var(--ease),box-shadow .4s}
+.mp .num-list li::before{content:counter(obj,decimal-leading-zero);flex:none;display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:50%;
+  background:var(--green-100);color:var(--green-700);font-weight:700;font-size:.85rem;transition:background .35s,color .35s,transform .4s var(--ease)}
+.mp .num-list li span{line-height:1.7;color:var(--muted);padding-top:.35rem}
+.mp .num-list li:hover{background:var(--paper);border-color:var(--line);transform:translateX(8px);box-shadow:var(--shadow)}
+.mp .num-list li:hover::before{background:var(--gold-500);color:var(--green-900);transform:scale(1.12) rotate(-6deg)}
+
+/* ---------- founders ---------- */
+.mp .founders{list-style:none;margin:0 0 2rem;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,17.5rem),1fr));gap:1.1rem}
+.mp .founder{position:relative;padding:1.6rem;border-radius:var(--radius);background:var(--paper);border:1px solid var(--line);
+  box-shadow:var(--shadow);overflow:hidden;transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .3s}
+.mp .founder::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--green-600),var(--gold-400));
+  transform:scaleX(0);transform-origin:left;transition:transform .55s var(--ease)}
+.mp .founder:hover{transform:translateY(-7px);box-shadow:var(--shadow-lg);border-color:rgba(20,104,74,.3)}
+.mp .founder:hover::before{transform:scaleX(1)}
+.mp .founder h3{font-size:1.1rem;color:var(--green-800);margin-bottom:.4rem}
+.mp .founder p{margin:0;color:var(--muted);line-height:1.6;font-size:.95rem}
+.mp .founder-role{display:inline-block;margin-bottom:.8rem;padding:.25rem .7rem;border-radius:999px;font-size:.7rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;background:var(--gold-200);color:#6b5410}
+.mp .form-note{color:var(--muted);line-height:1.7;font-size:.95rem;padding-left:1rem;border-left:3px solid var(--gold-500)}
+
+/* ---------- CTA ---------- */
+.mp .cta{position:relative;isolation:isolate;color:#fff;text-align:center;overflow:hidden;
+  padding-block:clamp(4.5rem,10vw,8rem);background:var(--green-900)}
+.mp .cta-bg{position:absolute;inset:-10% 0;z-index:-2}
+.mp .cta-bg img{width:100%;height:100%;object-fit:cover;opacity:.45}
+.mp .cta::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(6,40,28,.9),rgba(6,40,28,.7)),radial-gradient(50% 70% at 50% 0,rgba(201,162,39,.25),transparent 70%)}
+.mp .cta .eyebrow{color:var(--gold-400);justify-content:center}
+.mp .cta h2{font-size:clamp(1.9rem,4.6vw,3.2rem);letter-spacing:-.02em;margin:0 0 .5rem}
+.mp .cta .lead{margin-inline:auto;color:rgba(255,255,255,.82)}
+.mp .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;margin-top:2rem}
+
+/* ---------- scroll reveal ---------- */
+.mp.js [data-reveal]{opacity:0;transform:translateY(34px);filter:blur(4px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease);
+  transition-delay:calc(var(--i,0) * 90ms)}
+.mp.js [data-reveal="left"]{transform:translateX(-40px)}
+.mp.js [data-reveal="right"]{transform:translateX(40px)}
+.mp.js [data-reveal="zoom"]{transform:scale(.94)}
+.mp.js [data-reveal].in{opacity:1;transform:none;filter:none}
+/* once revealed, hand transitions back to hover timing */
+.mp.js .card.in,.mp.js .value.in,.mp.js .founder.in,.mp.js .num-list li.in{transition-delay:0s}
+
+/* ---------- responsive ---------- */
+@media (max-width:1000px){
+  .mp .value-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:860px){
+  .mp .mandate-grid,.mp .split{grid-template-columns:1fr}
+  .mp .mandate-grid>div:first-child{position:static}
+  .mp .split-media{order:-1}
+  .mp .h2-wide{max-width:none}
+}
+@media (max-width:560px){
+  .mp .value-grid{grid-template-columns:1fr}
+  .mp .hero-actions .btn,.mp .split .btn{width:100%;justify-content:center}
+  .mp .card{padding:1.3rem 1.3rem 1.3rem 1.5rem}
+  .mp .num-list li{padding:.9rem .6rem}
+  .mp .ruler{height:4px}
+}
+@media (hover:none){
+  .mp .card:hover,.mp .value:hover,.mp .founder:hover,.mp .num-list li:hover{transform:none}
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  .mp *,.mp *::before,.mp *::after{animation:none!important;transition-duration:.01ms!important;transition-delay:0s!important}
+  .mp.js [data-reveal]{opacity:1;transform:none;filter:none}
+}
+</style>
+
+<div class="mp" id="mp">
+  <div class="mp-progress" aria-hidden="true"><span id="mp-bar"></span></div>
+
     <section class="page-hero">
-      <div class="page-hero-bg" aria-hidden="true"><img src="/img/bridge.jpg" alt="" width="1280" height="720"></div>
+      <div class="page-hero-bg" aria-hidden="true"><img src="/img/bridge.jpg" alt="" width="1280" height="720" id="mp-hero-img"></div>
       <div class="wrap">
         <p class="crumbs"><a href="/">Home</a> / The Mandate</p>
         <p class="eyebrow">The Mandate</p>
@@ -12,7 +226,7 @@
 
     <section class="section" aria-labelledby="problem-title">
       <div class="wrap mandate-grid">
-        <div>
+        <div data-reveal="left">
           <p class="eyebrow">Why we exist</p>
           <h2 class="h2" id="problem-title">Project failure is structural, and governance can be strengthened.</h2>
           <div class="prose">
@@ -21,15 +235,15 @@
           </div>
         </div>
         <div class="stack">
-          <article class="card card-tinted">
+          <article class="card card-tinted" data-reveal style="--i:0">
             <h3>Weak front-end assurance</h3>
             <p>Decisions to sanction, finance, and proceed are frequently taken without independent scrutiny of whether the project is deliverable to time, budget, and quality.</p>
           </article>
-          <article class="card card-tinted">
+          <article class="card card-tinted" data-reveal style="--i:1">
             <h3>A thin diagnostic capability</h3>
             <p>When a project stalls or a dispute arises, there is often no independent, methodologically sound way to establish what went wrong, who bears responsibility, and how much of the loss was avoidable.</p>
           </article>
-          <article class="card card-tinted">
+          <article class="card card-tinted" data-reveal style="--i:2">
             <h3>No professional standard</h3>
             <p>The practitioners who do this work operate without a shared body of knowledge, a common code of conduct, or a recognised credential that tells an employer or a court that they are competent to opine.</p>
           </article>
@@ -39,7 +253,7 @@
 
     <section class="section section-tint" aria-labelledby="opp-title">
       <div class="wrap split">
-        <div>
+        <div data-reveal="left">
           <p class="eyebrow">The opportunity</p>
           <h2 class="h2" id="opp-title">One body across the lifecycle.</h2>
           <div class="prose">
@@ -48,18 +262,18 @@
           </div>
           <a class="btn btn-green" href="/lifecycle">See the lifecycle</a>
         </div>
-        <div class="split-media"><img src="/img/survey.jpg" alt="A professional reviewing a three-dimensional site model on a rugged tablet" width="1280" height="720" loading="lazy"></div>
+        <div class="split-media" data-reveal="right"><img src="/img/survey.jpg" alt="A professional reviewing a three-dimensional site model on a rugged tablet" width="1280" height="720" loading="lazy"></div>
       </div>
     </section>
 
     <section class="section" aria-labelledby="vision-title">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <p class="eyebrow">Vision and mission</p>
           <h2 class="h2" id="vision-title">Where we are going, and how we get there.</h2>
         </div>
-        <blockquote class="vision">A continent where every significant project is built to a sound and accountable standard, independently assured before it proceeds, and honestly examined when it fails, upheld by a recognised profession that Africa built for itself.</blockquote>
-        <div class="prose" style="margin-top:2rem">
+        <blockquote class="vision" data-reveal="zoom">A continent where every significant project is built to a sound and accountable standard, independently assured before it proceeds, and honestly examined when it fails, upheld by a recognised profession that Africa built for itself.</blockquote>
+        <div class="prose" style="margin-top:2rem" data-reveal>
           <p><strong>Our mission.</strong> To establish, uphold, and advance the profession of independent project assurance and project forensics, together with the sound delivery practice on which they rest, across Africa by setting standards of competence and conduct, certifying practitioners against them, building capability through education and research, and providing the institutional home through which the discipline speaks with one credible voice.</p>
         </div>
       </div>
@@ -67,48 +281,48 @@
 
     <section class="section section-tint" id="why" aria-labelledby="values-title">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <p class="eyebrow">Why AIPAF</p>
           <h2 class="h2 h2-wide" id="values-title">Built for African conditions. Answerable on the continent.</h2>
           <p class="lead">Each value carries an operational obligation. A body whose worth rests on the trust others place in its judgements cannot afford values it does not enforce.</p>
         </div>
         <div class="value-grid value-grid-6">
-          <div class="value"><h3>Independence</h3><p>Our members opine free of the interests of those who deliver, finance, or benefit from a project. Independence is what makes the Institute's opinions worth relying on.</p></div>
-          <div class="value"><h3>Evidence</h3><p>Judgements rest on facts gathered and weighed by sound method, not on assertion, reputation, or pressure. What cannot be evidenced is not opined.</p></div>
-          <div class="value"><h3>Integrity</h3><p>Members tell the truth as the evidence shows it, including when the truth is unwelcome to a powerful client or a sponsoring authority.</p></div>
-          <div class="value"><h3>Competence</h3><p>A credential from the Institute means the holder can actually do the work to standard, and keeps that competence current.</p></div>
-          <div class="value"><h3>Public interest</h3><p>Where the interests of a client and the interests of the communities a project serves diverge, our members hold the public interest as the higher duty.</p></div>
-          <div class="value"><h3>African ownership</h3><p>The standard is built for African delivery conditions, governed on the continent, and answerable to the people whose projects it concerns.</p></div>
+          <div class="value" data-reveal style="--i:0"><h3>Independence</h3><p>Our members opine free of the interests of those who deliver, finance, or benefit from a project. Independence is what makes the Institute's opinions worth relying on.</p></div>
+          <div class="value" data-reveal style="--i:1"><h3>Evidence</h3><p>Judgements rest on facts gathered and weighed by sound method, not on assertion, reputation, or pressure. What cannot be evidenced is not opined.</p></div>
+          <div class="value" data-reveal style="--i:2"><h3>Integrity</h3><p>Members tell the truth as the evidence shows it, including when the truth is unwelcome to a powerful client or a sponsoring authority.</p></div>
+          <div class="value" data-reveal style="--i:0"><h3>Competence</h3><p>A credential from the Institute means the holder can actually do the work to standard, and keeps that competence current.</p></div>
+          <div class="value" data-reveal style="--i:1"><h3>Public interest</h3><p>Where the interests of a client and the interests of the communities a project serves diverge, our members hold the public interest as the higher duty.</p></div>
+          <div class="value" data-reveal style="--i:2"><h3>African ownership</h3><p>The standard is built for African delivery conditions, governed on the continent, and answerable to the people whose projects it concerns.</p></div>
         </div>
       </div>
     </section>
 
     <section class="section" aria-labelledby="objects-title">
       <div class="wrap mandate-grid">
-        <div>
+        <div data-reveal="left">
           <p class="eyebrow">Objects of the Institute</p>
           <h2 class="h2" id="objects-title">Every activity traces back to at least one of eight objects.</h2>
         </div>
         <ol class="num-list">
-          <li><span>Define and maintain the body of knowledge, standards of competence, and code of professional conduct for project delivery, assurance, and forensics in Africa.</span></li>
-          <li><span>Certify individuals as competent to practise, and maintain a public register of those certified.</span></li>
-          <li><span>Provide education, training, and continuing professional development.</span></li>
-          <li><span>Advance research into the causes of project failure and the methods of assurance and forensic investigation.</span></li>
-          <li><span>Promote the adoption of independent project assurance by governments, financiers, and project owners.</span></li>
-          <li><span>Provide a recognised, impartial source of expertise for the investigation and resolution of project failures and disputes.</span></li>
-          <li><span>Uphold the standing of the profession by disciplining members who fall below its standards.</span></li>
-          <li><span>Represent the profession in dialogue with governments, regulators, professional bodies, and international institutions.</span></li>
+          <li data-reveal style="--i:0"><span>Define and maintain the body of knowledge, standards of competence, and code of professional conduct for project delivery, assurance, and forensics in Africa.</span></li>
+          <li data-reveal style="--i:1"><span>Certify individuals as competent to practise, and maintain a public register of those certified.</span></li>
+          <li data-reveal style="--i:2"><span>Provide education, training, and continuing professional development.</span></li>
+          <li data-reveal style="--i:3"><span>Advance research into the causes of project failure and the methods of assurance and forensic investigation.</span></li>
+          <li data-reveal style="--i:4"><span>Promote the adoption of independent project assurance by governments, financiers, and project owners.</span></li>
+          <li data-reveal style="--i:5"><span>Provide a recognised, impartial source of expertise for the investigation and resolution of project failures and disputes.</span></li>
+          <li data-reveal style="--i:6"><span>Uphold the standing of the profession by disciplining members who fall below its standards.</span></li>
+          <li data-reveal style="--i:7"><span>Represent the profession in dialogue with governments, regulators, professional bodies, and international institutions.</span></li>
         </ol>
       </div>
     </section>
 
     <section class="section section-tint" aria-labelledby="scope-title">
       <div class="wrap prose-wide">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <p class="eyebrow">Continental ambition</p>
           <h2 class="h2" id="scope-title">Pan-African by design, built outward from a credible base.</h2>
         </div>
-        <div class="prose">
+        <div class="prose" data-reveal>
           <p>A continental body can set one standard, certify against it consistently, and give a practitioner qualified in one jurisdiction recognition in others. That portability is part of what turns scattered expertise into a profession.</p>
           <p>The Institute will be built outward from a credible operating base rather than declared continental from the outset. Early activity will concentrate in Ghana and the surrounding region, with a governance structure and membership framework designed to admit practitioners and chapters across the continent as the body matures.</p>
         </div>
@@ -117,33 +331,75 @@
 
     <section class="section" id="founders" aria-labelledby="founders-title">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <p class="eyebrow">The Founders</p>
           <h2 class="h2" id="founders-title">Founded by scholars and practitioners.</h2>
           <p class="lead">AIPAF was established by a founding group drawn from the academic and professional community in Ghana, who under the Constitution constitute the inaugural Council of the Institute.</p>
         </div>
         <ul class="founders">
-          <li class="founder"><span class="founder-role">Founder</span><h3>Prof. De-Graft Owusu-Manu</h3><p>Department of Construction Technology and Management, KNUST, Kumasi.</p></li>
-          <li class="founder"><h3>Prof. Ernest Ofori Asamoah</h3><p>KNUST, Kumasi.</p></li>
-          <li class="founder"><h3>Prof. Joshua Ayarkwa</h3><p>Department of Construction Technology and Management, KNUST, Kumasi.</p></li>
-          <li class="founder"><h3>Prof. Theophilus Adjei Kumi</h3><p>Department of Publishing Studies, KNUST, Kumasi.</p></li>
-          <li class="founder"><h3>Dr. (Mrs) Maame Adwoa Ivy Abu</h3><p>Department of Construction Technology and Management, KNUST, Kumasi.</p></li>
-          <li class="founder"><h3>Dr. Michael Adesi</h3><p>Department of Construction Technology and Management, KNUST, Kumasi.</p></li>
-          <li class="founder"><span class="founder-role">Secretary</span><h3>Mrs Matilda Owusu-Manu</h3><p>Company Secretary to the Institute.</p></li>
+          <li class="founder" data-reveal style="--i:0"><span class="founder-role">Founder</span><h3>Prof. De-Graft Owusu-Manu</h3><p>Department of Construction Technology and Management, KNUST, Kumasi.</p></li>
+          <li class="founder" data-reveal style="--i:1"><h3>Prof. Ernest Ofori Asamoah</h3><p>KNUST, Kumasi.</p></li>
+          <li class="founder" data-reveal style="--i:2"><h3>Prof. Joshua Ayarkwa</h3><p>Department of Construction Technology and Management, KNUST, Kumasi.</p></li>
+          <li class="founder" data-reveal style="--i:0"><h3>Prof. Theophilus Adjei Kumi</h3><p>Department of Publishing Studies, KNUST, Kumasi.</p></li>
+          <li class="founder" data-reveal style="--i:1"><h3>Dr. (Mrs) Maame Adwoa Ivy Abu</h3><p>Department of Construction Technology and Management, KNUST, Kumasi.</p></li>
+          <li class="founder" data-reveal style="--i:2"><h3>Dr. Michael Adesi</h3><p>Department of Construction Technology and Management, KNUST, Kumasi.</p></li>
+          <li class="founder" data-reveal style="--i:0"><span class="founder-role">Secretary</span><h3>Mrs Matilda Owusu-Manu</h3><p>Company Secretary to the Institute.</p></li>
         </ul>
-        <p class="form-note" style="max-width:44rem">Together the founding members constitute the inaugural Council, adopt the founding instruments, and appoint the first office holders. They hold office until the first annual general meeting, at which the Council is elected.</p>
+        <p class="form-note" style="max-width:44rem" data-reveal>Together the founding members constitute the inaugural Council, adopt the founding instruments, and appoint the first office holders. They hold office until the first annual general meeting, at which the Council is elected.</p>
       </div>
     </section>
 
     <section class="cta" aria-labelledby="cta-title">
-      <div class="cta-bg" aria-hidden="true"><img src="/img/skyline.jpg" alt="" width="1280" height="720" loading="lazy"></div>
+      <div class="cta-bg" aria-hidden="true"><img src="/img/skyline.jpg" alt="" width="1280" height="720" loading="lazy" id="mp-cta-img"></div>
       <div class="wrap">
-        <p class="eyebrow">Founding Membership Is Open</p>
-        <h2 id="cta-title">Help found the profession.</h2>
-        <p class="lead">Join the practitioners defining the standard for Africa's projects.</p>
-        <div class="hero-actions">
+        <p class="eyebrow" data-reveal>Founding Membership Is Open</p>
+        <h2 id="cta-title" data-reveal style="--i:1">Help found the profession.</h2>
+        <p class="lead" data-reveal style="--i:2">Join the practitioners defining the standard for Africa's projects.</p>
+        <div class="hero-actions" data-reveal style="--i:3">
           <a class="btn btn-gold" href="/membership#join">Become a founding member</a>
           <a class="btn btn-glass" href="/contact">Contact the Institute</a>
         </div>
       </div>
     </section>
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById('mp'); if(!root) return;
+  root.classList.add('js');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* reveal on scroll */
+  var items=[].slice.call(root.querySelectorAll('[data-reveal]'));
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+    items.forEach(function(el){ io.observe(el); });
+  } else { items.forEach(function(el){ el.classList.add('in'); }); }
+
+  /* progress bar + parallax (single rAF-throttled scroll handler) */
+  var bar=document.getElementById('mp-bar'),
+      heroImg=document.getElementById('mp-hero-img'),
+      ctaImg=document.getElementById('mp-cta-img'),
+      ticking=false;
+  function update(){
+    var h=document.documentElement,
+        max=h.scrollHeight-h.clientHeight,
+        y=window.scrollY||h.scrollTop;
+    if(bar) bar.style.transform='scaleX('+(max>0?Math.min(y/max,1):0)+')';
+    if(!reduce){
+      if(heroImg && y<window.innerHeight*1.5) heroImg.parentNode.style.transform='translate3d(0,'+(y*.28)+'px,0)';
+      if(ctaImg){
+        var r=ctaImg.parentNode.parentNode.getBoundingClientRect();
+        if(r.top<window.innerHeight && r.bottom>0)
+          ctaImg.parentNode.style.transform='translate3d(0,'+((r.top-window.innerHeight)*.12)+'px,0)';
+      }
+    }
+    ticking=false;
+  }
+  window.addEventListener('scroll',function(){ if(!ticking){ ticking=true; requestAnimationFrame(update); } },{passive:true});
+  window.addEventListener('resize',update);
+  update();
+})();
+</script>

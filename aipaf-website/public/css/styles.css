@@ -127,18 +127,18 @@ ul { margin: 0; padding: 0; }
 }
 
 /* ---------- Hero (video) ---------- */
-.hero { position: relative; min-height: 100svh; display: flex; align-items: center; color: #fff; background: var(--g950); overflow: hidden; isolation: isolate; }
+.hero { position: relative; height: 100svh; min-height: 100svh; display: flex; align-items: center; color: #fff; background: var(--g950); overflow: hidden; isolation: isolate; }
 .hero-media { position: absolute; inset: 0; z-index: -2; }
 .hero-media video, .hero-media img { width: 100%; height: 100%; object-fit: cover; }
 .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background:
   linear-gradient(90deg, rgba(3, 20, 10, .93) 0%, rgba(3, 20, 10, .78) 38%, rgba(3, 20, 10, .35) 70%, rgba(3, 20, 10, .5) 100%),
   linear-gradient(180deg, rgba(3, 20, 10, .55) 0%, transparent 22%, transparent 70%, rgba(3, 20, 10, .92) 100%); }
-.hero-inner { width: 100%; max-width: 1280px; margin-inline: auto; padding: 8.5rem var(--gutter) 5.5rem; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(1rem, 3vw, 3rem); align-items: center; }
-.hero-eyebrow { display: inline-flex; align-items: center; gap: .7rem; color: var(--gold-hi); font-weight: 600; font-size: 1rem; margin-bottom: 1.4rem; }
+.hero-inner { width: 100%; max-width: 1280px; margin-inline: auto; padding: 5.5rem var(--gutter) 2.5rem; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(1rem, 3vw, 3rem); align-items: center; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: .7rem; color: var(--gold-hi); font-weight: 600; font-size: 1rem; margin-bottom: 1rem; }
 .hero-eyebrow::before { content: ""; width: 2.2rem; height: 2px; background: var(--gold-hi); }
-.hero h1 { font-size: clamp(2.5rem, 5.4vw, 4.6rem); font-weight: 500; line-height: 1.04; letter-spacing: -.022em; max-width: 14.5em; margin-bottom: 1.5rem; }
+.hero h1 { font-size: clamp(2.1rem, 4vw, 3.6rem); font-weight: 500; line-height: 1.08; letter-spacing: -.022em; max-width: 14.5em; margin-bottom: 1rem; }
 .hero h1 em { font-style: normal; color: var(--gold-hi); }
-.hero-sub { max-width: 34rem; font-size: clamp(1.05rem, 1.5vw, 1.2rem); color: rgba(255, 255, 255, .86); margin-bottom: 2.2rem; }
+.hero-sub { max-width: 34rem; font-size: clamp(.95rem, 1.2vw, 1.05rem); line-height: 1.5; color: rgba(255, 255, 255, .86); margin-bottom: 1.6rem; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: .9rem; }
 
 .hero-seal { margin: 0; justify-self: end; width: 100%; max-width: 40rem; }
@@ -146,10 +146,6 @@ ul { margin: 0; padding: 0; }
 .hero-seal video { width: 100%; aspect-ratio: 1.18; object-fit: cover; object-position: 50% 50%;
   -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
   mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); }
-.seal-replay { position: absolute; right: 8%; bottom: 8%; width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .3); background: rgba(3, 20, 10, .55); color: #fff; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.seal-replay:hover { background: rgba(255, 255, 255, .18); }
-.seal-replay[hidden] { display: none; }
-.seal-replay svg { width: 16px; height: 16px; }
 
 /* scroll-linked hero: --p runs 0 to 1 as the hero scrolls away (set in main.js) */
 .hero-copy { transform: translate3d(0, calc(var(--p, 0) * -70px), 0); opacity: calc(1 - var(--p, 0) * 1.2); will-change: transform, opacity; }
@@ -160,12 +156,6 @@ ul { margin: 0; padding: 0; }
 @keyframes cue { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
 
 .hero .ruler { position: absolute; left: 0; right: 0; bottom: 0; }
-.hero-pause { position: absolute; right: var(--gutter); bottom: 1.6rem; z-index: 2; width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .3); background: rgba(3, 20, 10, .5); color: #fff; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.hero-pause:hover { background: rgba(255, 255, 255, .18); }
-.hero-pause svg { width: 14px; height: 14px; fill: currentColor; }
-.hero-pause .i-play { display: none; }
-.hero-pause[aria-pressed="true"] .i-play { display: block; }
-.hero-pause[aria-pressed="true"] .i-pause { display: none; }
 
 /* page-load sequence: one orchestrated moment */
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
@@ -389,7 +379,9 @@ td li + li { margin-top: .3rem; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1000px) {
-  .hero-inner { grid-template-columns: 1fr; padding-top: 8rem; }
+  .hero { min-height: 100svh; }
+  .hero-inner { grid-template-columns: 1fr; padding-top: 6rem; padding-bottom: 2.5rem; }
+  .hero-copy { max-width: 42rem; }
   .hero-seal { justify-self: center; max-width: 30rem; }
   .mandate-grid, .split, .contact-grid, .join-grid { grid-template-columns: 1fr; }
   .split-reverse .split-media { order: 0; }
@@ -403,15 +395,21 @@ td li + li { margin-top: .3rem; }
 }
 @media (max-width: 640px) {
   body { font-size: 1rem; }
-  .hero-inner { padding-top: 7rem; padding-bottom: 4.5rem; }
+  .hero { height: 100svh; }
+  .hero-inner { padding-top: 5.5rem; padding-bottom: 1.5rem; }
+  .hero-eyebrow { margin-bottom: .7rem; font-size: .85rem; }
+  .hero h1 { font-size: clamp(2rem, 8.5vw, 2.7rem); margin-bottom: .8rem; }
+  .hero-sub { font-size: .95rem; margin-bottom: 1.2rem; }
+  .hero-actions { gap: .7rem; }
   .hero-actions .btn { width: 100%; }
+  .hero-seal { max-width: 17rem; }
   .triad li { grid-template-columns: 1fr; gap: .2rem; }
   .ladder li { grid-template-columns: 3rem 1fr; }
   .ladder li span { grid-column: 2; }
   .form-grid { grid-template-columns: 1fr; }
   .callout { grid-template-columns: 1fr; }
   .page-hero { padding-top: 8.5rem; }
-  .hero-pause { bottom: 1.2rem; }
+
   .scroll-cue { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {

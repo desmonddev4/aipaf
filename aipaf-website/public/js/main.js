@@ -20,42 +20,31 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setMenu(
 nav?.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
 document.addEventListener('click', (e) => { if (nav?.classList.contains('is-open') && !e.target.closest('.nav-shell')) setMenu(false); });
 
-/* Hero video: respects reduced motion, with a pause control */
-const video = document.querySelector('[data-hero-video]');
-const pauseBtn = document.querySelector('[data-hero-pause]');
-if (video) {
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const sync = () => pauseBtn?.setAttribute('aria-pressed', String(video.paused));
-  if (reduce.matches) video.pause(); else video.play?.().catch(() => {});
-  video.addEventListener('play', sync);
-  video.addEventListener('pause', sync);
-  sync();
-  pauseBtn?.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
-}
-
-/* Hero seal video: plays once and rests on the finished seal; can be replayed */
-const seal = document.querySelector('[data-seal-video]');
-const replay = document.querySelector('[data-seal-replay]');
+/* Hero videos: autoplay while the hero is visible and pause when it scrolls away */
+const hero = document.querySelector('.hero');
+const heroVideo = document.querySelector('[data-hero-video]');
+const sealVideo = document.querySelector('[data-seal-video]');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-if (seal) {
-  const rest = () => { if (replay) replay.hidden = false; };
-  seal.addEventListener('ended', rest);
+
+if (heroVideo || sealVideo) {
+  const videos = [heroVideo, sealVideo].filter(Boolean);
+  const playVideos = () => {
+    if (reduceMotion.matches) return;
+    videos.forEach((video) => video.play?.().catch(() => {}));
+  };
+  const pauseVideos = () => videos.forEach((video) => video.pause());
+
   if (reduceMotion.matches) {
-    // No motion: show the finished seal straight away.
-    const toEnd = () => { seal.currentTime = Math.max(0, seal.duration - 0.05); rest(); };
-    if (seal.readyState >= 1) toEnd(); else seal.addEventListener('loadedmetadata', toEnd, { once: true });
+    pauseVideos();
   } else {
-    const play = () => seal.play().catch(() => {});
-    // Start once the hero is on screen
-    new IntersectionObserver((entries, io) => {
-      if (entries.some((e) => e.isIntersecting)) { setTimeout(play, 500); io.disconnect(); }
-    }, { threshold: 0.3 }).observe(seal);
+    const heroObserver = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) playVideos(); else pauseVideos();
+    }, { threshold: 0.2 });
+    heroObserver.observe(hero);
   }
-  replay?.addEventListener('click', () => { replay.hidden = true; seal.currentTime = 0; seal.play().catch(() => {}); });
 }
 
 /* Hero scroll animation: sets --p (0 to 1) as the hero scrolls away; CSS does the rest */
-const hero = document.querySelector('.hero');
 if (hero && !reduceMotion.matches) {
   let ticking = false;
   const update = () => {
