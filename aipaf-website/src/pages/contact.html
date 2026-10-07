@@ -2,49 +2,25 @@
 <style>
   .cx {
     --cx-ink: #10231c;
-    --cx-text: #1e312a;
-    --cx-muted: #4a5f56;
+    --cx-text: #1f2f28;
+    --cx-muted: #46574f;
     --cx-green: #0f5c3f;
     --cx-green-dark: #0a432d;
     --cx-gold: #c9a24b;
-    --cx-error: #a62e24;
-    --cx-ok: #116942;
-    --cx-glass: rgba(255, 255, 255, .94);
-    --cx-glass-border: rgba(15, 92, 63, .18);
-    --cx-field: #f7faf8;
-    --cx-line: rgba(16, 35, 28, .16);
-    --cx-shadow: 0 24px 60px -24px rgba(10, 40, 28, .3);
+    --cx-error: #b3261e;
+    --cx-ok: #12704a;
+    --cx-glass: #ffffff;
+    --cx-glass-border: rgba(2, 82, 29, .2);
+    --cx-field: #f4f8f5;
+    --cx-line: rgba(16, 35, 28, .14);
+    --cx-shadow: 0 24px 60px -24px rgba(10, 40, 28, .35);
     --cx-ease: cubic-bezier(.22, .8, .3, 1);
     color: var(--cx-text);
     font-size: 1.0625rem;
     line-height: 1.65;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .cx {
-      --cx-ink: #f1f6f3;
-      --cx-text: #d3ded8;
-      --cx-muted: #9db0a6;
-      --cx-glass: rgba(18, 38, 30, .55);
-      --cx-glass-border: rgba(255, 255, 255, .12);
-      --cx-field: #1f473a;
-      --cx-line: rgba(255, 255, 255, .16);
-      --cx-error: #ff8a80;
-      --cx-ok: #6fdcaa;
-      --cx-shadow: 0 24px 60px -24px rgba(0, 0, 0, .6);
-    }
-  }
-  :root[data-theme="dark"] .cx {
-    --cx-ink: #f1f6f3;
-    --cx-text: #d3ded8;
-    --cx-muted: #9db0a6;
-    --cx-glass: rgba(18, 38, 30, .55);
-    --cx-glass-border: rgba(255, 255, 255, .12);
-    --cx-field: #1f473a;
-    --cx-line: rgba(255, 255, 255, .16);
-    --cx-error: #ff8a80;
-    --cx-ok: #6fdcaa;
-    --cx-shadow: 0 24px 60px -24px rgba(0, 0, 0, .6);
-  }
+  
+  
   .cx *, .cx *::before, .cx *::after { box-sizing: border-box; }
   .cx .wrap { width: min(1160px, 100% - 2.5rem); margin-inline: auto; }
 
@@ -70,9 +46,11 @@
     max-width: 44rem;
     padding: clamp(1.5rem, 4vw, 2.5rem);
     border-radius: 24px;
-    background: #0f5c3f;
-    border: 1px solid #2d6b4f;
-    box-shadow: none;
+    background: rgba(255, 255, 255, .09);
+    border: 1px solid rgba(255, 255, 255, .22);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: 0 30px 70px -30px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .25);
   }
   .cx .crumbs { margin: 0 0 1.25rem; font-size: .9rem; color: rgba(255, 255, 255, .78); }
   .cx .crumbs a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, .35); transition: color .2s, border-color .2s; }
@@ -94,7 +72,7 @@
   .cx .eyebrow { margin: 0 0 .75rem; font-size: .95rem; font-weight: 600; letter-spacing: .02em; color: var(--cx-green); }
 
   /* ---------- Section + glass ---------- */
-  .cx .section { position: relative; isolation: isolate; padding: clamp(3.5rem, 8vw, 6rem) 0 clamp(4rem, 9vw, 7rem); overflow: hidden; }
+  .cx .section { background: #f7faf8; position: relative; isolation: isolate; padding: clamp(3.5rem, 8vw, 6rem) 0 clamp(4rem, 9vw, 7rem); overflow: hidden; }
   .cx .section::before, .cx .section::after {
     content: ""; position: absolute; z-index: -1; border-radius: 50%; filter: blur(70px); opacity: .55; pointer-events: none;
   }
@@ -117,7 +95,7 @@
     border-radius: 18px;
     background: var(--cx-glass);
     border: 1px solid var(--cx-glass-border);
-    box-shadow: none;
+    box-shadow: 0 10px 30px -18px rgba(10, 40, 28, .35);
     transition: transform .3s var(--cx-ease), box-shadow .3s var(--cx-ease), border-color .3s;
   }
   .cx .contact-list li:hover { transform: translateY(-3px); border-color: rgba(201, 162, 75, .7); box-shadow: 0 18px 36px -18px rgba(10, 40, 28, .45); }
@@ -128,8 +106,8 @@
     transition: background-size .3s var(--cx-ease), color .2s;
   }
   .cx .contact-list a:hover, .cx .contact-list a:focus-visible { background-size: 100% 2px; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cx .contact-list a, :root:not([data-theme="light"]) .cx .eyebrow { color: #6fdcaa; } }
-  :root[data-theme="dark"] .cx .contact-list a, :root[data-theme="dark"] .cx .eyebrow { color: #6fdcaa; }
+  
+  
 
   /* ---------- Form ---------- */
   .cx .form-card {
@@ -137,7 +115,7 @@
     border-radius: 26px;
     background: var(--cx-glass);
     border: 1px solid var(--cx-glass-border);
-    box-shadow: none;
+    box-shadow: var(--cx-shadow), inset 0 1px 0 rgba(255, 255, 255, .6);
   }
   .cx .form-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
   @media (min-width: 600px) { .cx .form-grid { grid-template-columns: 1fr 1fr; } .cx .field-full { grid-column: 1 / -1; } }
@@ -211,6 +189,17 @@
     .cx *, .cx *::before, .cx *::after { animation: none !important; transition-duration: .01ms !important; }
     .cx [data-reveal] { opacity: 1; transform: none; }
   }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .cx .form-card, .cx .contact-list li { background: #f4f8f6; }
+    .cx .hero-panel { background: rgba(6, 30, 21, .55); }
+  }
+
+  /* Readability guard: explicit colours so the page never inherits site theme colours */
+  .cx .section .eyebrow { color: var(--cx-green-text); }
+  .cx .section .h2, .cx .section h3 { color: var(--cx-ink); }
+  .cx .section .lead, .cx .section-head p { color: var(--cx-text); }
+  .cx .card p, .cx .callout p, .cx .prose p, .cx .triad span, .cx tbody td { color: var(--cx-text); }
+  .cx .prose p:first-child { color: var(--cx-ink); }
 </style>
 
 <div class="cx">
