@@ -1,51 +1,5 @@
 import { initForms } from './forms.js';
 
-const header = document.querySelector('[data-header]');
-const toggle = document.querySelector('[data-nav-toggle]');
-const nav = document.querySelector('[data-nav]');
-
-/* Header: gains a darker glass once the page scrolls */
-const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
-onScroll();
-window.addEventListener('scroll', onScroll, { passive: true });
-
-/* Mobile menu */
-const setMenu = (open) => {
-  if (!toggle || !nav) return;
-  toggle.setAttribute('aria-expanded', String(open));
-  nav.classList.toggle('is-open', open);
-};
-toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
-
-/* Dropdown menus */
-const dropdowns = [...document.querySelectorAll('.nav-dropdown')];
-const setDropdown = (dropdown, open) => {
-  const trigger = dropdown?.querySelector('.nav-dropdown-trigger');
-  if (!dropdown || !trigger) return;
-  dropdown.classList.toggle('is-open', open);
-  trigger.setAttribute('aria-expanded', String(open));
-};
-dropdowns.forEach((dropdown) => {
-  const trigger = dropdown.querySelector('.nav-dropdown-trigger');
-  trigger?.addEventListener('click', (event) => {
-    event.stopPropagation();
-    const willOpen = trigger.getAttribute('aria-expanded') !== 'true';
-    dropdowns.forEach((item) => setDropdown(item, item === dropdown && willOpen));
-  });
-});
-document.addEventListener('click', (event) => {
-  if (!event.target.closest('.nav-dropdown')) dropdowns.forEach((dropdown) => setDropdown(dropdown, false));
-  if (nav?.classList.contains('is-open') && !event.target.closest('.nav-shell')) setMenu(false);
-});
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    setMenu(false);
-    dropdowns.forEach((dropdown) => setDropdown(dropdown, false));
-    toggle?.focus();
-  }
-});
-nav?.addEventListener('click', (event) => { if (event.target.closest('a')) setMenu(false); });
-
 /* Hero videos: autoplay while the hero is visible and pause when it scrolls away */
 const hero = document.querySelector('.hero');
 const heroVideo = document.querySelector('[data-hero-video]');

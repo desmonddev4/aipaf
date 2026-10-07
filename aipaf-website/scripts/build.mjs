@@ -17,7 +17,7 @@ mkdirSync(dist, { recursive: true });
 cpSync(join(root, 'public'), dist, { recursive: true });
 
 const layout = partial('layout');
-const header = partial('header');
+const header = partial('Navbar');
 const footer = partial('footer');
 const year = new Date().getFullYear();
 

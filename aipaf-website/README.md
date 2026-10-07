@@ -24,7 +24,7 @@ Or with the CLI: `npx vercel` from this folder.
 
 ```
 src/pages/        One file per page. First line is a JSON comment with title, description, nav item.
-src/partials/     layout.html (page shell), header.html, footer.html. Edit once, applies everywhere.
+src/partials/     layout.html (page shell), Navbar.html, footer.html. Edit once, applies everywhere.
 public/css/       styles.css (design tokens at the top: colours, fonts, spacing)
 public/js/        main.js (menu, hero video, hero card), forms.js (validation), config.js (backend hooks)
 public/media/     hero.webm and hero.mp4 (background video), hero-poster.jpg
@@ -39,4 +39,5 @@ BACKEND-TODO.md   Everything left for the backend
 - **Hero video** is the supplied storyboard video, re-encoded without sound (about 1 MB each as WebM and MP4). It pauses automatically for visitors who prefer reduced motion, and has a pause button.
 - **Forms** work today by opening the visitor's email app. Add the endpoints in `public/js/config.js` once the backend exists.
 - **Fonts** (Newsreader and Public Sans) load from Google Fonts. Safe fallbacks are set if they are blocked.
-- To add a page: create `src/pages/yourpage.html` with the JSON comment on the first line, then add it to `header.html` and `footer.html` if it needs a menu link.
+- The shared navbar, including its scoped styles and behavior, lives in `src/partials/Navbar.html`.
+- To add a page: create `src/pages/yourpage.html` with the JSON comment on the first line, then add it to `Navbar.html` and `footer.html` if it needs a menu link.
