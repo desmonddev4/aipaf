@@ -30,8 +30,9 @@
 
   /* Brand */
   .site-footer .brand { display: inline-flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; color: #fff; text-decoration: none; }
-  .site-footer .brand img { width: 64px; height: 64px; flex: none; transition: transform .5s var(--ft-ease), filter .3s; }
-  .site-footer .brand:hover img { transform: rotate(-6deg) scale(1.06); filter: drop-shadow(0 6px 14px rgba(240, 184, 74, .5)); }
+  .site-footer .brand-badge { width: 64px; height: 64px; border-radius: 50%; background: #fff; display: grid; place-items: center; flex: none; }
+  .site-footer .brand-badge img { width: 56px; height: 56px; flex: none; transition: transform .5s var(--ft-ease), filter .3s; }
+  .site-footer .brand:hover .brand-badge img { transform: rotate(-6deg) scale(1.06); filter: drop-shadow(0 6px 14px rgba(240, 184, 74, .5)); }
   .site-footer .brand-text { display: grid; line-height: 1.15; }
   .site-footer .brand-word { font-family: Georgia, "Times New Roman", serif; font-size: 1.8rem; font-weight: 700; letter-spacing: .01em; }
   .site-footer .brand-line { font-size: .95rem; color: var(--ft-gold-soft); }
@@ -52,6 +53,18 @@
   .site-footer nav a:hover, .site-footer nav a:focus-visible { color: #fff; }
   .site-footer nav a:hover::before, .site-footer nav a:focus-visible::before { width: 1rem; margin-right: .55rem; }
   .site-footer nav a[aria-current="page"] { color: var(--ft-gold-soft); }
+
+  .site-footer nav details { margin: 0; }
+  .site-footer nav summary { list-style: none; cursor: pointer; }
+  .site-footer nav summary::-webkit-details-marker { display: none; }
+  .site-footer nav summary::after { content: "▾"; float: right; color: var(--ft-gold-soft); transition: transform .25s var(--ft-ease); }
+  .site-footer nav details[open] summary::after { transform: rotate(180deg); }
+  .site-footer nav details > ul { margin-top: .9rem; }
+  @media (min-width: 640px) {
+    .site-footer nav details { border: 0; }
+    .site-footer nav summary { cursor: default; }
+    .site-footer nav summary::after { display: none; }
+  }
 
   /* Base row */
   .site-footer .footer-base { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 2rem; padding: 1.75rem 0 2rem; margin-top: clamp(1.5rem, 4vw, 2.5rem); font-size: .95rem; color: var(--ft-muted); }
@@ -74,30 +87,34 @@
     <div class="wrap footer-grid">
       <div class="footer-about" data-fx>
         <a class="brand brand-footer" href="/" aria-label="AIPAF home">
-          <img src="/img/logo-reversed.svg" alt="" width="64" height="64">
+          <span class="brand-badge"><img src="/img/logo-reversed.svg" alt="" width="56" height="56"></span>
           <span class="brand-text"><span class="brand-word">AIPAF</span><span class="brand-line">Assurance and Forensics</span></span>
         </a>
         <p>African Institute of Project Assurance and Forensics. A Pan-African professional body, based in Ghana.</p>
         <p class="motto-small">Assure the promise. Establish the truth.</p>
       </div>
       <nav aria-label="Explore" data-fx style="--d:100ms">
-        <h2 class="footer-h">Explore</h2>
-        <ul>
-          <li><a href="/about">The Mandate</a></li>
-          <li><a href="/lifecycle">The Lifecycle</a></li>
-          <li><a href="/credentials">Credentials</a></li>
-          <li><a href="/membership">Membership</a></li>
-        </ul>
+        <details open>
+          <summary><h2 class="footer-h">Explore</h2></summary>
+          <ul>
+            <li><a href="/about">The Mandate</a></li>
+            <li><a href="/lifecycle">The Lifecycle</a></li>
+            <li><a href="/credentials">Credentials</a></li>
+            <li><a href="/membership">Membership</a></li>
+          </ul>
+        </details>
       </nav>
       <nav aria-label="The Institute" data-fx style="--d:200ms">
-        <h2 class="footer-h">The Institute</h2>
-        <ul>
-          <li><a href="/about#why">Why AIPAF</a></li>
-          <li><a href="/credentials#chartered">Certified to Chartered</a></li>
-          <li><a href="/membership#join">Founding Membership</a></li>
-          <li><a href="/governance">Governance</a></li>
-          <li><a href="/contact">Contact</a></li>
-        </ul>
+        <details open>
+          <summary><h2 class="footer-h">The Institute</h2></summary>
+          <ul>
+            <li><a href="/about#why">Why AIPAF</a></li>
+            <li><a href="/credentials#chartered">Certified to Chartered</a></li>
+            <li><a href="/membership#join">Founding Membership</a></li>
+            <li><a href="/governance">Governance</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </details>
       </nav>
     </div>
     <div class="wrap footer-base" data-fx style="--d:300ms">
