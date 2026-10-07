@@ -21,16 +21,19 @@ const header = partial('header');
 const footer = partial('footer');
 const year = new Date().getFullYear();
 
-const pages = readdirSync(join(root, 'src/pages')).filter((f) => f.endsWith('.html'));
+const pageDirectories = ['src/pages', 'src/admin/pages'];
+const pages = pageDirectories.flatMap((directory) => readdirSync(join(root, directory))
+  .filter((file) => file.endsWith('.html'))
+  .map((file) => ({ file, directory })));
 const sitemap = [];
 
-for (const file of pages) {
-  const raw = read(`src/pages/${file}`);
-  const m = raw.match(/^<!--(\{[\s\S]*?\})-->\s*/);
-  if (!m) throw new Error(`${file}: missing JSON metadata comment on first line`);
+for (const page of pages) {
+  const raw = read(`${page.directory}/${page.file}`);
+  const m = raw.match(/^<!--(\{[\s\S]*?\})-->/);
+  if (!m) throw new Error(`${page.file}: missing JSON metadata comment on first line`);
   const meta = JSON.parse(m[1]);
   const content = raw.slice(m[0].length);
-  const slug = file.replace(/\.html$/, '');
+  const slug = page.file.replace(/\.html$/, '');
   const urlPath = slug === 'index' ? '/' : `/${slug}`;
 
   const nav = header.replace(/\{\{cur:([a-z-]+)\}\}/g, (_, s) => (s === meta.nav ? 'aria-current="page"' : ''));
@@ -47,7 +50,7 @@ for (const file of pages) {
     .replaceAll('{{robots}}', meta.noindex ? 'noindex, follow' : 'index, follow')
     .replaceAll('{{year}}', String(year));
 
-  writeFileSync(join(dist, file), html);
+  writeFileSync(join(dist, page.file), html);
   if (!meta.noindex) sitemap.push(SITE_URL + (urlPath === '/' ? '/' : urlPath));
 }
 

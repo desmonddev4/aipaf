@@ -1,0 +1,208 @@
+<!--{"title":"CMS content management | AIPAF","description":"Manage AIPAF website content and publication states.","nav":"admin","noindex":true}-->
+<style>
+  .cms-admin { color: #162a1f; background: #f3f7f4; min-height: calc(100vh - 72px); }
+  .cms-admin .wrap { width: min(1100px, calc(100% - 2rem)); margin-inline: auto; }
+  .cms-admin .shell { padding: clamp(3rem, 7vw, 6rem) 0; }
+  .cms-admin .hero { margin-bottom: 2rem; }
+  .cms-admin .eyebrow { margin: 0 0 .6rem; color: #0f5c3f; font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .cms-admin h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.25rem, 6vw, 4rem); line-height: 1; }
+  .cms-admin .lead { max-width: 48rem; margin: 1rem 0 0; color: #46574f; }
+  .cms-admin .login, .cms-admin .dashboard { background: #fff; border: 1px solid rgba(15,92,63,.12); border-radius: 24px; box-shadow: 0 28px 60px -38px rgba(10,40,28,.42); }
+  .cms-admin .login { max-width: 34rem; padding: clamp(1.5rem, 5vw, 2.5rem); margin: 0 auto; }
+  .cms-admin .field { margin-top: 1rem; }
+  .cms-admin label { display: block; margin-bottom: .45rem; font-weight: 600; }
+  .cms-admin input, .cms-admin select, .cms-admin textarea { width: 100%; padding: .8rem 1rem; border: 1.5px solid rgba(16,35,28,.15); border-radius: 12px; font: inherit; }
+  .cms-admin input:focus, .cms-admin select:focus, .cms-admin textarea:focus { outline: none; border-color: #0f5c3f; box-shadow: 0 0 0 4px rgba(15,92,63,.12); }
+  .cms-admin textarea { resize: vertical; min-height: 8rem; }
+  .cms-admin .btn { display: inline-flex; min-height: 3rem; padding: .8rem 1.4rem; border: 0; border-radius: 999px; background: #0f5c3f; color: #fff; cursor: pointer; font: inherit; font-weight: 600; }
+  .cms-admin .btn.secondary { background: #e7f0eb; color: #172d25; }
+  .cms-admin .btn[disabled] { cursor: progress; opacity: .7; }
+  .cms-admin .dashboard { display: none; padding: 1.25rem; }
+  .cms-admin .dashboard.is-open { display: block; }
+  .cms-admin .toolbar { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .cms-admin .toolbar-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .cms-admin .grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr 1.3fr; }
+  .cms-admin .card { padding: 1.25rem; border: 1px solid rgba(15,92,63,.12); border-radius: 16px; background: #f8faf8; }
+  .cms-admin .form-status { min-height: 1.4rem; margin: 1rem 0 0; color: #b3261e; }
+  .cms-admin .form-status.ok { color: #12704a; }
+  .cms-admin .item-list { display: grid; gap: .75rem; }
+  .cms-admin .item { display: grid; gap: .5rem; padding: 1rem; border-radius: 12px; background: #fff; border: 1px solid rgba(15,92,63,.12); }
+  .cms-admin .item-header { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
+  .cms-admin .tag { display: inline-block; padding: .2rem .6rem; border-radius: 999px; background: #dfeee7; color: #0f5c3f; font-size: .75rem; font-weight: 700; }
+  .cms-admin .empty { padding: 2rem; text-align: center; color: #46574f; }
+  @media (max-width: 760px) { .cms-admin .grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="cms-admin">
+  <main class="shell">
+    <div class="wrap">
+      <header class="hero">
+        <p class="eyebrow">Restricted area</p>
+        <h1>Content management.</h1>
+        <p class="lead">Create drafts, publish updates, and manage the content shown across the website.</p>
+      </header>
+
+      <section class="login" id="cms-login">
+        <h2>Sign in</h2>
+        <p>Use the Secretariat API key entered in this browser session.</p>
+        <form id="cms-form" novalidate>
+          <div class="field"><label for="cms-token">API key</label><input id="cms-token" type="password" autocomplete="current-password" required></div>
+          <button class="btn" type="submit">Open content management</button>
+          <p class="form-status" id="cms-login-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="dashboard" id="cms-dashboard" aria-label="CMS dashboard">
+        <div class="toolbar">
+          <div class="toolbar-actions">
+            <select id="cms-type"><option value="page">Pages</option><option value="news">News</option><option value="publication">Publications</option><option value="event">Events</option><option value="download">Downloads</option></select>
+            <select id="cms-status"><option value="draft">Drafts</option><option value="published">Published</option><option value="archived">Archived</option></select>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn" type="button" id="cms-refresh">Refresh</button>
+            <button class="btn secondary" type="button" id="cms-signout">Sign out</button>
+          </div>
+        </div>
+
+        <div class="grid">
+          <form id="cms-form-editor" class="card">
+            <h2>Create or update</h2>
+            <div class="field"><label for="cms-slug">Slug</label><input id="cms-slug" name="slug" required></div>
+            <div class="field"><label for="cms-title">Title</label><input id="cms-title" name="title" required></div>
+            <div class="field"><label for="cms-summary">Summary</label><textarea id="cms-summary" name="summary"></textarea></div>
+            <div class="field"><label for="cms-body">Content</label><textarea id="cms-body" name="body"></textarea></div>
+            <div class="field"><label for="cms-status">Status</label><select id="cms-status-editor" name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+            <button class="btn" type="submit">Save content</button>
+            <p class="form-status" id="cms-editor-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="card">
+            <h2>Content list</h2>
+            <div id="cms-list" class="item-list"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  var login = document.querySelector('#cms-login');
+  var dashboard = document.querySelector('#cms-dashboard');
+  var token = sessionStorage.getItem('aipaf-cms-token') || '';
+  var typeSelect = document.querySelector('#cms-type');
+  var statusSelect = document.querySelector('#cms-status');
+  var list = document.querySelector('#cms-list');
+  var editor = document.querySelector('#cms-form-editor');
+  var editorStatus = document.querySelector('#cms-editor-status');
+
+  function headers() {
+    return { Authorization: 'Bearer ' + (sessionStorage.getItem('aipaf-cms-token') || '') };
+  }
+
+  function showDashboard() {
+    login.style.display = 'none';
+    dashboard.classList.add('is-open');
+    refresh();
+  }
+
+  function hideDashboard() {
+    login.style.display = 'block';
+    dashboard.classList.remove('is-open');
+    sessionStorage.removeItem('aipaf-cms-token');
+    document.querySelector('#cms-token').value = '';
+    document.querySelector('#cms-login-status').textContent = '';
+  }
+
+  function renderList(items) {
+    if (!items.length) { list.innerHTML = '<div class="empty">No content matches this filter.</div>'; return; }
+
+    list.innerHTML = items.map(function (item) {
+      return '<article class="item"><div class="item-header"><div><strong>' + item.title + '</strong><br><small>' + item.slug + '</small></div><span class="tag">' + item.status + '</span></div><p>' + (item.summary || '') + '</p><div class="toolbar-actions"><button type="button" data-action="load" data-slug="' + item.slug + '">Edit</button><button type="button" data-action="delete" data-slug="' + item.slug + '">Delete</button></div></article>';
+    }).join('');
+
+    list.querySelectorAll('[data-action="load"]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        fetch('/api/cms?slug=' + encodeURIComponent(button.dataset.slug), { headers: headers() })
+          .then(function (response) { return response.json(); })
+          .then(function (payload) {
+            if (!payload.ok) throw new Error(payload.message || 'Unable to load content.');
+            document.querySelector('#cms-slug').value = payload.item.slug;
+            document.querySelector('#cms-title').value = payload.item.title;
+            document.querySelector('#cms-summary').value = payload.item.summary || '';
+            document.querySelector('#cms-body').value = payload.item.body || '';
+            document.querySelector('#cms-status-editor').value = payload.item.status || 'draft';
+          })
+          .catch(function (error) { window.alert(error.message); });
+      });
+    });
+
+    list.querySelectorAll('[data-action="delete"]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (!window.confirm('Delete this content item?')) return;
+        fetch('/api/cms?slug=' + encodeURIComponent(button.dataset.slug), {
+          method: 'DELETE',
+          headers: headers(),
+        }).then(function (response) { return response.json(); })
+          .then(function (payload) { if (payload.ok) refresh(); else throw new Error(payload.message || 'Delete failed.'); })
+          .catch(function (error) { window.alert(error.message); });
+      });
+    });
+  }
+
+  function refresh() {
+    fetch('/api/cms?type=' + typeSelect.value + '&status=' + statusSelect.value, { headers: headers() })
+      .then(function (response) {
+        if (response.status === 401) throw new Error('Invalid or expired key.');
+        if (!response.ok) throw new Error('Unable to load content.');
+        return response.json();
+      })
+      .then(function (payload) { renderList(payload.items || []); })
+      .catch(function (error) { hideDashboard(); document.querySelector('#cms-login-status').textContent = error.message; });
+  }
+
+  document.querySelector('#cms-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    var value = document.querySelector('#cms-token').value.trim();
+    if (!value) { document.querySelector('#cms-login-status').textContent = 'Enter your API key.'; return; }
+    sessionStorage.setItem('aipaf-cms-token', value);
+    showDashboard();
+  });
+
+  editor.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    editorStatus.className = 'form-status';
+    editorStatus.textContent = '';
+    var button = editor.querySelector('button[type="submit"]');
+    button.disabled = true;
+
+    try {
+      var payload = Object.fromEntries(new FormData(editor).entries());
+      payload.type = typeSelect.value;
+      var response = await fetch('/api/cms', {
+        method: 'POST',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, headers()),
+        body: JSON.stringify(payload),
+      });
+      var data = await response.json().catch(function () { return {}; });
+      if (!response.ok) throw new Error(data.message || 'Unable to save content.');
+      editorStatus.classList.add('ok');
+      editorStatus.textContent = 'Content saved.';
+      editor.reset();
+      refresh();
+    } catch (error) {
+      editorStatus.textContent = error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  typeSelect.addEventListener('change', refresh);
+  statusSelect.addEventListener('change', refresh);
+  document.querySelector('#cms-refresh').addEventListener('click', refresh);
+  document.querySelector('#cms-signout').addEventListener('click', hideDashboard);
+
+  if (token) showDashboard();
+})();
+</script>

@@ -1,0 +1,53 @@
+<!--{"title":"Verify email | AIPAF","description":"Verify your email address for secure member access.","nav":"members","noindex":true}-->
+<style>
+  .member-page { min-height: calc(100vh - 72px); background: #f3f7f4; color: #172d25; }
+  .member-page .wrap { width: min(520px, calc(100% - 2rem)); margin-inline: auto; }
+  .member-page .shell { padding: clamp(3rem, 7vw, 6rem) 0; }
+  .member-form { padding: clamp(1.5rem, 5vw, 2.5rem); background: #fff; border: 1px solid rgba(15,92,63,.12); border-radius: 24px; box-shadow: 0 30px 60px -38px rgba(10,40,28,.45); }
+  .member-page h1 { margin: 0 0 .5rem; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.1rem, 7vw, 3.6rem); line-height: 1; }
+  .member-page .lead { margin: 0 0 2rem; color: #46574f; }
+  .btn { display: inline-flex; min-height: 3rem; padding: .8rem 1.5rem; border: 0; border-radius: 999px; background: #0f5c3f; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .form-status { min-height: 1.5rem; margin: 1rem 0 0; color: #b3261e; }
+  .form-status.ok { color: #12704a; }
+  .meta { margin-top: 1.5rem; color: #46574f; font-size: .95rem; }
+</style>
+<div class="member-page">
+  <main class="shell">
+    <div class="wrap">
+      <h1>Verify your email.</h1>
+      <p class="lead">Confirm your contact email before full member access is enabled.</p>
+      <div class="member-form">
+        <button class="btn" id="verify-email-button" type="button">Verify email</button>
+        <p class="form-status" id="verify-status" role="status" aria-live="polite"></p>
+        <p class="meta"><a href="/member-login">Return to sign in</a></p>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  var button = document.querySelector('#verify-email-button');
+  var status = document.querySelector('#verify-status');
+  button.addEventListener('click', async function () {
+    status.className = 'form-status';
+    status.textContent = 'Verifying...';
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get('token');
+      if (!token) throw new Error('A verification token is required.');
+      var response = await fetch('/api/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify-email', token: token })
+      });
+      var payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.message || 'Unable to verify your email.');
+      status.classList.add('ok');
+      status.textContent = payload.message || 'Email verified successfully.';
+      setTimeout(function () { window.location.href = '/member-login'; }, 1200);
+    } catch (error) {
+      status.textContent = error.message;
+    }
+  });
+})();
+</script>

@@ -1,0 +1,103 @@
+<!--{"title":"Member Directory | AIPAF","description":"Explore publicly visible AIPAF members who have chosen to share their professional profile.","nav":"membership"}-->
+<style>
+  .member-directory { --md-ink: #10231c; --md-text: #1f2f28; --md-muted: #53655d; --md-green: #0f5c3f; --md-green-dark: #0a432d; --md-gold: #c9a24b; --md-line: rgba(16,35,28,.12); --md-surface: #fff; --md-soft: #f4f8f5; }
+  .member-directory * { box-sizing: border-box; }
+  .member-directory .wrap { width: min(1100px, calc(100% - 2.5rem)); margin-inline: auto; }
+  .member-directory .page-hero { padding: clamp(4rem, 10vw, 7rem) 0 clamp(2.75rem, 7vw, 4rem); color: #fff; background: linear-gradient(135deg, #062d1d, #0f5c3f 58%, #0a432d); }
+  .member-directory .page-hero h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.3rem, 6vw, 4.2rem); line-height: 1.06; }
+  .member-directory .page-hero p { max-width: 42rem; margin: 1.25rem 0 0; color: rgba(255,255,255,.84); font-size: clamp(1.05rem, 2vw, 1.2rem); }
+  .member-directory .section { padding: clamp(3rem, 7vw, 5rem) 0; background: #f7faf8; }
+  .member-directory .card { padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid var(--md-line); border-radius: 24px; background: var(--md-surface); box-shadow: 0 24px 60px -36px rgba(10,40,28,.35); }
+  .member-directory .search-row { display: grid; gap: 1rem; grid-template-columns: 1fr auto; align-items: end; }
+  .member-directory .field label { display: block; margin-bottom: .5rem; font-weight: 700; color: var(--md-ink); }
+  .member-directory .field input { width: 100%; padding: .9rem 1rem; border: 1.5px solid var(--md-line); border-radius: 12px; font: inherit; color: var(--md-ink); background: var(--md-soft); }
+  .member-directory .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: .8rem 1.25rem; border: 0; border-radius: 10px; color: #fff; background: var(--md-green); font: inherit; font-weight: 700; cursor: pointer; }
+  .member-directory .btn:hover, .member-directory .btn:focus-visible { background: var(--md-green-dark); }
+  .member-directory .search-status { min-height: 1.5rem; margin: .9rem 0 0; color: var(--md-muted); }
+  .member-directory .member-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); margin-top: 2rem; }
+  .member-directory .member-card { display: grid; gap: .55rem; padding: 1.4rem; border: 1px solid var(--md-line); border-radius: 18px; background: var(--md-soft); }
+  .member-directory .member-avatar { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; color: #fff; background: var(--md-green); font-weight: 700; }
+  .member-directory .member-card h2 { margin: 0; font-size: 1.25rem; }
+  .member-directory .member-card p { margin: 0; color: var(--md-muted); }
+  .member-directory .member-card a { color: var(--md-green); font-weight: 700; text-decoration: none; }
+  .member-directory .empty { padding: 2rem; text-align: center; color: var(--md-muted); }
+  @media (max-width: 560px) { .member-directory .search-row { grid-template-columns: 1fr; } }
+</style>
+
+<main class="member-directory">
+  <section class="page-hero">
+    <div class="wrap">
+      <h1>Find an AIPAF professional</h1>
+      <p>Members who choose to publish their profile are listed here. Search by name, organisation, designation, or country.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="directory-title">
+    <div class="wrap">
+      <div class="card">
+        <h2 id="directory-title">Public member directory</h2>
+        <form id="directory-form">
+          <div class="search-row">
+            <div class="field"><label for="directory-search">Search members</label><input id="directory-search" type="search" autocomplete="off" placeholder="e.g. Ghana, engineer, or Ada"></div>
+            <button class="btn" type="submit">Search</button>
+          </div>
+          <p class="search-status" id="directory-status" role="status" aria-live="polite">Loading publicly visible members…</p>
+        </form>
+        <div id="directory-results" class="member-grid" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var form = document.querySelector('#directory-form');
+  var search = document.querySelector('#directory-search');
+  var status = document.querySelector('#directory-status');
+  var results = document.querySelector('#directory-results');
+
+  function render(resultsList) {
+    results.innerHTML = '';
+    if (!resultsList.length) {
+      results.innerHTML = '<p class="empty">No public profiles match your search.</p>';
+      return;
+    }
+
+    resultsList.forEach(function (member) {
+      var card = document.createElement('article');
+      card.className = 'member-card';
+      card.innerHTML = '<span class="member-avatar" aria-hidden="true">' + (member.name || 'A').charAt(0).toUpperCase() + '</span>' +
+        '<h2>' + (member.name || 'AIPAF Member') + '</h2>' +
+        '<p><strong>' + (member.membership_grade || 'Member') + '</strong></p>' +
+        '<p>' + (member.organisation || 'Organisation not provided') + '</p>' +
+        '<p>' + (member.designation || 'Professional') + '</p>' +
+        '<p>' + (member.country || 'Location not provided') + '</p>' +
+        (member.public_email ? '<a href="mailto:' + encodeURIComponent(member.public_email) + '">Email member</a>' : '') +
+        (member.website ? '<a href="' + member.website + '" target="_blank" rel="noreferrer">View website</a>' : '') +
+        (member.linked_in ? '<a href="' + member.linked_in + '" target="_blank" rel="noreferrer">LinkedIn profile</a>' : '');
+      results.appendChild(card);
+    });
+  }
+
+  async function loadMembers(query) {
+    status.textContent = 'Loading publicly visible members…';
+    try {
+      var response = await fetch('/api/member-directory?search=' + encodeURIComponent(query || '') + '&limit=25');
+      var payload = await response.json();
+      if (!response.ok) throw new Error(payload.message || 'Unable to load the member directory.');
+      render(payload.items || []);
+      status.textContent = payload.items && payload.items.length ? 'Showing ' + payload.items.length + ' public member profile' + (payload.items.length === 1 ? '' : 's') + '.' : 'No public members match this search.';
+    } catch (error) {
+      status.textContent = error.message;
+      results.innerHTML = '<p class="empty">Unable to load the member directory.</p>';
+    }
+  }
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    loadMembers(search.value);
+  });
+
+  loadMembers('');
+})();
+</script>

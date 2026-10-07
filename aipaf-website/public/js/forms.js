@@ -47,6 +47,7 @@ export function initForms() {
       const data = Object.fromEntries(new FormData(form).entries());
       if (data.website) return; // honeypot: bots fill this in, people never see it
       delete data.website;
+      data.consent = form.querySelector('[name="consent"]')?.checked === true;
       data._elapsedMs = Date.now() - loadedAt;
       data._page = location.pathname;
 
@@ -63,13 +64,14 @@ export function initForms() {
       status.textContent = 'Sending...';
       try {
         const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-        if (!res.ok) throw new Error(String(res.status));
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(payload.message || String(res.status));
         form.reset();
-        status.classList.add('is-ok');
+        status.classList.add('ok');
         status.textContent = 'Thank you. The Secretariat has received your message and will reply by email.';
-      } catch {
-        status.classList.add('is-err');
-        status.textContent = `We could not send that. Please try again, or email ${CONTACT_EMAIL}.`;
+      } catch (error) {
+        status.classList.add('err');
+        status.textContent = error.message || `We could not send that. Please try again, or email ${CONTACT_EMAIL}.`;
       } finally {
         button.disabled = false;
       }
