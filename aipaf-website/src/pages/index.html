@@ -22,14 +22,15 @@
   .cx .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(100deg, rgba(3, 32, 14, .9) 0%, rgba(3, 32, 14, .62) 52%, rgba(3, 32, 14, .38) 100%), linear-gradient(180deg, transparent 70%, rgba(3, 32, 14, .85)); }
   .cx .hero-inner { width: min(1240px, 100% - 2.5rem); margin-inline: auto; display: grid; gap: clamp(2.5rem, 5vw, 4rem); grid-template-columns: 1fr; align-items: center; }
   @media (min-width: 960px) { .cx .hero-inner { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
-  .cx .hero-copy { opacity: var(--ho, 1); transform: translate3d(0, calc(var(--hc, 0) * 1px), 0); }
+  .cx .hero-copy { max-width: 42rem; opacity: var(--ho, 1); transform: translate3d(0, calc(var(--hc, 0) * 1px), 0); }
   .cx .hero-copy > * { animation: cx-rise 1s var(--cx-ease) both; }
   .cx .hero-copy > :nth-child(2) { animation-delay: .12s; } .cx .hero-copy > :nth-child(3) { animation-delay: .24s; } .cx .hero-copy > :nth-child(4) { animation-delay: .36s; }
-  .cx .hero-eyebrow { display: inline-block; margin: 0 0 1.4rem; padding: .5rem 1.1rem; font-size: .95rem; font-weight: 600; letter-spacing: .01em; color: var(--cx-gold-soft); border-radius: 999px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .25); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-  .cx .hero h1 { margin: 0 0 1.4rem; color: #fff; font-weight: 600; font-size: clamp(2.4rem, 5.6vw, 4.5rem); line-height: 1.06; letter-spacing: -.02em; }
+  .cx .hero-eyebrow { display: inline-block; margin: 0 0 1.2rem; padding: .4rem 1rem; font-size: .85rem; font-weight: 600; letter-spacing: .01em; color: var(--cx-gold-soft); border-radius: 999px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .25); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  .cx .hero h1 { margin: 0 0 1.1rem; color: #fff; font-weight: 600; font-size: clamp(1.85rem, 3.4vw, 2.9rem); line-height: 1.12; letter-spacing: -.015em; }
   .cx .hero h1 em { font-style: normal; color: var(--cx-gold-soft); }
-  .cx .hero-sub { margin: 0 0 2.2rem; max-width: 38rem; font-size: clamp(1.1rem, 1.6vw, 1.3rem); line-height: 1.6; color: rgba(255, 255, 255, .9); }
+  .cx .hero-sub { margin: 0 0 1.8rem; max-width: 34rem; font-size: clamp(.98rem, 1.2vw, 1.1rem); line-height: 1.6; color: rgba(255, 255, 255, .9); }
   .cx .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .cx .hero .btn { min-height: 2.9rem; padding: .7rem 1.5rem; font-size: .98rem; }
   .cx .hero-seal { margin: 0; justify-self: center; animation: cx-rise 1.2s var(--cx-ease) .3s both; }
   .cx .hero-seal-inner { position: relative; width: clamp(240px, 32vw, 440px); aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .22), rgba(255, 255, 255, .04) 60%); border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 0 10px rgba(255, 255, 255, .07), 0 0 0 11px rgba(255, 255, 255, .2), 0 40px 80px -20px rgba(0, 0, 0, .65), inset 0 0 60px rgba(255, 255, 255, .14); animation: cx-float 7s ease-in-out infinite; }
   .cx .hero-seal-inner video { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -86,6 +87,16 @@
   .cx .triad li:hover { transform: translateX(8px); border-color: rgba(210, 133, 3, .6); } .cx .triad li:hover::after { transform: scaleY(1); }
   .cx .triad strong { font-family: Georgia, "Times New Roman", serif; font-size: 1.45rem; color: var(--cx-ink); }
   .cx .triad span { color: var(--cx-text); }
+
+  /* Mandate scroll effects: scrubbed headline, sliding cards, progress line that lights each card */
+  .cx [data-scrub] .w { opacity: .2; transition: opacity .3s linear; }
+  .cx [data-scrub] .w.on { opacity: 1; }
+  .cx .triad { position: relative; padding-left: 1.9rem; }
+  .cx .triad::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px; background: var(--cx-border); }
+  .cx .triad::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px; background: linear-gradient(180deg, var(--cx-gold-soft), var(--cx-gold)); transform-origin: top; transform: scaleY(var(--tp, 0)); box-shadow: 0 0 14px rgba(210, 133, 3, .55); }
+  .cx .triad li[data-reveal] { translate: 70px 0; }
+  .cx .triad li[data-reveal].in { translate: 0 0; }
+  .cx .triad li.lit { border-color: rgba(210, 133, 3, .55); } .cx .triad li.lit::after { transform: scaleY(1); }
 
   /* Lifecycle */
   .cx .cycle { display: grid; gap: 2.75rem 1.5rem; padding-top: 1.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr)); align-items: stretch; }
@@ -172,7 +183,7 @@
   @keyframes cx-nudge { 50% { transform: translateX(6px); } }
   @media (prefers-reduced-motion: reduce) {
     .cx *, .cx *::before, .cx *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
-    .cx [data-reveal] { opacity: 1; translate: none; } .cx .cycle-step { transform: scale(1); } .cx .value::after { transform: scaleX(.3); }
+    .cx [data-reveal] { opacity: 1; translate: none; } .cx [data-scrub] .w { opacity: 1; } .cx .cycle-step { transform: scale(1); } .cx .value::after { transform: scaleX(.3); }
     .cx .hero-media, .cx .hero-copy, .cx .split-media img { transform: none; } .cx .split-media img { transform: scale(1.05); }
   }
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .cx .cta .wrap { background: rgba(3, 32, 14, .65); } .cx .hero-eyebrow, .cx .btn-glass { background: rgba(3, 32, 14, .55); } }
@@ -217,7 +228,7 @@
       <div class="wrap mandate-grid">
         <div data-reveal>
           <p class="eyebrow">The Mandate</p>
-          <h2 class="h2" id="mandate-title">Africa does not lack projects. It lacks the assurance that they will deliver, and the means to establish why when they do not.</h2>
+          <h2 class="h2" id="mandate-title" data-scrub>Africa does not lack projects. It lacks the assurance that they will deliver, and the means to establish why when they do not.</h2>
           <p class="lead">Across the continent, too many projects stall, overrun, or fail for reasons that were foreseeable and preventable. AIPAF exists to change that: to build the profession that delivers projects to a sound standard, reviews them independently before the money is committed, and investigates them honestly when they fall short.</p>
           <a class="btn btn-green" href="/about">Read the mandate</a>
         </div>
@@ -408,11 +419,27 @@
 
   /* Scroll-linked effects: progress bar, hero parallax and fade, founders image parallax */
   var bar = root.querySelector('.scroll-progress'), hero = root.querySelector('.hero'), img = root.querySelector('.split-media');
+  var scrub = root.querySelector('[data-scrub]'), words = [], triad = root.querySelector('.triad'), lis = triad ? triad.querySelectorAll('li') : [];
+  if (scrub) {
+    scrub.textContent.trim().split(/\s+/).forEach(function (t) { var w = document.createElement('span'); w.className = 'w'; w.textContent = t; words.push(w); });
+    scrub.textContent = '';
+    words.forEach(function (w, i) { if (i) scrub.appendChild(document.createTextNode(' ')); scrub.appendChild(w); });
+  }
   var ticking = false;
   function frame() {
     ticking = false;
     var y = window.pageYOffset, max = document.documentElement.scrollHeight - window.innerHeight;
     bar.style.setProperty('--sp', max > 0 ? Math.min(1, y / max).toFixed(4) : 0);
+    var vh = window.innerHeight;
+    if (scrub) {
+      var sr = scrub.getBoundingClientRect(), sp = calm ? 1 : Math.min(1, Math.max(0, (vh * .85 - sr.top) / (vh * .45))), lit = Math.round(sp * words.length);
+      words.forEach(function (w, i) { w.classList.toggle('on', i < lit); });
+    }
+    if (triad && !calm) {
+      var tr = triad.getBoundingClientRect(), tp = Math.min(1, Math.max(0, (vh * .75 - tr.top) / tr.height));
+      triad.style.setProperty('--tp', tp.toFixed(4));
+      lis.forEach(function (li) { li.classList.toggle('lit', li.offsetTop + li.offsetHeight * .35 <= tp * tr.height); });
+    }
     if (calm) return;
     if (hero) {
       var h = hero.offsetHeight, p = Math.min(1, Math.max(0, y / h));
