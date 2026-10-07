@@ -108,7 +108,10 @@ ul { margin: 0; padding: 0; }
 
 @media (max-width: 1080px) {
   .brand-line { display: none; }
-  .primary-nav ul a { padding: .55rem .6rem; font-size: .93rem; }
+  .primary-nav { gap: .7rem; }
+  .primary-nav ul { gap: .05rem; }
+  .primary-nav ul a { padding: .5rem .56rem; font-size: .86rem; }
+  .btn-nav { padding: .7rem 1rem; font-size: .86rem; }
 }
 @media (max-width: 960px) {
   .nav-toggle { display: block; }
