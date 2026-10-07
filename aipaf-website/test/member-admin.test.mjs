@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { requireAdmin } from '../api/_auth.mjs';
+import { requireAdmin } from '../src/server/handlers/api/_auth.mjs';
 
 test('member administration requires a configured Secretariat or Council role', () => {
   const previous = {

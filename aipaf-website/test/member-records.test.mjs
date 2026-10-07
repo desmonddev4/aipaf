@@ -9,7 +9,7 @@ import {
   normalizeExamination,
   normalizeCpdStatus,
   verifyPaymentWebhook,
-} from '../api/member-records.mjs';
+} from '../src/server/handlers/api/member-records.mjs';
 
 test('payment records normalize provider and currency values', () => {
   assert.deepEqual(normalizePayment({

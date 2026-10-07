@@ -4,7 +4,7 @@ import test from 'node:test';
 import {
   normalizeExaminationResult,
   normalizeCpdDecision,
-} from '../api/admin/records.mjs';
+} from '../src/server/handlers/api/admin/records.mjs';
 
 test('examination results accept only supported values', () => {
   assert.deepEqual(normalizeExaminationResult({

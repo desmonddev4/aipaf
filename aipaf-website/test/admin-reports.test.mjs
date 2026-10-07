@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildAdminOverviewReport } from '../api/admin/reports.mjs';
+import { buildAdminOverviewReport } from '../src/server/handlers/api/admin/reports.mjs';
 
 test('admin overview report normalizes counts and status summary', () => {
   const report = buildAdminOverviewReport({

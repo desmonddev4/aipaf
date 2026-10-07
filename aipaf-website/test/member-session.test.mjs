@@ -4,7 +4,7 @@ import test from 'node:test';
 import {
   parseSessionCookie,
   verifySignedSession,
-} from '../api/member-auth.mjs';
+} from '../src/server/handlers/api/member-auth.mjs';
 
 test('session cookies are parsed without exposing other cookies', () => {
   assert.deepEqual(parseSessionCookie('aipaf_session=token; other=value'), 'token');

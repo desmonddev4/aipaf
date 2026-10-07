@@ -6,7 +6,7 @@ import {
   createSignedSession,
   parseSessionCookie,
   verifySignedSession,
-} from '../api/member-auth.mjs';
+} from '../src/server/handlers/api/member-auth.mjs';
 
 test('session tokens are signed and can be verified with the same secret', () => {
   const secret = 'test-session-secret';

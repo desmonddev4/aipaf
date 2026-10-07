@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { normalizeDirectoryMember } from '../api/member-directory.mjs';
+import { normalizeDirectoryMember } from '../src/server/handlers/api/member-directory.mjs';
 
 test('member directory keeps only public, active profile data', () => {
   const member = normalizeDirectoryMember({

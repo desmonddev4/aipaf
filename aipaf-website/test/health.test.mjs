@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildHealthStatus } from '../api/health.mjs';
+import { buildHealthStatus } from '../src/server/handlers/api/health.mjs';
 
 test('health status reports service readiness and database availability', () => {
   const status = buildHealthStatus({

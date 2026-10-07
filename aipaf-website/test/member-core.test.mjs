@@ -8,7 +8,7 @@ import {
   validateMemberProfile,
   verifyPassword,
   validateMemberRegistration,
-} from '../api/member-core.mjs';
+} from '../src/server/handlers/api/member-core.mjs';
 
 test('member registration validates required identity and password fields', () => {
   const result = validateMemberRegistration({

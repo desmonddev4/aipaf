@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createHmac } from 'node:crypto';
 
-import handler, { createCertificateToken, verifyCertificateToken, buildCertificate } from '../api/certificates.mjs';
+import handler, { createCertificateToken, verifyCertificateToken, buildCertificate } from '../src/server/handlers/api/certificates.mjs';
 
 test('certificates create a signed token and verify only the matching credential', () => {
   const secret = 'test-certificate-secret';

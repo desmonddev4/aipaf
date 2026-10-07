@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { sanitizeCmsInput, validateCmsContent } from '../api/member-core.mjs';
+import { sanitizeCmsInput, validateCmsContent } from '../src/server/handlers/api/member-core.mjs';
 
 test('CMS submissions accept only supported content types and valid statuses', () => {
   const result = sanitizeCmsInput({
