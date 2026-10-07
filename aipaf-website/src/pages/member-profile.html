@@ -203,7 +203,7 @@
 
   function loadProfile() {
     fetch('/api/member-profile')
-      .then(function (response) { if (!response.ok) throw new Error('Authentication required.'); return response.json(); })
+      .then(function (response) { if (!response.ok) throw new Error('Authentication required.'); return window.readApiJson(response); })
       .then(function (payload) {
         renderProfile(payload.member);
         content.hidden = false;
@@ -241,7 +241,7 @@
   async function loadServices() {
     try {
       var examResponse = await fetch('/api/member-records?action=examinations');
-      var examPayload = await examResponse.json();
+      var examPayload = await window.readApiJson(examResponse);
       if (!examResponse.ok) throw new Error(examPayload.message || 'Unable to load examinations.');
       var openExams = (examPayload.items || []).filter(function (item) { return item.status === 'open'; });
       var examinationList = document.querySelector('#examination-list');
@@ -267,12 +267,12 @@
       }
 
       var cpdResponse = await fetch('/api/member-records?action=my-cpd');
-      var cpdPayload = await cpdResponse.json();
+      var cpdPayload = await window.readApiJson(cpdResponse);
       if (!cpdResponse.ok) throw new Error(cpdPayload.message || 'Unable to load CPD records.');
       renderRecords(cpdPayload.items || [], document.querySelector('#cpd-list'), 'No CPD records submitted yet.');
 
       var certResponse = await fetch('/api/certificates?action=my-certificates');
-      var certPayload = await certResponse.json();
+      var certPayload = await window.readApiJson(certResponse);
       if (!certResponse.ok) throw new Error(certPayload.message || 'Unable to load certificates.');
       renderRecords((certPayload.items || []).map(function (item) {
         return { name: item.name, status: item.grade, code: item.type.toUpperCase(), completion_date: item.issued_at };
@@ -291,7 +291,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ examinationId: examinationId })
       });
-      var payload = await response.json().catch(function () { return {}; });
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to register for this examination.');
       status.classList.add('ok');
       status.textContent = 'Registration submitted.';
@@ -329,7 +329,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(new FormData(form).entries())),
       });
-      var payload = await response.json().catch(function () { return {}; });
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to update your profile.');
       status.classList.add('ok');
       status.textContent = 'Profile updated.';
@@ -358,7 +358,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'change-password', ...Object.fromEntries(new FormData(event.currentTarget).entries()) }),
       });
-      var payload = await response.json().catch(function () { return {}; });
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to update your password.');
       securityStatus.classList.add('ok');
       securityStatus.textContent = 'Password updated.';
@@ -384,7 +384,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget).entries()))
       });
-      var payload = await response.json().catch(function () { return {}; });
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to create the payment record.');
       if (payload.checkout && payload.checkout.authorizationUrl) {
         status.classList.add('ok');
@@ -416,7 +416,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget).entries()))
       });
-      var payload = await response.json().catch(function () { return {}; });
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to submit the CPD record.');
       status.classList.add('ok');
       status.textContent = 'CPD record submitted for review.';

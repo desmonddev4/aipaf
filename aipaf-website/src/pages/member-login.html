@@ -45,7 +45,7 @@
     form.querySelector('button').disabled = true;
     try {
       var response = await fetch('/api/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ action: 'login' }, data)) });
-      var payload = await response.json().catch(() => ({}));
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to sign in.');
       status.classList.add('ok');
       status.textContent = 'Signed in. Redirecting...';

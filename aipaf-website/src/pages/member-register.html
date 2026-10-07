@@ -55,7 +55,7 @@
     form.querySelector('button').disabled = true;
     try {
       var response = await fetch('/api/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ action: 'register' }, data)) });
-      var payload = await response.json().catch(() => ({}));
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to create the account.');
       status.classList.add('ok');
       status.textContent = 'Account created. Please sign in.';

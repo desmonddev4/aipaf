@@ -64,7 +64,7 @@ export function initForms() {
       status.textContent = 'Sending...';
       try {
         const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-        const payload = await res.json().catch(() => ({}));
+        const payload = await window.readApiJson(res);
         if (!res.ok) throw new Error(payload.message || String(res.status));
         form.reset();
         status.classList.add('ok');

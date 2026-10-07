@@ -274,7 +274,7 @@
           method: 'POST',
           headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
           body: JSON.stringify({ action: 'mark-handled', id: button.dataset.id })
-        }).then(function (res) { return res.json(); }).then(function (data) {
+        }).then(function (res) { return window.readApiJson(res); }).then(function (data) {
           if (data.ok) refresh(); else alert(data.message || 'Unable to update the submission.');
         }).catch(function () { alert('Unable to update the submission.'); }).finally(function () { button.disabled = false; });
       });
@@ -289,7 +289,7 @@
           method: 'POST',
           headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
           body: JSON.stringify({ action: 'update-status', id: select.dataset.id, status: select.value })
-        }).then(function (res) { return res.json(); }).then(function (data) {
+        }).then(function (res) { return window.readApiJson(res); }).then(function (data) {
           if (data.ok) refresh(); else alert(data.message || 'Unable to update the member.');
         }).catch(function () { alert('Unable to update the member.'); }).finally(function () { select.disabled = false; });
       });
@@ -311,7 +311,7 @@
       .then(function (res) {
         if (res.status === 401) throw new Error('Invalid or expired key.');
         if (!res.ok) throw new Error('Unable to load records.');
-        return res.json();
+        return window.readApiJson(res);
       })
       .then(function (data) { renderRows(data.items || []); })
       .catch(function (error) { showLogin(error.message); })
@@ -351,7 +351,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: value })
     }).then(function (response) {
-      return response.json().then(function (data) { return { response: response, data: data }; });
+      return window.readApiJson(response).then(function (data) { return { response: response, data: data }; });
     }).then(function (result) {
       if (!result.response.ok) throw new Error(result.data.message || 'Authentication failed.');
       showDashboard();
@@ -412,7 +412,7 @@
     recordsStatus.textContent = 'Loading records…';
     try {
       var response = await fetch('/api/admin/records?type=' + recordsType.value + '&limit=' + recordsLimit.value, { headers: authHeaders() });
-      var payload = await response.json().catch(function () { return {}; });
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to load records.');
       renderRecordTable(payload.items || [], recordsType.value);
       recordsStatus.textContent = 'Records loaded.';
@@ -428,7 +428,7 @@
       headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
       body: JSON.stringify({ action: 'update-cpd-status', id: id, status: status })
     });
-    var payload = await response.json().catch(function () { return {}; });
+    var payload = await window.readApiJson(response);
     if (!response.ok) { recordsStatus.className = 'records-status'; recordsStatus.textContent = payload.message || 'Unable to update CPD status.'; return; }
     recordsStatus.textContent = 'CPD status updated.';
     recordsStatus.classList.add('ok');
@@ -441,7 +441,7 @@
       headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
       body: JSON.stringify({ action: 'update-examination-result', id: id, score: score, status: status })
     });
-    var payload = await response.json().catch(function () { return {}; });
+    var payload = await window.readApiJson(response);
     if (!response.ok) { recordsStatus.className = 'records-status'; recordsStatus.textContent = payload.message || 'Unable to update examination result.'; return; }
     recordsStatus.textContent = 'Examination result updated.';
     recordsStatus.classList.add('ok');
@@ -514,7 +514,7 @@
         headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
         body: JSON.stringify(data)
       });
-      var payload = await response.json().catch(function () { return {}; });
+      var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to issue the certificate.');
       certificateStatus.classList.add('ok');
       certificateStatus.textContent = 'Certificate issued. Share the verification token privately.';

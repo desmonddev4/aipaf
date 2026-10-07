@@ -125,7 +125,7 @@
     list.querySelectorAll('[data-action="load"]').forEach(function (button) {
       button.addEventListener('click', function () {
         fetch('/api/cms?slug=' + encodeURIComponent(button.dataset.slug), { headers: headers() })
-          .then(function (response) { return response.json(); })
+          .then(function (response) { return window.readApiJson(response); })
           .then(function (payload) {
             if (!payload.ok) throw new Error(payload.message || 'Unable to load content.');
             document.querySelector('#cms-slug').value = payload.item.slug;
@@ -144,7 +144,7 @@
         fetch('/api/cms?slug=' + encodeURIComponent(button.dataset.slug), {
           method: 'DELETE',
           headers: headers(),
-        }).then(function (response) { return response.json(); })
+        }).then(function (response) { return window.readApiJson(response); })
           .then(function (payload) { if (payload.ok) refresh(); else throw new Error(payload.message || 'Delete failed.'); })
           .catch(function (error) { window.alert(error.message); });
       });
@@ -156,7 +156,7 @@
       .then(function (response) {
         if (response.status === 401) throw new Error('Invalid or expired key.');
         if (!response.ok) throw new Error('Unable to load content.');
-        return response.json();
+        return window.readApiJson(response);
       })
       .then(function (payload) { renderList(payload.items || []); })
       .catch(function (error) { hideDashboard(); document.querySelector('#cms-login-status').textContent = error.message; });
@@ -185,7 +185,7 @@
         headers: Object.assign({ 'Content-Type': 'application/json' }, headers()),
         body: JSON.stringify(payload),
       });
-      var data = await response.json().catch(function () { return {}; });
+      var data = await window.readApiJson(response);
       if (!response.ok) throw new Error(data.message || 'Unable to save content.');
       editorStatus.classList.add('ok');
       editorStatus.textContent = 'Content saved.';
