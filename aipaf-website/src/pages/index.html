@@ -16,20 +16,23 @@
             <a class="btn btn-glass" href="/membership#join">Become a founding member</a>
           </div>
         </div>
-        <aside class="gate-card" aria-labelledby="stages-title">
-          <h2 id="stages-title">One discipline, three domains</h2>
-          <ul class="gate-list">
-            <li><a href="/lifecycle#deliver" data-stage><span class="gate-num">1</span><span><span class="gate-title">Deliver</span><span class="gate-desc">Build the project properly.</span></span></a></li>
-            <li><a href="/lifecycle#assure" data-stage><span class="gate-num">2</span><span><span class="gate-title">Assure</span><span class="gate-desc">Protect the value before it is lost.</span></span></a></li>
-            <li><a href="/lifecycle#investigate" data-stage><span class="gate-num">3</span><span><span class="gate-title">Investigate</span><span class="gate-desc">Establish the truth when a project fails.</span></span></a></li>
-          </ul>
-          <p class="gate-foot">Delivery and independent scrutiny are kept strictly separate.</p>
-        </aside>
+        <figure class="hero-seal" aria-label="The AIPAF seal revealed inside a glass sphere">
+          <div class="hero-seal-inner">
+            <video data-seal-video muted playsinline preload="auto" poster="/media/seal-poster.jpg" aria-hidden="true">
+              <source src="/media/seal.webm" type="video/webm">
+              <source src="/media/seal.mp4" type="video/mp4">
+            </video>
+            <button class="seal-replay" type="button" data-seal-replay aria-label="Replay the seal animation" hidden>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5a5.5 5.5 0 1 1-5.2 3.7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M1.2 2.2l.9 4.6 4.4-1.5z" fill="currentColor"/></svg>
+            </button>
+          </div>
+        </figure>
       </div>
       <button class="hero-pause" type="button" data-hero-pause aria-pressed="false" aria-label="Pause background video">
         <svg class="i-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.6" height="12"/><rect x="8.4" y="1" width="3.6" height="12"/></svg>
         <svg class="i-play" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1l10 6-10 6z"/></svg>
       </button>
+      <div class="scroll-cue" aria-hidden="true"><span></span></div>
       <div class="ruler" aria-hidden="true"></div>
     </section>
 

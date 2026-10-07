@@ -33,32 +33,39 @@ if (video) {
   pauseBtn?.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
 }
 
-/* Hero card: the highlighted stage steps through Deliver > Assure > Investigate */
-const stages = [...document.querySelectorAll('[data-stage]')];
-if (stages.length) {
-  let current = 0;
-  let timer;
-  const show = (i) => {
-    current = i;
-    stages.forEach((el, n) => {
-      el.classList.toggle('is-active', n === i);
-      if (n === i) el.setAttribute('aria-current', 'true'); else el.removeAttribute('aria-current');
-    });
+/* Hero seal video: plays once and rests on the finished seal; can be replayed */
+const seal = document.querySelector('[data-seal-video]');
+const replay = document.querySelector('[data-seal-replay]');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+if (seal) {
+  const rest = () => { if (replay) replay.hidden = false; };
+  seal.addEventListener('ended', rest);
+  if (reduceMotion.matches) {
+    // No motion: show the finished seal straight away.
+    const toEnd = () => { seal.currentTime = Math.max(0, seal.duration - 0.05); rest(); };
+    if (seal.readyState >= 1) toEnd(); else seal.addEventListener('loadedmetadata', toEnd, { once: true });
+  } else {
+    const play = () => seal.play().catch(() => {});
+    // Start once the hero is on screen
+    new IntersectionObserver((entries, io) => {
+      if (entries.some((e) => e.isIntersecting)) { setTimeout(play, 500); io.disconnect(); }
+    }, { threshold: 0.3 }).observe(seal);
+  }
+  replay?.addEventListener('click', () => { replay.hidden = true; seal.currentTime = 0; seal.play().catch(() => {}); });
+}
+
+/* Hero scroll animation: sets --p (0 to 1) as the hero scrolls away; CSS does the rest */
+const hero = document.querySelector('.hero');
+if (hero && !reduceMotion.matches) {
+  let ticking = false;
+  const update = () => {
+    const p = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.85)));
+    hero.style.setProperty('--p', p.toFixed(3));
+    ticking = false;
   };
-  const start = () => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    stop();
-    timer = setInterval(() => show((current + 1) % stages.length), 3800);
-  };
-  const stop = () => clearInterval(timer);
-  stages.forEach((el, n) => {
-    el.addEventListener('mouseenter', () => { stop(); show(n); });
-    el.addEventListener('focus', () => { stop(); show(n); });
-    el.addEventListener('mouseleave', start);
-    el.addEventListener('blur', start);
-  });
-  show(0);
-  start();
+  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 }
 
 initForms();
