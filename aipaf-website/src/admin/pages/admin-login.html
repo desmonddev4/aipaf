@@ -1,0 +1,20 @@
+<!--{"title":"Admin sign in | AIPAF","description":"Sign in to the AIPAF administration console.","nav":"admin","bodyClass":"admin-login-page","noindex":true}-->
+<div class="admin-login">
+  <section class="admin-login-card" aria-labelledby="admin-login-title">
+    <a class="admin-login-brand" href="/" aria-label="AIPAF home">
+      <img src="/img/logo-mark.svg" alt="" width="48" height="48">
+      <span>AIPAF <small>Administration</small></span>
+    </a>
+    <p class="admin-login-eyebrow">Restricted area</p>
+    <h1 id="admin-login-title">Sign in</h1>
+    <p class="admin-login-intro">Use your Secretariat or Council API key to access the administration console.</p>
+    <form id="admin-login-form" novalidate>
+      <label for="admin-login-token">API key</label>
+      <input id="admin-login-token" name="token" type="password" autocomplete="current-password" required>
+      <p class="admin-login-status" id="admin-login-status" role="status" aria-live="polite"></p>
+      <button type="submit">Continue to admin</button>
+    </form>
+    <a class="admin-login-back" href="/">Return to AIPAF</a>
+  </section>
+</div>
+<script type="module" src="/js/admin/login.js"></script>

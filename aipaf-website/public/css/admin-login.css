@@ -1,0 +1,147 @@
+body.admin-login-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 75% 12%, rgba(210, 133, 3, .17), transparent 38rem),
+    linear-gradient(145deg, #03140a, #0a2c16 58%, #061f10);
+}
+
+body.admin-login-page #aipaf-header,
+body.admin-login-page .site-footer,
+body.admin-login-page > .skip {
+  display: none;
+}
+
+.admin-login {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  color: #10231c;
+  font-family: "Public Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+.admin-login-card {
+  width: min(100%, 28rem);
+  padding: clamp(1.5rem, 6vw, 3rem);
+  border: 1px solid rgba(255, 255, 255, .68);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, .97);
+  box-shadow: 0 2rem 5rem -2rem rgba(0, 0, 0, .55);
+}
+
+.admin-login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .8rem;
+  margin-bottom: 2.5rem;
+  color: #10231c;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-login-brand img {
+  width: 3rem;
+  height: 3rem;
+  padding: .2rem;
+  border-radius: 50%;
+  background: #f1f5f2;
+}
+
+.admin-login-brand small {
+  display: block;
+  margin-top: .15rem;
+  color: #52645a;
+  font-family: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.admin-login-eyebrow {
+  margin: 0 0 .5rem;
+  color: #86550a;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.admin-login h1 {
+  margin: 0;
+  color: #10231c;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 8vw, 2.65rem);
+  line-height: 1.1;
+}
+
+.admin-login-intro {
+  margin: .8rem 0 1.8rem;
+  color: #52645a;
+  line-height: 1.6;
+}
+
+.admin-login label {
+  display: block;
+  margin-bottom: .45rem;
+  color: #10231c;
+  font-size: .92rem;
+  font-weight: 600;
+}
+
+.admin-login input {
+  width: 100%;
+  min-height: 3.2rem;
+  padding: .75rem .9rem;
+  border: 1px solid #cbd8cf;
+  border-radius: .7rem;
+  background: #fbfdfb;
+  color: #10231c;
+  font: inherit;
+}
+
+.admin-login input:focus-visible {
+  border-color: #02521d;
+  outline: 3px solid rgba(2, 82, 29, .18);
+  outline-offset: 1px;
+}
+
+.admin-login input[aria-invalid="true"] {
+  border-color: #b3261e;
+}
+
+.admin-login-status {
+  min-height: 1.5rem;
+  margin: .6rem 0 .9rem;
+  color: #b3261e;
+  font-size: .9rem;
+}
+
+.admin-login-status.is-info { color: #52645a; }
+.admin-login-status.is-success { color: #12704a; }
+
+.admin-login button {
+  width: 100%;
+  min-height: 3.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0b6b2b, #013a14);
+  box-shadow: 0 .6rem 1.4rem -.8rem rgba(1, 58, 20, .8);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 650;
+}
+
+.admin-login button:hover { filter: brightness(1.08); }
+.admin-login button:focus-visible { outline: 3px solid #d28503; outline-offset: 3px; }
+.admin-login button:disabled { cursor: progress; opacity: .65; }
+
+.admin-login-back {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: #385647;
+  font-size: .9rem;
+}

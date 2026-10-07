@@ -148,11 +148,26 @@ test('admin cookie sessions are authenticated without exposing the key to JavaSc
   assert.deepEqual(auth.role, 'secretariat');
 });
 
-test('admin page gate rejects unauthenticated requests', async () => {
+test('admin page gate redirects unauthenticated requests to the separate login page', async () => {
   const handler = (await import('../src/server/handlers/api/admin/page.mjs')).default;
   const response = await handler(new Request('https://example.com/admin'));
-  assert.equal(response.status, 401);
-  assert.match(await response.text(), /Authentication required/);
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get('location'), '/admin-login');
+});
+
+test('authenticated admin page uses the shared site layout and extracted assets', async () => {
+  process.env.ADMIN_SECRETARIAT_KEY = 'secretariat-test-key';
+  const handler = (await import('../src/server/handlers/api/admin/page.mjs')).default;
+  const response = await handler(new Request('https://example.com/admin', {
+    headers: { cookie: createAdminSession('secretariat-test-key') },
+  }));
+
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /\/css\/admin\.css/);
+  assert.match(html, /\/js\/api\.js/);
+  assert.match(html, /\/js\/admin\/index\.js/);
+  assert.match(html, /id="aipaf-header"/);
 });
 
 test('council cannot mark submissions handled', () => {

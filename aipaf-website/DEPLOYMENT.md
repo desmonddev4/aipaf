@@ -71,7 +71,7 @@ After deployment:
 2. Verify that the submission is stored in PostgreSQL.
 3. Verify the Secretariat notification email is delivered.
 4. Test the acknowledgement email address.
-5. Sign in to `/admin` with the Secretariat token and export a CSV.
+5. Sign in at `/admin-login` with the Secretariat token, then use `/admin` to export a CSV.
 6. Confirm that the Council token can read submissions but cannot mark them handled.
 7. Create a member account, sign in, and confirm the authenticated member dashboard loads.
 8. Create a payment checkout record using `/api/member-records?action=checkout` and confirm that the response contains a Paystack `authorizationUrl`.

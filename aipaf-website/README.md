@@ -24,9 +24,12 @@ Or with the CLI: `npx vercel` from this folder.
 
 ```
 src/pages/        One file per page. First line is a JSON comment with title, description, nav item.
+src/admin/pages/  Admin dashboard, dedicated admin login, and CMS pages.
 src/partials/     layout.html (page shell), Navbar.html, footer.html. Edit once, applies everywhere.
 public/css/       styles.css (design tokens at the top: colours, fonts, spacing)
 public/js/        main.js (menu, hero video, hero card), forms.js (validation), config.js (backend hooks)
+public/css/admin.css and cms-admin.css  Scoped styles for each admin screen.
+public/js/admin/  Admin login/session, submissions, records, certificates, overview, and CMS modules.
 public/media/     hero.webm and hero.mp4 (background video), hero-poster.jpg
 public/img/       logo SVGs (full colour, mark, reversed, mono), stills from the video, favicons
 scripts/          build.mjs (assembles dist/), dev.mjs (local preview)
