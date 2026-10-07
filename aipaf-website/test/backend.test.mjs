@@ -10,6 +10,7 @@ import {
   getValidationError,
 } from '../src/server/handlers/api/_shared.mjs';
 import { requireAdmin } from '../src/server/handlers/api/_auth.mjs';
+import { createAdminSession } from '../src/server/handlers/api/admin/session.mjs';
 
 const validContact = {
   name: 'Ada Lovelace',
@@ -134,6 +135,24 @@ test('admin auth recognizes configured roles and rejects unknown keys', { concur
     if (previous.council === undefined) delete process.env.ADMIN_COUNCIL_KEY;
     else process.env.ADMIN_COUNCIL_KEY = previous.council;
   }
+});
+
+test('admin cookie sessions are authenticated without exposing the key to JavaScript', () => {
+  process.env.ADMIN_SECRETARIAT_KEY = 'secretariat-test-key';
+
+  const cookie = createAdminSession('secretariat-test-key');
+  const auth = requireAdmin(new Request('https://example.com', {
+    headers: { cookie },
+  }));
+
+  assert.deepEqual(auth.role, 'secretariat');
+});
+
+test('admin page gate rejects unauthenticated requests', async () => {
+  const handler = (await import('../src/server/handlers/api/admin/page.mjs')).default;
+  const response = await handler(new Request('https://example.com/admin'));
+  assert.equal(response.status, 401);
+  assert.match(await response.text(), /Authentication required/);
 });
 
 test('council cannot mark submissions handled', () => {

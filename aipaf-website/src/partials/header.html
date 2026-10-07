@@ -11,10 +11,24 @@
         <ul>
           <li><a href="/about" {{cur:about}}>Mandate</a></li>
           <li><a href="/lifecycle" {{cur:lifecycle}}>Lifecycle</a></li>
-          <li><a href="/credentials" {{cur:credentials}}>Credentials</a></li>
-          <li><a href="/membership" {{cur:membership}}>Membership</a></li>
-          <li><a href="/member-directory" {{cur:member-directory}}>Members</a></li>
-          <li><a href="/governance" {{cur:governance}}>Governance</a></li>
+          <li class="nav-dropdown">
+            <button class="nav-dropdown-trigger" type="button" aria-expanded="false" aria-controls="membership-menu">
+              Membership <span aria-hidden="true">▾</span>
+            </button>
+            <ul id="membership-menu" class="nav-dropdown-menu">
+              <li><a href="/membership" {{cur:membership}}>Membership</a></li>
+              <li><a href="/member-directory" {{cur:member-directory}}>Members</a></li>
+            </ul>
+          </li>
+          <li class="nav-dropdown">
+            <button class="nav-dropdown-trigger" type="button" aria-expanded="false" aria-controls="governance-menu">
+              Governance <span aria-hidden="true">▾</span>
+            </button>
+            <ul id="governance-menu" class="nav-dropdown-menu">
+              <li><a href="/governance" {{cur:governance}}>Governance</a></li>
+              <li><a href="/credentials" {{cur:credentials}}>Credentials</a></li>
+            </ul>
+          </li>
           <li><a href="/about#why" {{cur:why}}>Why us</a></li>
           <li><a href="/contact" {{cur:contact}}>Contact</a></li>
         </ul>

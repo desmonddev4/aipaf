@@ -5,6 +5,10 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/admin", "destination": "/api/admin/page" },
+    { "source": "/cms-admin", "destination": "/api/admin/page" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

@@ -16,9 +16,35 @@ const setMenu = (open) => {
   nav.classList.toggle('is-open', open);
 };
 toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setMenu(false); toggle?.focus(); } });
-nav?.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
-document.addEventListener('click', (e) => { if (nav?.classList.contains('is-open') && !e.target.closest('.nav-shell')) setMenu(false); });
+
+/* Dropdown menus */
+const dropdowns = [...document.querySelectorAll('.nav-dropdown')];
+const setDropdown = (dropdown, open) => {
+  const trigger = dropdown?.querySelector('.nav-dropdown-trigger');
+  if (!dropdown || !trigger) return;
+  dropdown.classList.toggle('is-open', open);
+  trigger.setAttribute('aria-expanded', String(open));
+};
+dropdowns.forEach((dropdown) => {
+  const trigger = dropdown.querySelector('.nav-dropdown-trigger');
+  trigger?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const willOpen = trigger.getAttribute('aria-expanded') !== 'true';
+    dropdowns.forEach((item) => setDropdown(item, item === dropdown && willOpen));
+  });
+});
+document.addEventListener('click', (event) => {
+  if (!event.target.closest('.nav-dropdown')) dropdowns.forEach((dropdown) => setDropdown(dropdown, false));
+  if (nav?.classList.contains('is-open') && !event.target.closest('.nav-shell')) setMenu(false);
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    setMenu(false);
+    dropdowns.forEach((dropdown) => setDropdown(dropdown, false));
+    toggle?.focus();
+  }
+});
+nav?.addEventListener('click', (event) => { if (event.target.closest('a')) setMenu(false); });
 
 /* Hero videos: autoplay while the hero is visible and pause when it scrolls away */
 const hero = document.querySelector('.hero');

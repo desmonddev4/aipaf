@@ -237,13 +237,8 @@
   var reportPeriod = document.querySelector('#report-period');
   var overviewReport = document.querySelector('#overview-report');
 
-  var token = sessionStorage.getItem('aipaf-admin-token') || '';
-  function setAuth(tokenValue) {
-    if (tokenValue) sessionStorage.setItem('aipaf-admin-token', tokenValue); else sessionStorage.removeItem('aipaf-admin-token');
-  }
-
   function authHeaders() {
-    return { Authorization: 'Bearer ' + (sessionStorage.getItem('aipaf-admin-token') || '') };
+    return {};
   }
 
   /* Escape anything coming from the API before it goes into innerHTML */
@@ -329,7 +324,15 @@
     refresh();
   }
 
-  if (token) showDashboard();
+  function verifySession() {
+    return fetch('/api/admin/session', { credentials: 'same-origin' })
+      .then(function (response) {
+        if (!response.ok) return false;
+        showDashboard();
+        return true;
+      })
+      .catch(function () { return false; });
+  }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -341,17 +344,33 @@
       return;
     }
     tokenInput.removeAttribute('aria-invalid');
-    status.textContent = '';
-    setAuth(value);
-    showDashboard();
+    status.textContent = 'Authenticating...';
+    fetch('/api/admin/session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: value })
+    }).then(function (response) {
+      return response.json().then(function (data) { return { response: response, data: data }; });
+    }).then(function (result) {
+      if (!result.response.ok) throw new Error(result.data.message || 'Authentication failed.');
+      showDashboard();
+    }).catch(function (error) {
+      status.textContent = error.message;
+      tokenInput.setAttribute('aria-invalid', 'true');
+    });
   });
   tokenInput.addEventListener('input', function () { tokenInput.removeAttribute('aria-invalid'); if (tokenInput.value.trim()) status.textContent = ''; });
 
   document.querySelector('#admin-signout').addEventListener('click', function () {
-    setAuth('');
-    tokenInput.value = '';
-    showLogin('');
+    fetch('/api/admin/session', { method: 'DELETE', credentials: 'same-origin' })
+      .finally(function () {
+        tokenInput.value = '';
+        showLogin('');
+      });
   });
+
+  verifySession();
 
   var searchTimer;
   tableSelect.addEventListener('change', refresh);

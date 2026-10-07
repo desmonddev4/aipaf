@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { verifyAdminSession } from './admin/session.mjs';
 
 function getAdminKeys() {
   return {
@@ -14,14 +15,16 @@ function getBearerToken(request) {
 
 export function requireAdmin(request, allowedRoles = ['secretariat', 'council']) {
   const token = getBearerToken(request);
-  if (!token) return { message: 'Authentication required.', status: 401 };
+  const session = token ? null : verifyAdminSession(request);
+  if (!token && session.status) return { message: session.message, status: session.status };
 
+  const activeToken = token || session.token;
   const adminKeys = getAdminKeys();
   const role = allowedRoles.find((name) => {
     const expected = adminKeys[name];
     if (!expected) return false;
     const expectedBuffer = Buffer.from(expected);
-    const receivedBuffer = Buffer.from(token);
+    const receivedBuffer = Buffer.from(activeToken);
     return expectedBuffer.length === receivedBuffer.length && timingSafeEqual(expectedBuffer, receivedBuffer);
   });
 

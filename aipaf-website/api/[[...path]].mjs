@@ -8,6 +8,7 @@ const routeMap = {
   'certificates': () => import('../src/server/handlers/api/certificates.mjs').then((module) => module.default),
   'cms': () => import('../src/server/handlers/api/cms.mjs').then((module) => module.default),
   'health': () => import('../src/server/handlers/api/health.mjs').then((module) => module.default),
+  'admin/session': () => import('../src/server/handlers/api/admin/session.mjs').then((module) => module.default),
   'admin/submissions': () => import('../src/server/handlers/api/admin/submissions.mjs').then((module) => module.default),
   'admin/members': () => import('../src/server/handlers/api/admin/members.mjs').then((module) => module.default),
   'admin/records': () => import('../src/server/handlers/api/admin/records.mjs').then((module) => module.default),
