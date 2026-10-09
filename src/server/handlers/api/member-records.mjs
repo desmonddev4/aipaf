@@ -153,14 +153,14 @@ export default async function handler(request) {
     }
   }
 
+  // Actions a signed-in member may use; each one re-checks the member session itself.
+  const memberActions = new Set([
+    'GET:examinations', 'GET:my-examinations', 'GET:my-cpd',
+    'POST:checkout', 'POST:register-examination', 'POST:cpd',
+  ]);
   const auth = requireAdmin(request);
-  if (auth.status) {
-    if (request.method === 'POST' && action === 'checkout') {
-      const session = getSessionFromRequest(request);
-      if (!session?.memberId) return jsonResponse({ ok: false, message: 'Authentication required.' }, 401);
-    } else {
-      return jsonResponse({ ok: false, message: auth.message }, auth.status);
-    }
+  if (auth.status && !memberActions.has(`${request.method}:${action}`)) {
+    return jsonResponse({ ok: false, message: auth.message }, auth.status);
   }
 
   if (request.method === 'GET' && action === 'payments') {
@@ -230,6 +230,7 @@ export default async function handler(request) {
   }
 
   if (request.method === 'GET' && action === 'examinations') {
+    if (auth.status && !getSessionFromRequest(request)?.memberId) return jsonResponse({ ok: false, message: 'Authentication required.' }, 401);
     const rows = await withDb(async (client) => client.query(
       `SELECT id, code, name, description, status, opens_at, closes_at, published_at, created_at
        FROM examinations ORDER BY published_at DESC NULLS LAST, created_at DESC`,
