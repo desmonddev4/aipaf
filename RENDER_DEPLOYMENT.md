@@ -93,7 +93,7 @@ SMTP_HOST=smtp.zoho.com
 SMTP_PORT=465
 SMTP_USER=info@aipafgh.org
 SMTP_PASS=your-zoho-app-password
-EMAIL_FROM=AIPAF Website <info@aipafgh.org>
+EMAIL_FROM=AIPAF <info@aipafgh.org>
 SECRETARIAT_EMAIL=info@aipafgh.org
 ADMIN_SECRETARIAT_KEY=a_very_long_random_string_at_least_32_chars
 ADMIN_COUNCIL_KEY=a_different_very_long_random_string_at_least_32_chars
@@ -151,7 +151,7 @@ SMTP_HOST=smtp.zoho.com
 SMTP_PORT=465
 SMTP_USER=info@aipafgh.org
 SMTP_PASS=your-app-specific-password
-EMAIL_FROM=AIPAF Website <info@aipafgh.org>
+EMAIL_FROM=AIPAF <info@aipafgh.org>
 SECRETARIAT_EMAIL=info@aipafgh.org
 ```
 

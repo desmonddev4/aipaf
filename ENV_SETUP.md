@@ -31,7 +31,7 @@ SMTP_HOST=smtp.zoho.com
 SMTP_PORT=465
 SMTP_USER=info@your-domain.example
 SMTP_PASS=your-zoho-app-password
-EMAIL_FROM=AIPAF Website <info@your-domain.example>
+EMAIL_FROM=AIPAF <info@your-domain.example>
 SECRETARIAT_EMAIL=info@your-domain.example
 ```
 - `SMTP_HOST`: Zoho Mail SMTP server (smtp.zoho.com)

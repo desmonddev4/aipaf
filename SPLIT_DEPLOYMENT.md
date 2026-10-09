@@ -56,7 +56,7 @@ This guide explains how to deploy the AIPAF website with a split architecture:
    SMTP_PORT=465
    SMTP_USER=info@aipafgh.org
    SMTP_PASS=your_zoho_app_password
-   EMAIL_FROM=AIPAF Website <info@aipafgh.org>
+   EMAIL_FROM=AIPAF <info@aipafgh.org>
    SECRETARIAT_EMAIL=info@aipafgh.org
    PAYMENT_WEBHOOK_SECRET=your_webhook_secret
    CERTIFICATE_SECRET=your_certificate_secret
@@ -251,7 +251,7 @@ SMTP_HOST=smtp.zoho.com
 SMTP_PORT=465
 SMTP_USER=info@aipafgh.org
 SMTP_PASS=...
-EMAIL_FROM=AIPAF Website <info@aipafgh.org>
+EMAIL_FROM=AIPAF <info@aipafgh.org>
 SECRETARIAT_EMAIL=info@aipafgh.org
 PAYMENT_WEBHOOK_SECRET=...
 CERTIFICATE_SECRET=...

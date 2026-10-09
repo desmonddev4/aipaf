@@ -39,7 +39,7 @@ services:
       - key: SMTP_PASS
         sync: false
       - key: EMAIL_FROM
-        value: AIPAF Website <info@aipafgh.org>
+        value: AIPAF <info@aipafgh.org>
       - key: SECRETARIAT_EMAIL
         value: info@aipafgh.org
       - key: PAYMENT_WEBHOOK_SECRET

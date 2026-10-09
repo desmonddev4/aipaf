@@ -29,7 +29,7 @@ function getTransporter() {
 
 function emailConfig() {
   return {
-    from: process.env.EMAIL_FROM || 'AIPAF Website <noreply@aipafgh.org>',
+    from: process.env.EMAIL_FROM || 'AIPAF <noreply@aipafgh.org>',
     to: process.env.SECRETARIAT_EMAIL || 'info@aipafgh.org',
   };
 }
