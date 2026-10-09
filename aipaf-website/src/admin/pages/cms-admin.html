@@ -1,4 +1,150 @@
 <!--{"title":"CMS content management | AIPAF","description":"Manage AIPAF website content and publication states.","nav":"admin","noindex":true}-->
+<style>
+/* =====================================================================
+   AIPAF CMS dashboard. Scoped under .cms-admin, except the toast
+   messages (.cms-toasts), which cms.js appends to <body>.
+   Class names and IDs from the original are unchanged.
+   ===================================================================== */
+.cms-admin {
+  --c-ink: #10231c; --c-text: #162a1f; --c-muted: #46574f;
+  --c-green: #0f5c3f; --c-green-dark: #0a3f2b; --c-gold: #d28503; --c-gold-hi: #f2ac1f;
+  --c-border: rgba(15, 92, 63, .14); --c-error: #b3261e; --c-ok: #12704a;
+  --c-shadow: 0 1px 2px rgba(10, 40, 28, .05), 0 28px 60px -38px rgba(10, 40, 28, .42);
+  --c-ease: cubic-bezier(.22, .8, .3, 1);
+  --c-nav: 5.5rem; /* clearance for the fixed navbar */
+  color: var(--c-text); background: linear-gradient(180deg, #f3f7f4, #e9f1ec); min-height: calc(100vh - 72px);
+}
+.cms-admin *, .cms-admin *::before, .cms-admin *::after { box-sizing: border-box; }
+.cms-admin .wrap { width: min(1100px, calc(100% - 2rem)); margin-inline: auto; }
+.cms-admin .shell { padding: clamp(6.5rem, 12vw, 9rem) 0 clamp(3rem, 7vw, 6rem); }
+
+/* The site's global .hero rule is a full-screen dark video hero. Undo it for this page's heading block. */
+.cms-admin .hero {
+  height: auto; min-height: 0; display: block; overflow: visible; isolation: auto; background: none; color: inherit;
+  margin-bottom: 2rem;
+}
+.cms-admin .hero::before { content: none; }
+
+.cms-admin .hero > * { animation: c-rise .7s var(--c-ease) both; }
+.cms-admin .hero > :nth-child(2) { animation-delay: .08s; }
+.cms-admin .hero > :nth-child(3) { animation-delay: .16s; }
+.cms-admin .eyebrow { margin: 0 0 .6rem; color: var(--c-green); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.cms-admin h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.25rem, 6vw, 4rem); line-height: 1; color: var(--c-ink); text-wrap: balance; }
+.cms-admin h1::after { content: ""; display: block; width: 4.5rem; height: 4px; margin-top: 1.1rem; border-radius: 4px; background: linear-gradient(90deg, var(--c-gold), var(--c-gold-hi)); }
+.cms-admin .lead { max-width: 48rem; margin: 1rem 0 0; color: var(--c-muted); }
+
+/* ---------- Cards ---------- */
+.cms-admin .login, .cms-admin .dashboard { background: #fff; border: 1px solid var(--c-border); border-radius: 24px; box-shadow: var(--c-shadow); }
+.cms-admin .login { max-width: 34rem; padding: clamp(1.5rem, 5vw, 2.5rem); margin: 0 auto; }
+.cms-admin .dashboard { display: none; padding: clamp(1rem, 2.5vw, 1.5rem); }
+.cms-admin .dashboard.is-open { display: block; animation: c-rise .6s var(--c-ease) both; }
+.cms-admin .card { padding: 1.25rem; border: 1px solid var(--c-border); border-radius: 16px; background: #f8faf8; }
+
+/* ---------- Fields ---------- */
+.cms-admin .field { margin-top: 1rem; }
+.cms-admin label { display: block; margin-bottom: .45rem; font-weight: 600; color: var(--c-ink); }
+.cms-admin input, .cms-admin select, .cms-admin textarea {
+  width: 100%; padding: .8rem 1rem; color: var(--c-ink); background-color: #fff; border: 1.5px solid rgba(16, 35, 28, .15); border-radius: 12px; font: inherit;
+  transition: border-color .2s, box-shadow .2s;
+}
+.cms-admin select {
+  -webkit-appearance: none; appearance: none; padding-right: 2.5rem; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 4.5 6 8.5l4-4' fill='none' stroke='%230f5c3f' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right .9rem center; background-size: 12px;
+}
+.cms-admin input:hover, .cms-admin select:hover, .cms-admin textarea:hover { border-color: rgba(15, 92, 63, .45); }
+.cms-admin input:focus, .cms-admin select:focus, .cms-admin textarea:focus { outline: none; border-color: var(--c-green); box-shadow: 0 0 0 4px rgba(15, 92, 63, .14); }
+.cms-admin textarea { resize: vertical; min-height: 8rem; }
+.cms-admin #cms-body { min-height: 14rem; line-height: 1.55; }
+
+/* ---------- Buttons ---------- */
+.cms-admin .btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: .8rem 1.4rem; border: 0; border-radius: 999px;
+  background: linear-gradient(135deg, var(--c-green), var(--c-green-dark)); color: #fff; cursor: pointer; font: inherit; font-weight: 600; white-space: nowrap;
+  box-shadow: 0 10px 20px -12px rgba(10, 63, 43, .8);
+  transition: transform .25s var(--c-ease), box-shadow .25s var(--c-ease), background .2s, color .2s, opacity .2s;
+}
+.cms-admin .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 26px -14px rgba(10, 63, 43, .85); }
+.cms-admin .btn:active { transform: scale(.97); }
+.cms-admin .btn:focus-visible { outline: 3px solid var(--c-gold); outline-offset: 3px; }
+.cms-admin .btn.secondary { background: #e7f0eb; color: #172d25; box-shadow: none; }
+.cms-admin .btn.secondary:hover { background: #d9e8e0; box-shadow: none; }
+.cms-admin .btn.danger { background: #fbeceb; color: var(--c-error); box-shadow: none; }
+.cms-admin .btn.danger:hover { background: var(--c-error); color: #fff; box-shadow: none; }
+.cms-admin .btn.btn-sm { min-height: 2.25rem; padding: .35rem 1rem; font-size: .9rem; }
+.cms-admin .btn[disabled] { cursor: progress; opacity: .6; transform: none; }
+
+/* ---------- Toolbar ---------- */
+.cms-admin .toolbar {
+  position: sticky; top: var(--c-nav); z-index: 4; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center;
+  margin: -.25rem -.25rem 1rem; padding: .6rem .75rem; border-radius: 16px; background: rgba(255, 255, 255, .85);
+  -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+}
+.cms-admin .toolbar select { width: auto; min-width: 9rem; }
+.cms-admin .toolbar-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+/* ---------- Layout ---------- */
+.cms-admin .grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr 1.3fr; align-items: start; }
+.cms-admin #cms-form-editor { position: sticky; top: calc(var(--c-nav) + 4.5rem); }
+.cms-admin .form-status { min-height: 1.4rem; margin: 1rem 0 0; color: var(--c-error); }
+.cms-admin .form-status.ok { color: var(--c-ok); }
+.cms-admin .form-status.info { color: var(--c-muted); }
+
+/* ---------- Content list ---------- */
+.cms-admin .item-list { display: grid; gap: .75rem; }
+.cms-admin .item {
+  position: relative; display: grid; gap: .5rem; padding: 1rem 1rem 1rem 1.2rem; border-radius: 12px; background: #fff; border: 1px solid var(--c-border);
+  transition: border-color .25s, box-shadow .25s, transform .3s var(--c-ease);
+}
+.cms-admin .item::before { content: ""; position: absolute; left: 0; top: .75rem; bottom: .75rem; width: 3px; border-radius: 3px; background: var(--c-gold); transform: scaleY(0); transition: transform .35s var(--c-ease); }
+.cms-admin .item:hover { border-color: rgba(15, 92, 63, .35); box-shadow: 0 14px 28px -22px rgba(10, 40, 28, .6); transform: translateY(-2px); }
+.cms-admin .item:hover::before, .cms-admin .item.is-editing::before { transform: scaleY(1); }
+.cms-admin .item.is-editing { border-color: var(--c-gold); box-shadow: 0 0 0 3px rgba(210, 133, 3, .15); }
+.cms-admin .item-header { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
+.cms-admin .item strong { color: var(--c-ink); overflow-wrap: anywhere; }
+.cms-admin .item small { color: var(--c-muted); overflow-wrap: anywhere; }
+.cms-admin .item p { margin: 0; color: var(--c-muted); }
+.cms-admin .item .toolbar-actions { margin-top: .25rem; }
+.cms-admin .tag { display: inline-block; padding: .2rem .6rem; border-radius: 999px; background: #dfeee7; color: var(--c-green); font-size: .75rem; font-weight: 700; text-transform: capitalize; white-space: nowrap; }
+.cms-admin .tag-draft { background: #f6e8bd; color: #5d4900; }
+.cms-admin .tag-archived { background: #e4e6e5; color: #4b5651; }
+.cms-admin .empty { padding: 2rem; text-align: center; color: var(--c-muted); }
+.cms-admin .skeleton { height: 5.5rem; border-radius: 12px; background: linear-gradient(100deg, #e9f0ec 30%, #f6faf7 50%, #e9f0ec 70%) 0 0 / 200% 100%; animation: c-shimmer 1.2s linear infinite; }
+
+/* ---------- Toasts (appended to <body> by cms.js) ---------- */
+.cms-toasts { position: fixed; right: 1rem; bottom: 1rem; z-index: 1100; display: grid; gap: .6rem; width: min(24rem, calc(100vw - 2rem)); pointer-events: none; }
+.cms-toast {
+  pointer-events: auto; display: flex; gap: .75rem; align-items: flex-start; padding: .85rem 1rem; border-radius: 14px; cursor: pointer;
+  color: #fff; background: #0a2c16; border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .7);
+  font: 500 .95rem/1.4 "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif; animation: c-toast-in .35s cubic-bezier(.22, .8, .3, 1) both;
+}
+.cms-toast::before { content: ""; flex: none; width: .6rem; height: .6rem; margin-top: .4rem; border-radius: 50%; background: #f2ac1f; }
+.cms-toast.ok::before { background: #5fd49a; }
+.cms-toast.err::before { background: #ff8a80; }
+.cms-toast.is-leaving { animation: c-toast-out .25s ease both; }
+
+/* ---------- Motion ---------- */
+@keyframes c-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes c-shimmer { to { background-position: -200% 0; } }
+@keyframes c-toast-in { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes c-toast-out { to { opacity: 0; transform: translateY(8px); } }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .cms-admin .grid { grid-template-columns: 1fr; }
+  .cms-admin #cms-form-editor { position: static; }
+}
+@media (max-width: 640px) {
+  .cms-admin .toolbar { position: static; margin: 0 0 1rem; padding: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .cms-admin .toolbar select { width: 100%; }
+  .cms-admin .toolbar-actions { width: 100%; }
+  .cms-admin .toolbar .toolbar-actions .btn { flex: 1 1 auto; }
+  .cms-toasts { right: .75rem; left: .75rem; bottom: .75rem; width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cms-admin *, .cms-toast { animation: none !important; transition-duration: .01ms !important; }
+}
+</style>
 
 
 <div class="cms-admin">

@@ -155,7 +155,7 @@ test('admin page gate redirects unauthenticated requests to the separate login p
   assert.equal(response.headers.get('location'), '/admin-login');
 });
 
-test('authenticated admin page uses the shared site layout and extracted assets', async () => {
+test('authenticated admin page uses the shared site layout and embedded styles', async () => {
   process.env.ADMIN_SECRETARIAT_KEY = 'secretariat-test-key';
   const handler = (await import('../src/server/handlers/api/admin/page.mjs')).default;
   const response = await handler(new Request('https://example.com/admin', {
@@ -164,7 +164,8 @@ test('authenticated admin page uses the shared site layout and extracted assets'
 
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /\/css\/admin\.css/);
+  assert.match(html, /<style>[\s\S]*\.admin \{/);
+  assert.doesNotMatch(html, /\/css\/admin\.css/);
   assert.match(html, /\/js\/api\.js/);
   assert.match(html, /\/js\/admin\/index\.js/);
   assert.match(html, /id="aipaf-header"/);
