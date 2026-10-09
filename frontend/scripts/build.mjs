@@ -30,12 +30,14 @@ writeFileSync(configPath, updatedConfig, 'utf8');
 const layout = partial('layout');
 const header = partial('Navbar');
 const footer = partial('footer');
+const memberHeader = partial('member-nav');
 const adminSidebar = read('src/admin/partials/sidebar.html').trim();
 const sidebarMarker = '<!--ADMIN_SIDEBAR-->';
 const year = new Date().getFullYear();
 
 function renderPage(raw, meta, slug) {
-  const nav = header.replace(/\{\{cur:([a-z-]+)\}\}/g, (_, item) => (item === meta.nav ? 'aria-current="page"' : ''));
+  const isMemberPage = meta.layout === 'member';
+  const nav = (isMemberPage ? memberHeader : header).replace(/\{\{cur:([a-z-]+)\}\}/g, (_, item) => (item === (isMemberPage ? slug : meta.nav) ? 'aria-current="page"' : ''));
   const isAdminPage = /^(admin(?:-|$)|cms-admin$)/.test(slug);
   const content = isAdminPage
     ? raw
@@ -45,7 +47,7 @@ function renderPage(raw, meta, slug) {
     : raw;
   return layout
     .replace('{{header}}', isAdminPage ? '' : nav)
-    .replace('{{footer}}', isAdminPage ? '' : footer)
+    .replace('{{footer}}', isAdminPage || isMemberPage ? '' : footer)
     .replace('{{content}}', content)
     .replaceAll('{{title}}', meta.title)
     .replaceAll('{{description}}', meta.description)

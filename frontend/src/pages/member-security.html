@@ -1,4 +1,4 @@
-<!--{"title":"Security | AIPAF","description":"Manage your AIPAF account security.","nav":"members","noindex":true}-->
+<!--{"title":"Security | AIPAF","description":"Manage your AIPAF account security.","nav":"members","layout":"member","noindex":true}-->
 <style>
 .mp{--serif: Georgia, "Times New Roman", serif;
   --sans: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
@@ -101,9 +101,6 @@ to { opacity: 1; transform: none; }
 .mp .login-required{max-width: 28rem; margin: 20vh auto; text-align: center;}
 .mp .login-required .btn{width: auto; margin-top: 1rem; text-decoration: none;}
 .mp{min-height:70vh;color:#fff;font-family:var(--sans);line-height:1.5;padding:clamp(5.5rem,10vw,7rem) 0 3rem;background:radial-gradient(ellipse at 75% 5%,rgba(210,133,3,.2),transparent 38rem),radial-gradient(ellipse at 8% 100%,rgba(11,107,43,.32),transparent 32rem),linear-gradient(145deg,#03140a,#0a2c16 58%,#061f10);}
-.mp .mp-tabs{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding:.35rem;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.07);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);}
-.mp .mp-tabs a{flex:none;padding:.5rem 1rem;border-radius:999px;color:var(--mute);font-size:.88rem;font-weight:600;text-decoration:none;}
-.mp .mp-tabs a:hover{background:rgba(255,255,255,.12);color:#fff;}
 .mp .card{scroll-margin-top:7rem;}
 .mp .page-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:.8rem;margin:0 .25rem .2rem;}
 .mp .page-head h1{font:500 clamp(1.9rem,5vw,2.8rem)/1.05 var(--serif);}
@@ -111,12 +108,10 @@ to { opacity: 1; transform: none; }
 .mp .who{padding:.35rem .9rem;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.07);color:var(--mute);font-size:.82rem;}
 .mp .two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:1.25rem;align-items:start;}
 @media (max-width:56rem){.mp .two{grid-template-columns:1fr;}}
-.mp .mp-tabs a[aria-current="page"]{background:linear-gradient(135deg,#f2ac1f,#d28503);color:#2c1b00;}
 </style>
 <div class="mp">
 <div id="page-gate" class="login-required card"><h2>Loading your portal...</h2><p class="meta">If this takes long, you may need to sign in.</p><a class="btn" href="/member-login">Sign in</a></div>
 <div class="mp-main" id="page-content" hidden>
-  <nav class="mp-tabs" aria-label="Member portal"><a href="/member-profile">Profile</a><a href="/member-payments">Payments</a><a href="/member-examinations">Examinations</a><a href="/member-cpd">CPD</a><a href="/member-certificates">Certificates</a><a href="/member-security" aria-current="page">Security</a></nav>
   <div class="page-head"><div><h1>Security</h1><p>Keep your account safe.</p></div><span class="who" id="who"></span></div>
 <form id="security-form" class="card">
           <h2>Change password</h2><p class="sub">Use a strong password you do not use elsewhere.</p>

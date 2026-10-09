@@ -12,6 +12,7 @@ import { initPayments } from './payments.js';
 import { initRecords } from './records.js';
 import { initSession } from './session.js';
 import { initSubmissions } from './submissions.js';
+import { initUsers } from './users.js';
 import { toast } from './shared.js';
 
 const has = (selector) => Boolean(document.querySelector(selector));
@@ -62,3 +63,5 @@ if (has('#apps-table-container')) start('applications', initApplications);
 if (has('#deletions-table-container')) start('data deletion', () => initDataDeletion({ showLogin: handleAuthError }));
 if (has('#audit-table-container')) start('audit log', () => initAudit({ showLogin: handleAuthError }));
 if (has('#cms-list')) start('content', () => initCms({ showLogin: handleAuthError }));
+
+if (has('#users-table-container')) start('users', initUsers);

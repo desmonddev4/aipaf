@@ -85,6 +85,29 @@ export async function sendVerificationEmail({ email, code }) {
   return { status: 'sent' };
 }
 
+export async function sendAdminWelcomeEmail({ email, role }) {
+  const transport = getTransporter();
+  if (!transport) return { status: 'skipped', reason: 'SMTP is not configured.' };
+
+  const config = emailConfig();
+  const siteUrl = process.env.SITE_URL || 'https://www.aipafgh.org';
+  await transport.sendMail({
+    from: config.from,
+    to: email,
+    subject: 'You have been added to the AIPAF admin console',
+    text: [
+      'Hello,',
+      '',
+      `You have been given ${role} access to the AIPAF admin console.`,
+      '',
+      `Sign in at ${siteUrl}/admin-login with this email address.`,
+      'The Secretariat will share your temporary password with you separately.',
+      'A verification code will be emailed to you each time you sign in.',
+    ].join('\n'),
+  });
+  return { status: 'sent' };
+}
+
 export async function sendAcknowledgementEmail({ kind, data }) {
   const transport = getTransporter();
   if (!transport || !data.email) return { status: 'skipped', reason: 'SMTP is not configured.' };

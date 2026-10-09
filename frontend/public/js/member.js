@@ -24,6 +24,13 @@ window.Member = (function () {
     post('/api/members', { action: 'logout' }).catch(function () {}).then(function () { window.location.href = '/member-login'; });
   }
 
+  document.addEventListener('click', function (event) {
+    var link = event.target.closest && event.target.closest('[data-member-signout]');
+    if (!link) return;
+    event.preventDefault();
+    signOut();
+  });
+
   function renderRecords(list, container, emptyText) {
     container.innerHTML = '';
     if (!list.length) {

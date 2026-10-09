@@ -1,4 +1,4 @@
-<!--{"title":"CPD | AIPAF","description":"Submit and track continuing professional development.","nav":"members","layout":"member","noindex":true}-->
+<!--{"title":"Contact the secretariat | AIPAF","description":"Send a message to the AIPAF administrators.","nav":"members","layout":"member","noindex":true}-->
 <style>
 .mp{--serif: Georgia, "Times New Roman", serif;
   --sans: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
@@ -112,21 +112,21 @@ to { opacity: 1; transform: none; }
 <div class="mp">
 <div id="page-gate" class="login-required card"><h2>Loading your portal...</h2><p class="meta">If this takes long, you may need to sign in.</p><a class="btn" href="/member-login">Sign in</a></div>
 <div class="mp-main" id="page-content" hidden>
-  <div class="page-head"><div><h1>Continuing professional development</h1><p>Log activities and track their approval.</p></div><span class="who" id="who"></span></div>
+  <div class="page-head"><div><h1>Contact the secretariat</h1><p>Questions about your membership? Message the administrators.</p></div><span class="who" id="who"></span></div>
 <div class="two">
-    <section class="card"><h2>Submit a CPD record</h2><p class="sub">Log a learning activity for approval.</p>
-<form id="cpd-form">
-            <div class="field-grid">
-              <div class="field"><label for="cpd-title-input">Activity title</label><input id="cpd-title-input" name="title" required></div>
-              <div class="field"><label for="cpd-category">Category</label><select id="cpd-category" name="category"><option value="education">Education</option><option value="practice">Practice</option><option value="research">Research</option><option value="service">Service</option><option value="other">Other</option></select></div>
-              <div class="field"><label for="cpd-provider">Provider</label><input id="cpd-provider" name="provider"></div>
-              <div class="field"><label for="cpd-hours">Hours</label><input id="cpd-hours" name="hours" type="number" min="0.01" step="0.01" required></div>
-              <div class="field field-full"><label for="cpd-date">Completion date</label><input id="cpd-date" name="completionDate" type="date" required></div>
-            </div>
-            <button class="btn" type="submit">Submit CPD record</button>
-            <p class="form-status" id="cpd-status" role="status" aria-live="polite"></p>
-          </form></section>
-    <section class="card"><h2>Your CPD records</h2><p class="sub">Submitted activities and their status.</p><div id="cpd-list" class="record-list"></div></section>
+    <section class="card"><h2>Send a message</h2><p class="sub">Your message goes straight to the AIPAF secretariat and we reply by email.</p>
+      <form id="contact-form" novalidate>
+        <div class="field-grid">
+          <div class="field"><label for="c-name">Your name</label><input id="c-name" name="name" required minlength="2" maxlength="100" autocomplete="name"></div>
+          <div class="field"><label for="c-email">Your email</label><input id="c-email" name="email" type="email" required readonly></div>
+          <div class="field field-full"><label for="c-topic">Topic</label><select id="c-topic" name="topic"><option>Membership</option><option>Payments and invoices</option><option>Examinations</option><option>CPD</option><option>Certificates</option><option>Account and access</option><option>Other</option></select></div>
+          <div class="field field-full"><label for="c-message">Message</label><textarea id="c-message" name="message" rows="6" required minlength="20" maxlength="2000" placeholder="How can we help? (at least 20 characters)"></textarea></div>
+        </div>
+        <div style="position:absolute;left:-9999px" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+        <button class="btn" type="submit">Send message</button>
+        <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
+      </form></section>
+    <section class="card"><h2>Other ways to reach us</h2><p class="sub">Prefer email? Write to <a href="mailto:info@aipafgh.org">info@aipafgh.org</a>. We aim to respond within two working days.</p></section>
   </div>
 </div>
 </div>
@@ -135,20 +135,17 @@ to { opacity: 1; transform: none; }
 (async function () {
   var member = await window.Member.requireAuth();
   document.querySelector("#who").textContent = member.email;
-
-  var list = document.querySelector('#cpd-list');
-  async function load() {
-    try {
-      var payload = await window.Member.json(await window.apiFetch('/api/member-records?action=my-cpd'), 'Unable to load CPD records.');
-      window.Member.renderRecords(payload.items || [], list, 'No CPD records submitted yet.');
-    } catch (e) { document.querySelector('#cpd-status').textContent = e.message; }
-  }
-  load();
-  window.Member.bindForm(document.querySelector('#cpd-form'), document.querySelector('#cpd-status'), async function (data) {
-    await window.Member.json(await window.Member.post('/api/member-records?action=cpd', data), 'Unable to submit the CPD record.');
-    document.querySelector('#cpd-form').reset();
-    await load();
-    return 'CPD record submitted for review.';
+  var form = document.querySelector('#contact-form');
+  form.email.value = member.email;
+  form.name.value = member.fullName || member.full_name || member.name || '';
+  var opened = Date.now();
+  window.Member.bindForm(form, document.querySelector('#contact-status'), async function (data) {
+    if (String(data.message || '').trim().length < 20) throw new Error('Please write at least 20 characters.');
+    if (String(data.name || '').trim().length < 2) throw new Error('Please enter your name.');
+    data._elapsedMs = Math.max(Date.now() - opened, 2500);
+    await window.Member.json(await window.Member.post('/api/contact', data), 'Unable to send your message.');
+    form.message.value = '';
+    return 'Message sent. We will reply by email.';
   });
 })();
 </script>
