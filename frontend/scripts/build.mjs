@@ -65,6 +65,7 @@ const sitemap = [];
 
 for (const page of pages) {
   const raw = read(`${page.directory}/${page.file}`);
+  if (/^\s*<!doctype html>/i.test(raw)) { writeFileSync(join(dist, page.file), raw); continue; }
   const m = raw.match(/^<!--(\{[\s\S]*?\})-->/);
   if (!m) throw new Error(`${page.file}: missing JSON metadata comment on first line`);
   const meta = JSON.parse(m[1]);

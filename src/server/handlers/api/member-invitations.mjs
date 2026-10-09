@@ -232,6 +232,7 @@ export default async function handler(request) {
               email: inv.email,
               fullName: inv.full_name,
               grade: inv.proposed_grade,
+              qualification: inv.qualification,
               acceptUrl
             }
           });
@@ -336,6 +337,7 @@ export default async function handler(request) {
                 email: inv.email,
                 fullName: inv.full_name,
                 grade: inv.proposed_grade,
+                qualification: inv.qualification,
                 acceptUrl
               }
             });
