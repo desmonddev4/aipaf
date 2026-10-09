@@ -1,3 +1,5 @@
+import { apiFetch } from './shared.js';
+
 /* AIPAF CMS dashboard.
    Plain script (no imports), as in the original. Wrapped in a function so its
    names cannot clash with other scripts on the page. */
@@ -92,7 +94,7 @@
   function refresh() {
     const seq = ++requestSeq;
     showSkeleton();
-    fetch(`/api/cms?type=${encodeURIComponent(typeSelect.value)}&status=${encodeURIComponent(statusSelect.value)}`, { credentials: 'include', headers: headers() })
+    apiFetch(`/api/cms?type=${encodeURIComponent(typeSelect.value)}&status=${encodeURIComponent(statusSelect.value)}`, { headers: headers() })
       .then(async (response) => {
         if (response.status === 401) throw new Error('You need to sign in to access the CMS.');
         const payload = await response.json();
@@ -115,7 +117,7 @@
 
     if (button.dataset.action === 'load') {
       button.disabled = true;
-      fetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { credentials: 'include', headers: headers() })
+      apiFetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { headers: headers() })
         .then((response) => response.json())
         .then((payload) => {
           if (!payload.ok) throw new Error(payload.message || 'Unable to load content.');
@@ -138,7 +140,7 @@
     if (button.dataset.action === 'delete') {
       if (!window.confirm('Delete this content item?')) return;
       button.disabled = true;
-      fetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { method: 'DELETE', credentials: 'include', headers: headers() })
+      apiFetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { method: 'DELETE', headers: headers() })
         .then((response) => response.json())
         .then((payload) => {
           if (!payload.ok) throw new Error(payload.message || 'Delete failed.');
@@ -152,7 +154,7 @@
 
   /* ---------- check authentication ---------- */
   function checkAuth() {
-    fetch('/api/admin/session', { credentials: 'include' })
+    apiFetch('/api/admin/session')
       .then((response) => {
         if (response.ok) {
           showDashboard();
@@ -177,7 +179,7 @@
     try {
       const payload = Object.fromEntries(new FormData(editor).entries());
       payload.type = typeSelect.value;
-      const response = await fetch('/api/cms', {
+      const response = await apiFetch('/api/cms', {
         method: 'POST',
         credentials: 'include',
         headers: Object.assign({ 'Content-Type': 'application/json' }, headers()),

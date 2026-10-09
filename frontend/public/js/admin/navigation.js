@@ -1,4 +1,4 @@
-import { toast } from './shared.js';
+import { apiFetch, toast } from './shared.js';
 
 // Admin navigation configuration
 const adminSections = [
@@ -78,7 +78,7 @@ function generateSidebar() {
 // Handle signout
 async function handleSignout() {
   try {
-    const response = await fetch('/api/admin/session', {
+    const response = await apiFetch('/api/admin/session', {
       method: 'DELETE',
     });
     if (response.ok) {
@@ -98,11 +98,11 @@ async function loadUserInfo() {
   if (!userNameEl) return;
 
   try {
-    const response = await fetch('/api/admin/session');
+    const response = await apiFetch('/api/admin/session');
     if (response.ok) {
       const data = await response.json();
-      if (data.ok && data.user) {
-        userNameEl.textContent = data.user.name || data.user.email || 'Admin';
+      if (data.ok && data.admin) {
+        userNameEl.textContent = data.admin.name || data.admin.email || 'Admin';
       }
     }
   } catch (error) {

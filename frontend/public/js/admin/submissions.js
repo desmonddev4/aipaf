@@ -1,13 +1,16 @@
-import { authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, setBusy, statusBadge, toast, getSelectedIds, updateSelectAllCheckbox, toggleAllCheckboxes } from './shared.js';
+import { apiFetch, authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, setBusy, statusBadge, toast, getSelectedIds, updateSelectAllCheckbox, toggleAllCheckboxes } from './shared.js';
 
 export function initSubmissions({ showLogin }) {
   const tableSelect = document.querySelector('#admin-table');
   const statusSelect = document.querySelector('#admin-status');
   const searchInput = document.querySelector('#admin-search');
   const tableContainer = document.querySelector('#admin-table-container');
+  if (!tableContainer || !statusSelect || !searchInput) return { refresh() {} };
+
   let searchTimer;
   let refreshSeq = 0;
   let selectAllCheckbox = null;
+  const selectedTable = () => tableSelect?.value || 'members';
 
   const humanize = (field) => field.replace(/_/g, ' ');
   const isDateField = (field) => /(_at|date)$/i.test(field);
@@ -19,7 +22,7 @@ export function initSubmissions({ showLogin }) {
     }
 
     const fields = Object.keys(items[0]);
-    const isMembers = tableSelect.value === 'members';
+    const isMembers = selectedTable() === 'members';
 
     const rows = items.map((item) => {
       const cells = fields.map((field) => {
@@ -36,7 +39,7 @@ export function initSubmissions({ showLogin }) {
 
       const action = isMembers
         ? `<select aria-label="Member status" data-action="status" data-id="${escapeHtml(item.id)}"><option value="unverified">Unverified</option><option value="pending">Pending</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="expired">Expired</option></select>`
-        : `<button type="button" data-action="handled" data-id="${escapeHtml(item.id)}" data-table="${escapeHtml(tableSelect.value)}">Mark handled</button>`;
+        : `<button type="button" data-action="handled" data-id="${escapeHtml(item.id)}" data-table="${escapeHtml(selectedTable())}">Mark handled</button>`;
 
       return `<tr>${cell('Select', '<input type="checkbox" data-bulk-select data-id="' + escapeHtml(item.id) + '">')}${cells}${cell('Action', `<div class="row-actions">${action}</div>`)}</tr>`;
     }).join('');
@@ -69,7 +72,7 @@ export function initSubmissions({ showLogin }) {
       button.addEventListener('click', async () => {
         setBusy(button, true);
         try {
-          const response = await fetch(`/api/admin/submissions?table=${tableSelect.value}`, {
+          const response = await apiFetch(`/api/admin/submissions?table=${selectedTable()}`, {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'mark-handled', id: button.dataset.id }),
@@ -92,7 +95,7 @@ export function initSubmissions({ showLogin }) {
       select.addEventListener('change', async () => {
         select.disabled = true;
         try {
-          const response = await fetch('/api/admin/members', {
+          const response = await apiFetch('/api/admin/members', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'update-status', id: select.dataset.id, status: select.value }),
@@ -112,16 +115,17 @@ export function initSubmissions({ showLogin }) {
 
   function refresh() {
     const seq = ++refreshSeq;
-    const endpoint = tableSelect.value === 'members' ? '/api/admin/members' : '/api/admin/submissions';
+    const table = selectedTable();
+    const endpoint = table === 'members' ? '/api/admin/members' : '/api/admin/submissions';
     const params = new URLSearchParams({
-      table: tableSelect.value,
+      table,
       status: statusSelect.value,
       search: searchInput.value,
       limit: '100',
     });
-    if (tableSelect.value === 'members') params.delete('table');
+    if (table === 'members') params.delete('table');
     tableContainer.classList.add('is-loading');
-    fetch(`${endpoint}?${params}`, { headers: authHeaders() })
+    apiFetch(`${endpoint}?${params}`, { headers: authHeaders() })
       .then(async (response) => {
         if (response.status === 401) throw new Error('Invalid or expired key.');
         const data = await readJson(response);
@@ -133,25 +137,25 @@ export function initSubmissions({ showLogin }) {
       .finally(() => { if (seq === refreshSeq) tableContainer.classList.remove('is-loading'); });
   }
 
-  tableSelect.addEventListener('change', refresh);
+  tableSelect?.addEventListener('change', refresh);
   statusSelect.addEventListener('change', refresh);
   searchInput.addEventListener('input', () => {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(refresh, 250);
   });
-  document.querySelector('#admin-refresh').addEventListener('click', refresh);
+  document.querySelector('#admin-refresh')?.addEventListener('click', refresh);
 
-  document.querySelector('#admin-export').addEventListener('click', async (event) => {
+  document.querySelector('#admin-export')?.addEventListener('click', async (event) => {
     const button = event.currentTarget;
     setBusy(button, true);
     try {
-      const response = await fetch(`/api/admin/submissions?table=${tableSelect.value}&format=csv`, { headers: authHeaders() });
+      const response = await apiFetch(`/api/admin/submissions?table=${selectedTable()}&format=csv`, { headers: authHeaders() });
       if (!response.ok) throw new Error('Unable to export submissions.');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `${tableSelect.value}.csv`;
+      anchor.download = `${selectedTable()}.csv`;
       anchor.click();
       URL.revokeObjectURL(url);
       toast('Export downloaded.', 'ok');
@@ -163,14 +167,14 @@ export function initSubmissions({ showLogin }) {
   });
 
   // Bulk actions handler
-  document.querySelector('#bulk-actions').addEventListener('click', async () => {
+  document.querySelector('#bulk-actions')?.addEventListener('click', async () => {
     const selectedIds = getSelectedIds(tableContainer);
     if (selectedIds.length === 0) {
       toast('No items selected.', 'err');
       return;
     }
 
-    const isMembers = tableSelect.value === 'members';
+    const isMembers = selectedTable() === 'members';
     const action = isMembers ? 'bulk-update-status' : 'bulk-mark-handled';
 
     if (isMembers) {
@@ -186,7 +190,7 @@ export function initSubmissions({ showLogin }) {
 
         setBusy(document.querySelector('#bulk-actions'), true);
         try {
-          const response = await fetch('/api/admin/members', {
+          const response = await apiFetch('/api/admin/members', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action, ids: selectedIds, status: newStatus }),
@@ -205,7 +209,7 @@ export function initSubmissions({ showLogin }) {
 
         setBusy(document.querySelector('#bulk-actions'), true);
         try {
-          const response = await fetch('/api/admin/members', {
+          const response = await apiFetch('/api/admin/members', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'export-data', ids: selectedIds }),
@@ -235,7 +239,7 @@ export function initSubmissions({ showLogin }) {
 
       setBusy(document.querySelector('#bulk-actions'), true);
       try {
-        const response = await fetch(`/api/admin/submissions?table=${tableSelect.value}`, {
+        const response = await apiFetch(`/api/admin/submissions?table=${selectedTable()}`, {
           method: 'POST',
           headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
           body: JSON.stringify({ action, ids: selectedIds }),

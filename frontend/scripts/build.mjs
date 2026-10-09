@@ -1,5 +1,5 @@
 // Zero-dependency static build for Vercel.
-// Wraps every file in src/pages/ with src/partials/layout.html and copies public/ to dist/.
+// Wraps page and admin fragments with src/partials/layout.html and copies public/ to dist/.
 // Page metadata is the JSON comment on the first line of each page file.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, cpSync, existsSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 const SITE_URL = process.env.SITE_URL || 'https://aipafgh.org'; // TODO: set SITE_URL in Vercel once the domain is final
-const API_BASE_URL = process.env.API_BASE_URL || 'https://aipaf-website.onrender.com'; // Render backend URL
+const API_BASE_URL = process.env.API_BASE_URL || 'https://aipaf-backend.onrender.com'; // Render backend URL
 
 const read = (p) => readFileSync(join(root, p), 'utf8');
 const partial = (name) => read(`src/partials/${name}.html`);
@@ -31,6 +31,27 @@ const header = partial('Navbar');
 const footer = partial('footer');
 const year = new Date().getFullYear();
 
+function renderPage(raw, meta, slug, adminStyles = '') {
+  const nav = header.replace(/\{\{cur:([a-z-]+)\}\}/g, (_, item) => (item === meta.nav ? 'aria-current="page"' : ''));
+  const content = /^(admin(?:-|$)|cms-admin$)/.test(slug)
+    ? raw.replace(/<main(?=[\s>])/g, '<div').replace(/<\/main>/g, '</div>')
+    : raw;
+  const pageLayout = adminStyles
+    ? layout.replace('</head>', `<style>\n${adminStyles}\n</style>\n</head>`)
+    : layout;
+  return pageLayout
+    .replace('{{header}}', nav)
+    .replace('{{footer}}', footer)
+    .replace('{{content}}', content)
+    .replaceAll('{{title}}', meta.title)
+    .replaceAll('{{description}}', meta.description)
+    .replaceAll('{{canonical}}', SITE_URL + (slug === 'index' ? '' : `/${slug}`))
+    .replaceAll('{{siteUrl}}', SITE_URL)
+    .replaceAll('{{bodyClass}}', meta.bodyClass || 'page-inner')
+    .replaceAll('{{robots}}', meta.noindex ? 'noindex, follow' : 'index, follow')
+    .replaceAll('{{year}}', String(year));
+}
+
 // Process pages from src/pages (require metadata and layout)
 const pageDirectory = 'src/pages';
 const pages = readdirSync(join(root, pageDirectory))
@@ -46,33 +67,28 @@ for (const page of pages) {
   const content = raw.slice(m[0].length);
   const slug = page.file.replace(/\.html$/, '');
   const urlPath = slug === 'index' ? '/' : `/${slug}`;
-
-  const nav = header.replace(/\{\{cur:([a-z-]+)\}\}/g, (_, s) => (s === meta.nav ? 'aria-current="page"' : ''));
-
-  const html = layout
-    .replace('{{header}}', nav)
-    .replace('{{footer}}', footer)
-    .replace('{{content}}', content)
-    .replaceAll('{{title}}', meta.title)
-    .replaceAll('{{description}}', meta.description)
-    .replaceAll('{{canonical}}', SITE_URL + (urlPath === '/' ? '' : urlPath))
-    .replaceAll('{{siteUrl}}', SITE_URL)
-    .replaceAll('{{bodyClass}}', meta.bodyClass || 'page-inner')
-    .replaceAll('{{robots}}', meta.noindex ? 'noindex, follow' : 'index, follow')
-    .replaceAll('{{year}}', String(year));
-
-  writeFileSync(join(dist, page.file), html);
+  writeFileSync(join(dist, page.file), renderPage(content, meta, slug));
   if (!meta.noindex) sitemap.push(SITE_URL + (urlPath === '/' ? '/' : urlPath));
 }
 
-// Copy admin pages as-is (standalone HTML files)
+// Admin templates are content fragments except for the standalone login page.
 const adminDir = 'src/admin/pages';
 if (existsSync(join(root, adminDir))) {
   const adminPages = readdirSync(join(root, adminDir))
     .filter((file) => file.endsWith('.html'));
   for (const file of adminPages) {
     const raw = read(`${adminDir}/${file}`);
-    writeFileSync(join(dist, file), raw);
+    if (/^\s*<!doctype html>/i.test(raw)) {
+      writeFileSync(join(dist, file), raw);
+      continue;
+    }
+
+    const metadataMatch = raw.match(/^<!--(\{[\s\S]*?\})-->/);
+    if (!metadataMatch) throw new Error(`${file}: missing JSON metadata comment on first line`);
+    const meta = JSON.parse(metadataMatch[1]);
+    const slug = file.replace(/\.html$/, '');
+    const adminStyles = slug === 'cms-admin' ? '' : read('public/css/admin.css');
+    writeFileSync(join(dist, file), renderPage(raw.slice(metadataMatch[0].length), meta, slug, adminStyles));
   }
 }
 

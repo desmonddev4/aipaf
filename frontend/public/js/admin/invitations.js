@@ -1,4 +1,4 @@
-import { cell, escapeHtml } from './shared.js';
+import { apiFetch, cell, escapeHtml } from './shared.js';
 
 async function fetchInvitations(status, limit) {
   try {
@@ -6,7 +6,7 @@ async function fetchInvitations(status, limit) {
     if (status) params.set('status', status);
     if (limit) params.set('limit', limit);
 
-    const response = await fetch(`/api/member-invitations?${params.toString()}`);
+    const response = await apiFetch(`/api/member-invitations?${params.toString()}`);
     if (!response.ok) throw new Error('Failed to fetch invitations');
     const data = await response.json();
     if (!data.ok) throw new Error(data.message || 'Failed to load invitations');
@@ -19,7 +19,7 @@ async function fetchInvitations(status, limit) {
 
 async function sendInvitation(id) {
   try {
-    const response = await fetch('/api/member-invitations?action=send', {
+    const response = await apiFetch('/api/member-invitations?action=send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
@@ -36,7 +36,7 @@ async function sendInvitation(id) {
 
 async function createManualInvitation(data) {
   try {
-    const response = await fetch('/api/member-invitations?action=create', {
+    const response = await apiFetch('/api/member-invitations?action=create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)

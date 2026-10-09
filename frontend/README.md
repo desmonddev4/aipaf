@@ -70,9 +70,12 @@ frontend/
 The build script (`scripts/build.mjs`) will:
 1. Clean the `dist` directory
 2. Copy `public/` to `dist/`
-3. Wrap each page in `src/pages/` with the layout template
-4. Generate sitemap.xml and robots.txt
-5. Update API_BASE_URL in config.js based on environment variable
+3. Wrap pages in `src/pages/` and admin content templates in `src/admin/pages/` with the shared layout; keep the standalone admin login page intact
+4. Embed the shared admin console stylesheet in generated admin pages
+5. Generate sitemap.xml and robots.txt
+6. Update API_BASE_URL in config.js based on environment variable
+
+Admin API requests use `API_BASE_URL` and include session cookies. Set it to the Render backend URL in Vercel if overriding the default.
 
 ## Environment Variables
 

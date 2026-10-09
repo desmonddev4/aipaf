@@ -5,6 +5,9 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/favicon.ico", "destination": "/img/favicon.svg" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

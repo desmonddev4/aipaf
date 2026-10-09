@@ -1,4 +1,4 @@
-import { authHeaders, readJson, setBusy, toast } from './shared.js';
+import { apiFetch, authHeaders, readJson, setBusy, toast } from './shared.js';
 
 export function initCertificates() {
   const form = document.querySelector('#certificate-form');
@@ -51,7 +51,7 @@ export function initCertificates() {
     try {
       const data = Object.fromEntries(new FormData(form).entries());
       data.id = [Date.now(), Math.random().toString(16).slice(2)].join('-');
-      const response = await fetch('/api/certificates?action=issue', {
+      const response = await apiFetch('/api/certificates?action=issue', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
         body: JSON.stringify(data),

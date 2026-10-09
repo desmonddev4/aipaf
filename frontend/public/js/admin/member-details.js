@@ -1,8 +1,8 @@
-import { escapeHtml } from './shared.js';
+import { apiFetch, escapeHtml } from './shared.js';
 
 async function fetchMemberDetails(id) {
   try {
-    const response = await fetch(`/api/admin/members?id=${id}`);
+    const response = await apiFetch(`/api/admin/members?id=${id}`);
     if (!response.ok) throw new Error('Failed to fetch member details');
     const data = await response.json();
     if (!data.ok) throw new Error(data.message || 'Failed to load member details');
@@ -15,7 +15,7 @@ async function fetchMemberDetails(id) {
 
 async function updateMemberDetails(id, data) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'update-details', id, ...data })
@@ -32,7 +32,7 @@ async function updateMemberDetails(id, data) {
 
 async function changeMemberGrade(id, grade) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'change-grade', id, grade })
@@ -49,7 +49,7 @@ async function changeMemberGrade(id, grade) {
 
 async function changeMemberRole(id, role) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'change-role', id, role })
@@ -66,7 +66,7 @@ async function changeMemberRole(id, role) {
 
 async function verifyMemberEmail(id) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'verify-email', id })
@@ -83,7 +83,7 @@ async function verifyMemberEmail(id) {
 
 async function resetMemberPassword(id, newPassword) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'reset-password', id, newPassword })
@@ -100,7 +100,7 @@ async function resetMemberPassword(id, newPassword) {
 
 async function deleteMemberAccount(id) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'delete-account', id })
@@ -117,7 +117,7 @@ async function deleteMemberAccount(id) {
 
 async function mergeMemberAccounts(sourceId, targetId) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'merge-accounts', sourceId, targetId })
@@ -134,7 +134,7 @@ async function mergeMemberAccounts(sourceId, targetId) {
 
 async function exportMemberData(ids) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'export-data', ids })
@@ -151,7 +151,7 @@ async function exportMemberData(ids) {
 
 async function updateAdminNotes(id, notes) {
   try {
-    const response = await fetch('/api/admin/members', {
+    const response = await apiFetch('/api/admin/members', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'update-admin-notes', id, notes })

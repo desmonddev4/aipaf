@@ -1,4 +1,4 @@
-import { cell, escapeHtml } from './shared.js';
+import { apiFetch, cell, escapeHtml } from './shared.js';
 
 async function fetchApplications(status, grade, limit) {
   try {
@@ -7,7 +7,7 @@ async function fetchApplications(status, grade, limit) {
     if (grade) params.set('grade', grade);
     params.set('limit', limit);
 
-    const response = await fetch(`/api/admin/applications?${params.toString()}`);
+    const response = await apiFetch(`/api/admin/applications?${params.toString()}`);
     if (!response.ok) throw new Error('Failed to fetch applications');
     const data = await response.json();
     if (!data.ok) throw new Error(data.message || 'Failed to load applications');
@@ -20,7 +20,7 @@ async function fetchApplications(status, grade, limit) {
 
 async function updateApplicationStatus(id, status, notes) {
   try {
-    const response = await fetch('/api/admin/applications', {
+    const response = await apiFetch('/api/admin/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'update-status', id, status, notes })
@@ -102,7 +102,7 @@ export function initApplications() {
     params.set('format', 'csv');
 
     try {
-      const response = await fetch(`/api/admin/applications?${params.toString()}`);
+      const response = await apiFetch(`/api/admin/applications?${params.toString()}`);
       if (!response.ok) throw new Error('Unable to export applications.');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);

@@ -1,4 +1,4 @@
-import { cell, escapeHtml } from './shared.js';
+import { apiFetch, cell, escapeHtml } from './shared.js';
 
 async function fetchExaminations(status, limit) {
   try {
@@ -6,7 +6,7 @@ async function fetchExaminations(status, limit) {
     if (status) params.set('status', status);
     params.set('limit', limit);
 
-    const response = await fetch(`/api/admin/examinations?${params.toString()}`);
+    const response = await apiFetch(`/api/admin/examinations?${params.toString()}`);
     if (!response.ok) throw new Error('Failed to fetch examinations');
     const data = await response.json();
     if (!data.ok) throw new Error(data.message || 'Failed to load examinations');
@@ -19,7 +19,7 @@ async function fetchExaminations(status, limit) {
 
 async function createExamination(data) {
   try {
-    const response = await fetch('/api/admin/examinations', {
+    const response = await apiFetch('/api/admin/examinations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'create', ...data })
@@ -36,7 +36,7 @@ async function createExamination(data) {
 
 async function updateExamination(id, data) {
   try {
-    const response = await fetch('/api/admin/examinations', {
+    const response = await apiFetch('/api/admin/examinations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'update', id, ...data })
@@ -53,7 +53,7 @@ async function updateExamination(id, data) {
 
 async function deleteExamination(id) {
   try {
-    const response = await fetch('/api/admin/examinations', {
+    const response = await apiFetch('/api/admin/examinations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'delete', id })

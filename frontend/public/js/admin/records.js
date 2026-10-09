@@ -1,4 +1,4 @@
-import { authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, statusBadge, toast } from './shared.js';
+import { apiFetch, authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, statusBadge, toast } from './shared.js';
 
 export function initRecords() {
   const typeSelect = document.querySelector('#records-type');
@@ -77,7 +77,7 @@ export function initRecords() {
     status.textContent = 'Loading records…';
     table.classList.add('is-loading');
     try {
-      const response = await fetch(`/api/admin/records?type=${typeSelect.value}&limit=${limitSelect.value}`, { headers: authHeaders() });
+      const response = await apiFetch(`/api/admin/records?type=${typeSelect.value}&limit=${limitSelect.value}`, { headers: authHeaders() });
       const payload = await readJson(response);
       if (seq !== loadSeq) return; // a newer request has replaced this one
       if (!response.ok) throw new Error(payload.message || 'Unable to load records.');
@@ -94,7 +94,7 @@ export function initRecords() {
 
   async function update(action, payload, successMessage, fallbackMessage) {
     try {
-      const response = await fetch('/api/admin/records', {
+      const response = await apiFetch('/api/admin/records', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
         body: JSON.stringify({ action, ...payload }),

@@ -16,11 +16,10 @@ import { toast } from './shared.js';
 // Initialize navigation
 initNavigation();
 
-// Get current section from URL
-const currentSection = window.location.pathname.replace('/admin-', '').replace('/', '') || 'overview';
+const has = (selector) => Boolean(document.querySelector(selector));
 
 // Initialize modules based on current section
-const submissions = initSubmissions({
+const submissions = has('#admin-table-container') ? initSubmissions({
   showLogin: (message) => {
     if (message === 'Invalid or expired key.') {
       window.location.replace('/admin-login');
@@ -28,34 +27,22 @@ const submissions = initSubmissions({
     }
     toast(message || 'Unable to load admin data.', 'err');
   },
-});
+}) : { refresh() {} };
 
-// Always initialize these as they're used across sections
-initRecords();
-initCertificates();
-initMemberDetails();
+if (has('#records-table-container')) initRecords();
+if (has('#certificate-form')) initCertificates();
+if (has('#admin-table-container')) initMemberDetails();
 initSession({
   onAuthenticated: submissions.refresh,
 });
 
 // Initialize section-specific modules
-if (currentSection === 'overview') {
-  initOverview();
-} else if (currentSection === 'members') {
-  // Submissions handles members
-} else if (currentSection === 'payments') {
-  initPayments();
-} else if (currentSection === 'examinations') {
-  initExaminations();
-} else if (currentSection === 'certificates') {
-  // Certificates already initialized
-} else if (currentSection === 'invitations') {
-  initInvitations();
-} else if (currentSection === 'applications') {
-  initApplications();
-} else if (currentSection === 'records') {
-  // Records already initialized
-} else if (currentSection === 'data-deletion') {
+if (has('#overview-report')) initOverview();
+if (has('#invitation-status')) initInvitations();
+if (has('#payment-status')) initPayments();
+if (has('#exam-status')) initExaminations();
+if (has('#apps-table-container')) initApplications();
+if (has('#deletions-table-container')) {
   initDataDeletion({
     showLogin: (message) => {
       if (message === 'Invalid or expired key.') {
@@ -65,7 +52,8 @@ if (currentSection === 'overview') {
       toast(message || 'Unable to load admin data.', 'err');
     },
   });
-} else if (currentSection === 'audit') {
+}
+if (has('#audit-table-container')) {
   initAudit({
     showLogin: (message) => {
       if (message === 'Invalid or expired key.') {
@@ -75,7 +63,4 @@ if (currentSection === 'overview') {
       toast(message || 'Unable to load admin data.', 'err');
     },
   });
-} else {
-  // Default to overview
-  initOverview();
 }

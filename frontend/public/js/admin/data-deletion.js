@@ -1,4 +1,4 @@
-import { authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, setBusy, statusBadge, toast } from './shared.js';
+import { apiFetch, authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, setBusy, statusBadge, toast } from './shared.js';
 
 export function initDataDeletion({ showLogin }) {
   const statusSelect = document.querySelector('#deletion-status');
@@ -46,7 +46,7 @@ export function initDataDeletion({ showLogin }) {
 
         setBusy(button, true);
         try {
-          const response = await fetch('/api/admin/data-deletion', {
+          const response = await apiFetch('/api/admin/data-deletion', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'process', id: button.dataset.id }),
@@ -75,7 +75,7 @@ export function initDataDeletion({ showLogin }) {
 
         setBusy(button, true);
         try {
-          const response = await fetch('/api/admin/data-deletion', {
+          const response = await apiFetch('/api/admin/data-deletion', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'update-status', id: button.dataset.id, status: newStatus, adminNotes }),
@@ -104,7 +104,7 @@ export function initDataDeletion({ showLogin }) {
     tableContainer.classList.add('is-loading');
     statusSpan.textContent = 'Loading...';
 
-    fetch(`/api/admin/data-deletion?${params}`, { headers: authHeaders() })
+    apiFetch(`/api/admin/data-deletion?${params}`, { headers: authHeaders() })
       .then(async (response) => {
         if (response.status === 401) throw new Error('Invalid or expired key.');
         const data = await readJson(response);
@@ -135,7 +135,7 @@ export function initDataDeletion({ showLogin }) {
     });
 
     try {
-      const response = await fetch(`/api/admin/data-deletion?${params}`, { headers: authHeaders() });
+      const response = await apiFetch(`/api/admin/data-deletion?${params}`, { headers: authHeaders() });
       if (!response.ok) throw new Error('Unable to export deletion requests.');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);

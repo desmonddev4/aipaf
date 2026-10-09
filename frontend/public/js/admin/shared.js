@@ -1,3 +1,9 @@
+import { apiUrl } from '../config.js';
+
+export function apiFetch(path, options = {}) {
+  return fetch(apiUrl(path), { credentials: 'include', ...options });
+}
+
 export function authHeaders() {
   return {};
 }

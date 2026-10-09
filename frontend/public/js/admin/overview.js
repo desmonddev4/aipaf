@@ -5,7 +5,7 @@ const percent = (part, whole) => (whole ? Math.round((part / whole) * 100) : 0);
 
 async function fetchOverviewReport() {
   try {
-    const response = await fetch(apiUrl('/api/admin/reports?action=overview'));
+    const response = await fetch(apiUrl('/api/admin/reports?action=overview'), { credentials: 'include' });
     if (!response.ok) throw new Error('Failed to fetch report');
     const data = await response.json();
     if (!data.ok) throw new Error(data.message || 'Failed to load report');

@@ -1,4 +1,4 @@
-import { authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, setBusy, statusBadge, toast } from './shared.js';
+import { apiFetch, authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, setBusy, statusBadge, toast } from './shared.js';
 
 export function initAudit({ showLogin }) {
   const roleSelect = document.querySelector('#audit-role');
@@ -55,7 +55,7 @@ export function initAudit({ showLogin }) {
     tableContainer.classList.add('is-loading');
     statusSpan.textContent = 'Loading...';
 
-    fetch(`/api/admin/audit?${params}`, { headers: authHeaders() })
+    apiFetch(`/api/admin/audit?${params}`, { headers: authHeaders() })
       .then(async (response) => {
         if (response.status === 401) throw new Error('Invalid or expired key.');
         const data = await readJson(response);
@@ -93,7 +93,7 @@ export function initAudit({ showLogin }) {
     });
 
     try {
-      const response = await fetch(`/api/admin/audit?${params}`, { headers: authHeaders() });
+      const response = await apiFetch(`/api/admin/audit?${params}`, { headers: authHeaders() });
       if (!response.ok) throw new Error('Unable to export audit log.');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);

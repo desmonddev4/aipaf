@@ -1,4 +1,4 @@
-import { cell, escapeHtml } from './shared.js';
+import { apiFetch, cell, escapeHtml } from './shared.js';
 
 async function fetchPayments(filters) {
   try {
@@ -9,7 +9,7 @@ async function fetchPayments(filters) {
     if (filters.search) params.set('search', filters.search);
     if (filters.limit) params.set('limit', filters.limit);
 
-    const response = await fetch(`/api/admin/payments?${params.toString()}`);
+    const response = await apiFetch(`/api/admin/payments?${params.toString()}`);
     if (!response.ok) throw new Error('Failed to fetch payments');
     const data = await response.json();
     if (!data.ok) throw new Error(data.message || 'Failed to load payments');
@@ -22,7 +22,7 @@ async function fetchPayments(filters) {
 
 async function updatePaymentStatus(id, status) {
   try {
-    const response = await fetch('/api/admin/payments', {
+    const response = await apiFetch('/api/admin/payments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'update-status', id, status })
@@ -39,7 +39,7 @@ async function updatePaymentStatus(id, status) {
 
 async function processRefund(id) {
   try {
-    const response = await fetch('/api/admin/payments', {
+    const response = await apiFetch('/api/admin/payments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'refund', id })
