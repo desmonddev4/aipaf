@@ -61,6 +61,7 @@ export default async function handler(request) {
       if (!result.ok) return jsonResponse({ ok: false, message: result.message }, 400);
       return jsonResponse(result);
     } catch (error) {
+      console.error('member-invitations error:', error);
       return jsonResponse({ ok: false, message: 'Unable to check invitation.' }, 503);
     }
   }
@@ -154,6 +155,7 @@ export default async function handler(request) {
         },
       });
     } catch (error) {
+     console.error('member-invitations error:', error);
       console.error('Accept invitation failed:', error);
       return jsonResponse({ ok: false, message: 'Unable to accept invitation.' }, 503);
     }
@@ -190,6 +192,7 @@ export default async function handler(request) {
       const rows = await withDb(async (client) => client.query(sql, [...params, limit, offset]));
       return jsonResponse({ ok: true, items: rows.rows, count: rows.rows.length, role: auth.role });
     } catch (error) {
+      console.error('member-invitations error:', error);
       return jsonResponse({ ok: false, message: 'Unable to load invitations.' }, 503);
     }
   }
@@ -253,6 +256,7 @@ export default async function handler(request) {
       if (!result.ok) return jsonResponse({ ok: false, message: result.message }, 400);
       return jsonResponse(result);
     } catch (error) {
+      console.error('member-invitations error:', error);
       return jsonResponse({ ok: false, message: 'Unable to send invitation.' }, 503);
     }
   }
@@ -297,6 +301,7 @@ export default async function handler(request) {
       if (!result.ok) return jsonResponse({ ok: false, message: result.message }, 400);
       return jsonResponse({ ok: true, message: 'Invitation created successfully.', token: result.token });
     } catch (error) {
+      console.error('member-invitations error:', error);
       return jsonResponse({ ok: false, message: 'Unable to create invitation.' }, 503);
     }
   }
@@ -360,6 +365,7 @@ export default async function handler(request) {
       if (!result.ok) return jsonResponse({ ok: false, message: result.message }, 400);
       return jsonResponse({ ok: true, message: `Sent ${result.sent} invitations.`, sent: result.sent });
     } catch (error) {
+      console.error('member-invitations error:', error);
       return jsonResponse({ ok: false, message: 'Unable to send invitations.' }, 503);
     }
   }
@@ -393,6 +399,7 @@ export default async function handler(request) {
 
       return jsonResponse({ ok: true, message: `Updated ${result.updated} invitations.`, updated: result.updated });
     } catch (error) {
+      console.error('member-invitations error:', error);
       return jsonResponse({ ok: false, message: 'Unable to update invitations.' }, 503);
     }
   }
@@ -420,6 +427,7 @@ export default async function handler(request) {
       }
       return jsonResponse({ ok: true, message: `Deleted ${deleted.rowCount} invitation${deleted.rowCount === 1 ? '' : 's'}.`, deleted: deleted.rowCount });
     } catch (error) {
+      console.error('member-invitations error:', error);
       return jsonResponse({ ok: false, message: 'Unable to delete invitations.' }, 503);
     }
   }
