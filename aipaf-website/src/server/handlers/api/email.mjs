@@ -29,8 +29,8 @@ function getTransporter() {
 
 function emailConfig() {
   return {
-    from: process.env.EMAIL_FROM || 'AIPAF Website <noreply@aipaf.africa>',
-    to: process.env.SECRETARIAT_EMAIL || 'info@aipaf.africa',
+    from: process.env.EMAIL_FROM || 'AIPAF Website <noreply@aipafgh.org>',
+    to: process.env.SECRETARIAT_EMAIL || 'info@aipafgh.org',
   };
 }
 
@@ -57,6 +57,32 @@ export async function sendSubmissionEmails({ kind, data, recordId }) {
   });
 
   return { status: 'sent', id: result.messageId || null };
+}
+
+export async function sendVerificationEmail({ email, code }) {
+  const transport = getTransporter();
+  if (!transport) return { status: 'skipped', reason: 'SMTP is not configured.' };
+
+  const config = emailConfig();
+  const subject = 'Your AIPAF Admin Verification Code';
+  const text = [
+    'Your verification code is:',
+    '',
+    code,
+    '',
+    'This code will expire in 10 minutes.',
+    '',
+    'If you did not request this code, you can safely ignore this email.',
+    'Do not reply to this automated message.',
+  ].join('\n');
+
+  await transport.sendMail({
+    from: config.from,
+    to: email,
+    subject,
+    text,
+  });
+  return { status: 'sent' };
 }
 
 export async function sendAcknowledgementEmail({ kind, data }) {
