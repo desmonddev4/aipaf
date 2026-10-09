@@ -125,7 +125,7 @@ export default async function handler(request) {
           `INSERT INTO members (email, password_hash, first_name, last_name, membership_grade, membership_status, email_verified)
            VALUES ($1, $2, $3, $4, $5, 'active', TRUE)
            RETURNING id, email, first_name, last_name, membership_grade`,
-          [inv.email, passwordHash, firstName, lastName, inv.proposed_grade]
+          [inv.email, passwordHash, firstName, lastName, inv.proposed_grade === 'graduate' ? 'student' : inv.proposed_grade]
         );
 
         // Update invitation status
@@ -154,6 +154,7 @@ export default async function handler(request) {
         },
       });
     } catch (error) {
+      console.error('Accept invitation failed:', error);
       return jsonResponse({ ok: false, message: 'Unable to accept invitation.' }, 503);
     }
   }
