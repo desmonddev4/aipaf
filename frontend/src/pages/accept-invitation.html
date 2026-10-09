@@ -135,6 +135,28 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
 .form-status { margin-top: .7rem; min-height: 1.2rem; font-size: .85rem; text-align: center; }
 .ai-links { margin-top: .9rem; padding-top: .9rem; font-size: .84rem; text-align: center; gap: .4rem; }
 @media (max-height: 40rem) { .ai-page { place-items: start center; } }
+
+/* multi-step flow */
+.stepper { display: flex; align-items: center; justify-content: center; gap: .35rem; margin: 0 0 1.1rem; padding: 0; list-style: none; }
+.stepper li { display: flex; align-items: center; gap: .35rem; color: var(--mute); font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.stepper li::after { content: ""; width: 1.6rem; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .18); }
+.stepper li:last-child::after { display: none; }
+.stepper b { display: grid; place-items: center; width: 1.55rem; height: 1.55rem; border-radius: 50%; border: 1px solid var(--line); background: rgba(255, 255, 255, .08); font-size: .72rem; }
+.stepper li.is-active { color: #fff; }
+.stepper li.is-active b { border-color: var(--gold); background: linear-gradient(135deg, #f2ac1f, #d28503); color: #2c1b00; }
+.stepper li.is-done b { border-color: transparent; background: #3fbf6b; color: #04210f; }
+.stepper li.is-done::after { background: #3fbf6b; }
+.stepper span { display: none; }
+.stepper li.is-active span { display: inline; }
+.step { animation: rise .35s cubic-bezier(.22, .8, .3, 1) both; }
+.step[hidden] { display: none; }
+.step-title { margin: 0 0 .9rem; font: 500 1.05rem var(--serif); text-align: center; }
+.step-actions { display: flex; gap: .6rem; margin-top: 1rem; }
+.step-actions .btn { width: auto; flex: 1; }
+.step-actions .btn-ghost { flex: 0 0 auto; padding-inline: 1.1rem; }
+.ai-details { margin-bottom: 1rem; }
+.ai-check { font-size: .84rem; margin: .4rem 0 .2rem; }
+.ai-card:has(.ai-steps:not([hidden])) { width: min(100%, 28rem); }
 </style>
 </head>
 <body>
@@ -147,8 +169,9 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
 
     <div id="loading" class="ai-state" role="status"><div class="spinner"></div><p class="lead" style="margin:0">Checking your invitation…</p></div>
 
-    <div id="invitation-form-container" class="ai-grid" hidden>
-      <div class="ai-intro">
+    <div id="invitation-form-container" class="ai-steps" hidden>
+      <ol class="stepper" id="stepper" aria-label="Progress"><li><b>1</b><span>Welcome</span></li><li><b>2</b><span>Password</span></li><li><b>3</b><span>Confirm</span></li></ol>
+      <div class="ai-intro step" id="step-intro">
       <h1>Welcome, <span id="first-name"></span>.</h1>
       <p class="lead">You have been invited to join the African Institute of Project Assurance and Forensics. Create a password to activate your account.</p>
 
@@ -157,12 +180,15 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
         <div><span>Invited as</span><strong><b class="ai-grade" id="grade-display"></b></strong></div>
         <div id="qualification-container"><span>Qualification</span><strong id="qualification-display"></strong></div>
       </div>
-      <p class="meta">Questions? Contact the <a href="/contact">Secretariat</a>.</p>
+      <p class="meta" style="margin-top:.8rem">Questions? Contact the <a href="/contact">Secretariat</a>.</p>
+      <div class="step-actions"><button class="btn" type="button" id="start-btn">Get started</button></div>
       </div>
 
       <form id="accept-form" novalidate>
+        <div class="step" id="step-pw" hidden>
+        <h2 class="step-title">Create your password</h2>
         <div class="field">
-          <label for="password">Create your password</label>
+          <label for="password">Password</label>
           <div class="pw"><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required><button type="button" data-toggle aria-label="Show password" aria-pressed="false"><svg class="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.6 19 2 12 2 12a18 18 0 0 1 4.1-5M9.9 5.2A9.8 9.8 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div>
           <div class="ai-meter" id="meter" data-s="0" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
           <p class="ai-hint">At least 8 characters. Mix letters, numbers and symbols for a stronger password.</p>
@@ -171,11 +197,16 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
           <label for="confirm-password">Confirm password</label>
           <div class="pw"><input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required><button type="button" data-toggle aria-label="Show password" aria-pressed="false"><svg class="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.6 19 2 12 2 12a18 18 0 0 1 4.1-5M9.9 5.2A9.8 9.8 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div>
         </div>
+        <div class="step-actions"><button class="btn btn-ghost" type="button" data-back>Back</button><button class="btn" type="button" id="pw-next">Continue</button></div>
+        </div>
+        <div class="step" id="step-confirm" hidden>
+        <h2 class="step-title">Almost there</h2>
         <label class="ai-check" for="consent">
           <input id="consent" name="consent" type="checkbox" required>
           <span>I accept the <a href="/privacy" target="_blank" rel="noopener">privacy notice</a> and agree to the <a href="/media/AIPAF_Code%20of%20Professional%20Conduct.docx" target="_blank" download>Code of Professional Conduct</a>.</span>
         </label>
-        <button class="btn" type="submit">Accept invitation &amp; create account</button>
+        <div class="step-actions"><button class="btn btn-ghost" type="button" data-back>Back</button><button class="btn" type="submit">Create account</button></div>
+        </div>
         <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
       </form>
     </div>
@@ -195,7 +226,6 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
     </div>
   </div>
 </main>
-<button class="ai-scroll" id="scroll-hint" type="button" hidden>Scroll down <span aria-hidden="true">↓</span></button>
 
 <script type="module">
 import { apiUrl } from '/js/config.js';
@@ -212,6 +242,15 @@ function show(which, message) {
   if (message) $('error-message').textContent = message;
 }
 function say(text, kind) { status.className = `form-status${kind ? ` ${kind}` : ''}`; status.textContent = text; }
+const stepEls = () => ['step-intro', 'step-pw', 'step-confirm'].map($);
+let curStep = 0;
+function go(i) {
+  curStep = i;
+  stepEls().forEach((el, k) => { el.hidden = k !== i; });
+  document.querySelectorAll('#stepper li').forEach((d, k) => { d.classList.toggle('is-active', k === i); d.classList.toggle('is-done', k < i); });
+  say('');
+  if (i === 1) $('password').focus({ preventScroll: true });
+}
 async function json(response) { try { return await response.json(); } catch { return {}; } }
 
 async function check() {
@@ -227,7 +266,7 @@ async function check() {
     if (inv.qualification) $('qualification-display').textContent = inv.qualification;
     else $('qualification-container').hidden = true;
     show('invitation-form-container');
-    $('password').focus();
+    go(0);
   } catch {
     show('error-container', 'We could not reach the server. Please try again in a moment.');
   }
@@ -251,12 +290,21 @@ $('password').addEventListener('input', (event) => {
   $('meter').dataset.s = v ? String(Math.max(score, 1)) : '0';
 });
 
+function checkPasswords() {
+  if ($('password').value.length < 8) { say('Password must be at least 8 characters.'); return false; }
+  if ($('password').value !== $('confirm-password').value) { say('Passwords do not match.'); return false; }
+  return true;
+}
+$('start-btn').addEventListener('click', () => go(1));
+$('pw-next').addEventListener('click', () => { if (checkPasswords()) go(2); });
+form.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => go(curStep - 1)));
+form.addEventListener('keydown', (e) => { if (e.key === 'Enter' && curStep === 1 && e.target.tagName !== 'BUTTON') { e.preventDefault(); if (checkPasswords()) go(2); } });
+
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const password = $('password').value;
   const confirmPassword = $('confirm-password').value;
-  if (password.length < 8) return say('Password must be at least 8 characters.');
-  if (password !== confirmPassword) return say('Passwords do not match.');
+  if (!checkPasswords()) return go(1);
   if (!$('consent').checked) return say('You must accept the privacy notice and code of conduct.');
 
   submit.disabled = true;
@@ -280,18 +328,6 @@ form.addEventListener('submit', async (event) => {
 
 check();
 
-(function () {
-  var hint = document.getElementById('scroll-hint');
-  function check() {
-    var box = document.getElementById('invitation-form-container');
-    var more = box && !box.hidden && (window.scrollY + innerHeight < document.documentElement.scrollHeight - 80);
-    hint.hidden = !more;
-  }
-  hint.addEventListener('click', function () { document.getElementById('password').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
-  addEventListener('scroll', check, { passive: true });
-  addEventListener('resize', check);
-  setInterval(check, 700);
-})();
 </script>
 </body>
 </html>

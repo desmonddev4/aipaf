@@ -118,7 +118,7 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rg
 .ai-card.wide { width: min(100%, 40rem); }
 .fgrid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 1rem; }
 .fgrid .full { grid-column: 1 / -1; }
-@media (max-width: 34rem) { .fgrid { grid-template-columns: 1fr; } }
+@media (max-width: 28rem) { .fgrid { grid-template-columns: 1fr; } }
 .ai-state { display: grid; justify-items: center; gap: .8rem; text-align: center; padding: .5rem 0; }
 .ai-hint { margin-top: .35rem; color: var(--mute); font-size: .8rem; }
 /* sign-in layout: compact, centred, fits one screen */
@@ -147,7 +147,29 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
 .form-status { margin-top: .7rem; min-height: 1.2rem; font-size: .85rem; text-align: center; }
 .ai-links { margin-top: .9rem; padding-top: .9rem; font-size: .84rem; text-align: center; gap: .4rem; }
 @media (max-height: 40rem) { .ai-page { place-items: start center; } }
-.ai-card.wide { width: min(100%, 36rem); }
+.ai-card.wide { width: min(100%, 28rem); }
+
+/* multi-step flow */
+.stepper { display: flex; align-items: center; justify-content: center; gap: .35rem; margin: 0 0 1.1rem; padding: 0; list-style: none; }
+.stepper li { display: flex; align-items: center; gap: .35rem; color: var(--mute); font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.stepper li::after { content: ""; width: 1.6rem; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .18); }
+.stepper li:last-child::after { display: none; }
+.stepper b { display: grid; place-items: center; width: 1.55rem; height: 1.55rem; border-radius: 50%; border: 1px solid var(--line); background: rgba(255, 255, 255, .08); font-size: .72rem; }
+.stepper li.is-active { color: #fff; }
+.stepper li.is-active b { border-color: var(--gold); background: linear-gradient(135deg, #f2ac1f, #d28503); color: #2c1b00; }
+.stepper li.is-done b { border-color: transparent; background: #3fbf6b; color: #04210f; }
+.stepper li.is-done::after { background: #3fbf6b; }
+.stepper span { display: none; }
+.stepper li.is-active span { display: inline; }
+.step { animation: rise .35s cubic-bezier(.22, .8, .3, 1) both; }
+.step[hidden] { display: none; }
+.step-title { margin: 0 0 .9rem; font: 500 1.05rem var(--serif); text-align: center; }
+.step-actions { display: flex; gap: .6rem; margin-top: 1rem; }
+.step-actions .btn { width: auto; flex: 1; }
+.step-actions .btn-ghost { flex: 0 0 auto; padding-inline: 1.1rem; }
+.ai-details { margin-bottom: 1rem; }
+.ai-check { font-size: .84rem; margin: .4rem 0 .2rem; }
+@media (max-height: 52rem) { .ai-brand small, .lead { display: none; } .ai-brand { margin-bottom: .7rem; } }
 </style>
 </head>
 <body>
@@ -159,18 +181,33 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
     </div>
     <h1>Create your account</h1>
     <p class="lead">Register for secure member access to AIPAF services.</p>
+    <ol class="stepper" id="stepper" aria-label="Progress"><li><b>1</b><span>Account</span></li><li><b>2</b><span>Security</span></li><li><b>3</b><span>Profile</span></li></ol>
     <form id="f" novalidate>
-      <div class="fgrid">
-        <div class="field"><label for="fn">First name</label><input id="fn" name="firstName" type="text" required maxlength="100" autocomplete="given-name"></div>
-        <div class="field"><label for="ln">Last name</label><input id="ln" name="lastName" type="text" required maxlength="100" autocomplete="family-name"></div>
-        <div class="field full"><label for="em">Email</label><input id="em" name="email" type="email" required maxlength="254" autocomplete="email"></div>
-        <div class="field full"><label for="pw">Password</label><div class="pw"><input id="pw" name="password" type="password" autocomplete="new-password" required minlength="8"><button type="button" aria-label="Show password" aria-pressed="false"><svg class="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.6 19 2 12 2 12a18 18 0 0 1 4.1-5M9.9 5.2A9.8 9.8 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div></div>
-        <div class="field"><label for="co">Country</label><input id="co" name="country" type="text" maxlength="80"></div>
-        <div class="field"><label for="og">Organisation</label><input id="og" name="organisation" type="text" maxlength="150"></div>
-        <div class="field full"><label for="ds">Designation</label><input id="ds" name="designation" type="text" maxlength="150"></div>
+      <div class="step">
+        <h2 class="step-title">Who are you?</h2>
+        <div class="fgrid">
+          <div class="field"><label for="fn">First name</label><input id="fn" name="firstName" type="text" required maxlength="100" autocomplete="given-name"></div>
+          <div class="field"><label for="ln">Last name</label><input id="ln" name="lastName" type="text" required maxlength="100" autocomplete="family-name"></div>
+          <div class="field full"><label for="em">Email</label><input id="em" name="email" type="email" required maxlength="254" autocomplete="email"></div>
+        </div>
+        <div class="step-actions"><button class="btn" type="button" data-next>Continue</button></div>
       </div>
-      <p class="ai-hint" style="margin:-.4rem 0 1rem">Use at least 8 characters.</p>
-      <button class="btn" type="submit" id="b">Create account</button>
+      <div class="step" hidden>
+        <h2 class="step-title">Secure your account</h2>
+        <div class="field"><label for="pw">Password</label><div class="pw"><input id="pw" name="password" type="password" autocomplete="new-password" required minlength="8"><button type="button" aria-label="Show password" aria-pressed="false"><svg class="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.6 19 2 12 2 12a18 18 0 0 1 4.1-5M9.9 5.2A9.8 9.8 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div>
+          <div class="ai-meter" id="meter" data-s="0" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <p class="ai-hint">At least 8 characters. Mix letters, numbers and symbols for a stronger password.</p></div>
+        <div class="step-actions"><button class="btn btn-ghost" type="button" data-back>Back</button><button class="btn" type="button" data-next>Continue</button></div>
+      </div>
+      <div class="step" hidden>
+        <h2 class="step-title">About you <span style="color:var(--mute);font-size:.8rem">(optional)</span></h2>
+        <div class="fgrid">
+          <div class="field"><label for="co">Country</label><input id="co" name="country" type="text" maxlength="80" autocomplete="country-name"></div>
+          <div class="field"><label for="og">Organisation</label><input id="og" name="organisation" type="text" maxlength="150" autocomplete="organization"></div>
+          <div class="field full"><label for="ds">Designation</label><input id="ds" name="designation" type="text" maxlength="150" autocomplete="organization-title"></div>
+        </div>
+        <div class="step-actions"><button class="btn btn-ghost" type="button" data-back>Back</button><button class="btn" type="submit" id="b">Create account</button></div>
+      </div>
       <p class="form-status" role="status" aria-live="polite"></p>
     </form>
     <div class="ai-links"><span>Already have an account? <a href="/member-login">Sign in</a></span><a href="/member-forgot-password">Reset password</a></div>
@@ -184,18 +221,56 @@ function togglePw(root) { root.querySelectorAll('.pw button').forEach((b) => b.a
 
 const f = document.getElementById('f'), st = f.querySelector('.form-status'), b = document.getElementById('b');
 togglePw(f);
+
+function makeSteps(root, onChange) {
+  const steps = [...root.querySelectorAll('.step')];
+  const dots = [...document.querySelectorAll('#stepper li')];
+  let cur = 0;
+  function go(i) {
+    cur = i;
+    steps.forEach((s, k) => { s.hidden = k !== i; });
+    dots.forEach((d, k) => { d.classList.toggle('is-active', k === i); d.classList.toggle('is-done', k < i); });
+    const first = steps[i].querySelector('input:not([type=checkbox]), select');
+    if (first) first.focus({ preventScroll: true });
+    if (onChange) onChange(i);
+  }
+  go(0);
+  return { go, get index() { return cur; }, count: steps.length };
+}
+const flow = makeSteps(f);
+const sayErr = (t, el) => { st.className = 'form-status'; st.textContent = t; if (el) el.focus(); };
+function validate(i) {
+  st.textContent = '';
+  if (i === 0) {
+    if (!f.firstName.value.trim() || !f.lastName.value.trim()) return sayErr('Enter your first and last name.', f.firstName.value.trim() ? f.lastName : f.firstName), false;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) return sayErr('Enter a valid email address.', f.email), false;
+  }
+  if (i === 1 && f.password.value.length < 8) return sayErr('Password must be at least 8 characters.', f.password), false;
+  return true;
+}
+f.querySelectorAll('[data-next]').forEach((n) => n.addEventListener('click', () => { if (validate(flow.index)) flow.go(flow.index + 1); }));
+f.querySelectorAll('[data-back]').forEach((n) => n.addEventListener('click', () => { st.textContent = ''; flow.go(flow.index - 1); }));
+f.password.addEventListener('input', (e) => {
+  const v = e.target.value; let sc = 0;
+  if (v.length >= 12) sc++; if (/[a-z]/.test(v) && /[A-Z]/.test(v)) sc++; if (/\d/.test(v)) sc++; if (/[^A-Za-z0-9]/.test(v)) sc++;
+  document.getElementById('meter').dataset.s = v ? String(Math.max(sc, 1)) : '0';
+});
+f.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' || e.target.tagName === 'BUTTON') return;
+  if (flow.index < flow.count - 1) { e.preventDefault(); if (validate(flow.index)) flow.go(flow.index + 1); }
+});
 f.addEventListener('submit', async (e) => {
   e.preventDefault(); st.className = 'form-status'; st.textContent = '';
   const data = Object.fromEntries(new FormData(f).entries());
-  if (!data.firstName.trim() || !data.lastName.trim() || !data.email.trim()) { st.textContent = 'Name and email are required.'; return; }
-  if (data.password.length < 8) { st.textContent = 'Password must be at least 8 characters.'; return; }
+  if (!validate(0)) return flow.go(0);
+  if (!validate(1)) return flow.go(1);
   setBusy(b, true);
   try {
     const r = await api('/api/members', { action: 'register', ...data });
     const p = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(p.message || 'Unable to create the account.');
     st.className = 'form-status ok'; st.textContent = p.message || 'Account created. Please check your email.';
-    f.reset(); setTimeout(() => { location.href = '/member-login'; }, 2500);
+    f.reset(); flow.go(0); setTimeout(() => { location.href = '/member-login'; }, 2500);
   } catch (err) { st.textContent = err.message; }
   setBusy(b, false, 'Create account');
 });
