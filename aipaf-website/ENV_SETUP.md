@@ -25,15 +25,23 @@ Secret key for signing session cookies. Generate with:
 openssl rand -base64 32
 ```
 
-### Email Configuration (Resend)
+### Email Configuration (Zoho Mail SMTP)
 ```
-RESEND_API_KEY=re_your_api_key_here
+SMTP_HOST=smtp.zoho.com
+SMTP_PORT=465
+SMTP_USER=noreply@your-domain.example
+SMTP_PASS=your-zoho-app-password
 EMAIL_FROM=AIPAF Website <noreply@your-domain.example>
 SECRETARIAT_EMAIL=info@your-domain.example
 ```
-- `RESEND_API_KEY`: Your Resend API key for transactional emails
-- `EMAIL_FROM`: From address for automated emails
+- `SMTP_HOST`: Zoho Mail SMTP server (smtp.zoho.com)
+- `SMTP_PORT`: SMTP port (465 for SSL, 587 for TLS)
+- `SMTP_USER`: Your Zoho email address for sending emails
+- `SMTP_PASS`: Your Zoho password or app-specific password
+- `EMAIL_FROM`: From address for automated emails (must match SMTP_USER)
 - `SECRETARIAT_EMAIL`: Secretariat email address for form submission notifications
+
+**Note**: For better security, create an app-specific password in Zoho Mail instead of using your main password.
 
 ### Admin Authentication
 ```

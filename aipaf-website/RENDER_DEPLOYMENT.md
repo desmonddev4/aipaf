@@ -89,8 +89,11 @@ In your Render web service (Settings → Environment Variables), add the followi
 ```text
 SITE_URL=https://your-app-name.onrender.com
 SESSION_SECRET=a_very_long_random_string_at_least_32_chars
-RESEND_API_KEY=re_xxxxxxxxxxxxx
-EMAIL_FROM=AIPAF Website <noreply@your-domain.com>
+SMTP_HOST=smtp.zoho.com
+SMTP_PORT=465
+SMTP_USER=your-email@aipafgh.org
+SMTP_PASS=your-zoho-app-password
+EMAIL_FROM=AIPAF Website <noreply@aipafgh.org>
 SECRETARIAT_EMAIL=info@aipafgh.org
 ADMIN_SECRETARIAT_KEY=a_very_long_random_string_at_least_32_chars
 ADMIN_COUNCIL_KEY=a_different_very_long_random_string_at_least_32_chars
@@ -114,15 +117,50 @@ Run this command to generate secure random strings:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-## Configure Email (Resend)
+## Configure Email (Zoho Mail)
 
-1. Create a Resend account at https://resend.com
-2. Go to API Keys and create an API key
-3. Copy the API key as `RESEND_API_KEY` in Render
-4. Configure your sending domain in Resend
-5. Add the required DNS records (SPF, DKIM, DMARC) to your domain
-6. Set `EMAIL_FROM` to use your verified domain
-7. Set `SECRETARIAT_EMAIL` to the email that should receive notifications
+The application uses Zoho Mail for sending emails via SMTP.
+
+### Get Zoho Mail SMTP Credentials
+
+1. Log in to your Zoho Mail account at https://mail.zoho.com
+2. Go to **Settings** → **Mail Accounts** → **your-email@aipafgh.org**
+3. Navigate to **SMTP Configuration** or **POP/IMAP/SMTP Access**
+4. Enable SMTP access if not already enabled
+5. Note down the SMTP settings:
+   - **SMTP Host**: `smtp.zoho.com`
+   - **SMTP Port**: `465` (SSL) or `587` (TLS)
+   - **SMTP User**: Your full email address (e.g., `noreply@aipafgh.org`)
+   - **SMTP Password**: Your Zoho account password or app-specific password
+
+### Create App-Specific Password (Recommended)
+
+For better security, create an app-specific password:
+
+1. In Zoho Mail, go to **Settings** → **Security**
+2. Find **App Passwords** or **Two-Factor Authentication**
+3. Generate a new app-specific password for the website
+4. Use this password as `SMTP_PASS` instead of your main password
+
+### Configure in Render
+
+Add these environment variables to your Render web service:
+
+```text
+SMTP_HOST=smtp.zoho.com
+SMTP_PORT=465
+SMTP_USER=noreply@aipafgh.org
+SMTP_PASS=your-app-specific-password
+EMAIL_FROM=AIPAF Website <noreply@aipafgh.org>
+SECRETARIAT_EMAIL=info@aipafgh.org
+```
+
+### Important Notes
+
+- Use a dedicated email address like `noreply@aipafgh.org` for sending automated emails
+- The `EMAIL_FROM` address must match the `SMTP_USER` for Zoho Mail
+- Zoho Mail has daily sending limits on free plans (check your plan details)
+- Ensure your domain's SPF, DKIM, and DMARC records are properly configured if using a custom domain
 
 ## Configure Paystack (Optional)
 

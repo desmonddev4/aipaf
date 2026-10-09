@@ -1,6 +1,31 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+let transporter = null;
+
+function getTransporter() {
+  if (transporter) return transporter;
+
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = process.env.SMTP_PORT;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+
+  if (!smtpHost || !smtpPort || !smtpUser || !smtpPass) {
+    return null;
+  }
+
+  transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: parseInt(smtpPort),
+    secure: parseInt(smtpPort) === 465, // true for 465, false for other ports
+    auth: {
+      user: smtpUser,
+      pass: smtpPass,
+    },
+  });
+
+  return transporter;
+}
 
 function emailConfig() {
   return {
@@ -10,7 +35,8 @@ function emailConfig() {
 }
 
 export async function sendSubmissionEmails({ kind, data, recordId }) {
-  if (!resend) return { status: 'skipped', reason: 'RESEND_API_KEY is not configured.' };
+  const transport = getTransporter();
+  if (!transport) return { status: 'skipped', reason: 'SMTP is not configured.' };
 
   const config = emailConfig();
   const subject = kind === 'contact'
@@ -22,7 +48,7 @@ export async function sendSubmissionEmails({ kind, data, recordId }) {
     ...Object.entries(data).filter(([key]) => !key.startsWith('_')).map(([key, value]) => `${key}: ${value}`),
   ].join('\n');
 
-  const result = await resend.emails.send({
+  const result = await transport.sendMail({
     from: config.from,
     to: config.to,
     replyTo: data.email,
@@ -30,12 +56,12 @@ export async function sendSubmissionEmails({ kind, data, recordId }) {
     text,
   });
 
-  if (result.error) throw new Error(result.error.message || 'Email delivery failed.');
-  return { status: 'sent', id: result.data?.id || null };
+  return { status: 'sent', id: result.messageId || null };
 }
 
 export async function sendAcknowledgementEmail({ kind, data }) {
-  if (!resend || !data.email) return { status: 'skipped', reason: 'RESEND_API_KEY is not configured.' };
+  const transport = getTransporter();
+  if (!transport || !data.email) return { status: 'skipped', reason: 'SMTP is not configured.' };
 
   const config = emailConfig();
   let subject, text;
@@ -127,9 +153,9 @@ export async function sendAcknowledgementEmail({ kind, data }) {
     ].join('\n');
   }
 
-  await resend.emails.send({
+  await transport.sendMail({
     from: config.from,
-    to: [data.email],
+    to: data.email,
     subject,
     text,
   });
