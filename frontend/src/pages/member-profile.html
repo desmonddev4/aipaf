@@ -174,7 +174,7 @@ to { opacity: 1; transform: none; }
 <script src="/js/member.js"></script>
 <script>
 (async function () {
-  var member = await window.Member.requireAuth();
+  var member = await window.Member.requireAuth({ fresh: true });
   document.querySelector("#who").textContent = member.email;
 
   var form = document.querySelector('#profile-form');

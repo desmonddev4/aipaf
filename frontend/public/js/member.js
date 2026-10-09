@@ -4,23 +4,55 @@ window.Member = (function () {
     return window.apiFetch(path, { method: method || 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   }
 
-  async function requireAuth() {
+  var CACHE_KEY = 'aipaf_member_cache';
+
+  function reveal() {
+    var content = document.querySelector('#page-content');
+    var gate = document.querySelector('#page-gate');
+    if (content) content.hidden = false;
+    if (gate) gate.hidden = true;
+  }
+
+  function readCache() {
+    try { return JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null'); } catch (e) { return null; }
+  }
+
+  async function fetchMember() {
+    var response = await window.apiFetch('/api/member-profile');
+    if (!response.ok) throw new Error('Authentication required.');
+    var payload = await window.readApiJson(response);
+    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(payload.member)); } catch (e) {}
+    return payload.member;
+  }
+
+  function toLogin() {
+    try { sessionStorage.removeItem(CACHE_KEY); } catch (e) {}
+    window.location.replace('/member-login');
+    return new Promise(function () {});
+  }
+
+  /* Shows the page at once when a session was already confirmed in this tab, then re-checks quietly.
+     Pass { fresh: true } to wait for the server (used where stale data would matter). */
+  async function requireAuth(options) {
+    var cached = !(options && options.fresh) && readCache();
+    if (cached) {
+      reveal();
+      fetchMember().catch(toLogin);
+      return cached;
+    }
+    var gate = document.querySelector('#page-gate');
+    if (gate) { gate.style.visibility = 'hidden'; setTimeout(function () { gate.style.visibility = ''; }, 700); }
     try {
-      var response = await window.apiFetch('/api/member-profile');
-      if (!response.ok) throw new Error('Authentication required.');
-      var payload = await window.readApiJson(response);
-      var content = document.querySelector('#page-content');
-      var gate = document.querySelector('#page-gate');
-      if (content) content.hidden = false;
-      if (gate) gate.hidden = true;
-      return payload.member;
+      var member = await fetchMember();
+      reveal();
+      return member;
     } catch (error) {
-      window.location.replace('/member-login');
-      return new Promise(function () {});
+      return toLogin();
     }
   }
 
   function signOut() {
+    try { sessionStorage.removeItem(CACHE_KEY); } catch (e) {}
     post('/api/members', { action: 'logout' }).catch(function () {}).then(function () { window.location.href = '/member-login'; });
   }
 
