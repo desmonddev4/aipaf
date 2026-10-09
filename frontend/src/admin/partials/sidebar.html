@@ -46,7 +46,7 @@ html.adm-collapsed { --adm-w: 5.2rem; }
 .adm-sidebar__list a[aria-current="page"] svg { color: #f2ac1f; }
 .adm-sidebar__list a[aria-current="page"]::before { content: ""; position: absolute; left: -1.1rem; top: .65rem; bottom: .65rem; width: 4px; border-radius: 0 4px 4px 0; background: #f2ac1f; }
 
-.adm-sidebar__footer { display: grid; gap: .7rem; padding-top: .9rem; border-top: 1px solid rgba(255, 255, 255, .1); }
+.adm-sidebar__footer { position: sticky; bottom: -1rem; z-index: 3; display: grid; gap: .7rem; margin: 0 -1.1rem -1rem; padding: .9rem 1.1rem 1rem; background: #0b2a16; border-top: 1px solid rgba(255, 255, 255, .1); }
 .adm-sidebar__user { display: flex; align-items: center; gap: .7rem; padding: .55rem .65rem; border-radius: .9rem; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); }
 .adm-sidebar__avatar { display: grid; place-items: center; flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: linear-gradient(135deg, #f2ac1f, #b86f00); color: #3a2400; }
 .adm-sidebar__user-meta { min-width: 0; }
@@ -69,7 +69,7 @@ html.adm-collapsed { --adm-w: 5.2rem; }
 }
 .adm-sidebar__badge[hidden] { display: none; }
 
-.adm-sidebar__top { display: flex; align-items: center; gap: .4rem; border-bottom: 1px solid rgba(255, 255, 255, .1); }
+.adm-sidebar__top { position: sticky; top: -1rem; z-index: 3; display: flex; align-items: center; gap: .4rem; margin: -1rem -1.1rem 0; padding: 1rem 1.1rem .6rem; background: #0b2a16; border-bottom: 1px solid rgba(255, 255, 255, .1); }
 .adm-sidebar__top .adm-sidebar__brand { flex: 1; min-width: 0; border-bottom: 0; }
 .adm-sidebar__brand span { white-space: nowrap; }
 .adm-sidebar__collapse {
@@ -106,7 +106,8 @@ html.adm-collapsed { --adm-w: 5.2rem; }
 @media (min-width: 62.01rem) {
   html.adm-collapsed .adm-sidebar { overflow: visible; padding-inline: .8rem; }
   html.adm-collapsed .adm-sidebar__collapse { transform: rotate(180deg); }
-  html.adm-collapsed .adm-sidebar__top { flex-direction: column; padding-bottom: .7rem; }
+  html.adm-collapsed .adm-sidebar__top { flex-direction: column; margin-inline: -.8rem; padding-inline: .8rem; padding-bottom: .7rem; }
+  html.adm-collapsed .adm-sidebar__footer { margin-inline: -.8rem; padding-inline: .8rem; }
   html.adm-collapsed .adm-sidebar__top .adm-sidebar__brand { flex: none; padding: .35rem 0; }
   html.adm-collapsed .adm-sidebar__brand span,
   html.adm-collapsed .adm-sidebar__text,
