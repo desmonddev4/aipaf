@@ -11,7 +11,8 @@
     "test:backend": "node --test test/backend.test.mjs",
     "db:migrate": "node scripts/db-migrate.mjs",
     "cms:add-downloads": "node scripts/add-downloads-to-cms.mjs",
-    "import:invitations": "node scripts/import-member-invitations.mjs"
+    "import:invitations": "node scripts/import-member-invitations.mjs",
+    "create-admin": "node scripts/create-admin.mjs"
   },
   "engines": { "node": ">=18" },
   "dependencies": {

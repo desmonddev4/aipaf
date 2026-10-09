@@ -1,5 +1,18 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+CREATE TABLE IF NOT EXISTS admin_users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('secretariat', 'council')),
+  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  verification_code TEXT,
+  verification_expires_at TIMESTAMPTZ,
+  last_login_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS contact_messages (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
@@ -238,6 +251,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS admin_users_email_idx ON admin_users (email);
 CREATE INDEX IF NOT EXISTS contact_messages_created_at_idx ON contact_messages (created_at DESC);
 CREATE INDEX IF NOT EXISTS membership_interests_created_at_idx ON membership_interests (created_at DESC);
 CREATE INDEX IF NOT EXISTS contact_messages_handled_at_idx ON contact_messages (handled_at);

@@ -45,15 +45,11 @@ SECRETARIAT_EMAIL=info@your-domain.example
 
 ### Admin Authentication
 ```
-ADMIN_SECRETARIAT_KEY=your-long-random-secretariat-key
-ADMIN_COUNCIL_KEY=your-long-random-council-key
+# No longer needed - admin users are now managed in the database
+# ADMIN_SECRETARIAT_KEY and ADMIN_COUNCIL_KEY are deprecated
 ```
-API keys for admin access. Generate with:
-```bash
-openssl rand -base64 32
-```
-- `ADMIN_SECRETARIAT_KEY`: Full access for Secretariat
-- `ADMIN_COUNCIL_KEY`: Read-only access for Council
+
+Admin authentication now uses email/password instead of API keys. Admin users are created and managed in the database via the `/api/admin/users` endpoint.
 
 ### Payment Configuration (Paystack)
 ```

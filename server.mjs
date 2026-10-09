@@ -59,6 +59,7 @@ async function handleApiRequest(req, res, pathname) {
     'data-deletion': () => import('./src/server/handlers/api/data-deletion.mjs').then((module) => module.default),
     'health': () => import('./src/server/handlers/api/health.mjs').then((module) => module.default),
     'admin/session': () => import('./src/server/handlers/api/admin/session.mjs').then((module) => module.default),
+    'admin/users': () => import('./src/server/handlers/api/admin/users.mjs').then((module) => module.default),
     'admin/submissions': () => import('./src/server/handlers/api/admin/submissions.mjs').then((module) => module.default),
     'admin/members': () => import('./src/server/handlers/api/admin/members.mjs').then((module) => module.default),
     'admin/payments': () => import('./src/server/handlers/api/admin/payments.mjs').then((module) => module.default),

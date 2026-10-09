@@ -58,8 +58,6 @@ This guide explains how to deploy the AIPAF website with a split architecture:
    SMTP_PASS=your_zoho_app_password
    EMAIL_FROM=AIPAF Website <info@aipafgh.org>
    SECRETARIAT_EMAIL=info@aipafgh.org
-   ADMIN_SECRETARIAT_KEY=your_long_random_secretariat_key
-   ADMIN_COUNCIL_KEY=your_long_random_council_key
    PAYMENT_WEBHOOK_SECRET=your_webhook_secret
    CERTIFICATE_SECRET=your_certificate_secret
    PAYSTACK_SECRET_KEY=sk_test_your_paystack_secret_key
@@ -77,7 +75,20 @@ This guide explains how to deploy the AIPAF website with a split architecture:
      npm run db:migrate
      ```
 
-   The schema creates the member, payment, examination, CPD, CMS, contact, and membership tables with indexes and status constraints.
+   The schema creates the member, payment, examination, CPD, CMS, contact, membership, and admin_users tables with indexes and status constraints.
+
+5. **Create First Admin User**
+   After migration, create the first admin user:
+   ```bash
+   npm run create-admin info@aipafgh.org yourSecurePassword123 secretariat
+   ```
+
+   This creates an admin with:
+   - Email: `info@aipafgh.org`
+   - Password: `yourSecurePassword123` (replace with a strong password)
+   - Role: `secretariat` (full access)
+
+   See [ADMIN_AUTHENTICATION.md](./ADMIN_AUTHENTICATION.md) for more details.
 
 5. **Note the Backend URL**
    - Your backend will be available at: `https://aipaf-backend.onrender.com`
@@ -114,6 +125,20 @@ If you prefer not to use the Blueprint:
    Add all the other required environment variables listed in step 3 above (except DATABASE_URL which you already added).
 
    **Important**: Set `FRONTEND_URL` to your Vercel domain (e.g., `https://aipafgh.org`) for better CORS security. Set to `*` during development if needed.
+
+5. **Run Database Migration**
+   Run the migration to create all tables including admin_users:
+   ```bash
+   export DATABASE_URL="paste_your_database_url_here"
+   npm run db:migrate
+   ```
+
+6. **Create First Admin User**
+   ```bash
+   npm run create-admin info@aipafgh.org yourSecurePassword123 secretariat
+   ```
+
+   See [ADMIN_AUTHENTICATION.md](./ADMIN_AUTHENTICATION.md) for more details.
 
 Then continue with the database migration step above.
 
@@ -199,12 +224,14 @@ Should return: `{"ok":true,"database":"connected"}`
 
 - [ ] All secrets are in Render environment variables (not in code)
 - [ ] All secrets are in Vercel environment variables (not in code)
-- [ ] Admin keys are long and random (32+ characters)
+- [ ] Admin passwords are strong (12+ characters, mixed case, numbers, symbols)
 - [ ] Database is not publicly accessible
 - [ ] HTTPS is enabled on both Vercel and Render (automatic)
 - [ ] Email domain is verified in Zoho Mail
 - [ ] Webhook secrets are shared only with payment provider
 - [ ] Regular backups are enabled for PostgreSQL
+- [ ] Admin users are created with appropriate roles (secretariat vs council)
+- [ ] SMTP uses app-specific passwords, not main account password
 
 ## Environment Variables Summary
 
@@ -226,12 +253,12 @@ SMTP_USER=info@aipafgh.org
 SMTP_PASS=...
 EMAIL_FROM=AIPAF Website <info@aipafgh.org>
 SECRETARIAT_EMAIL=info@aipafgh.org
-ADMIN_SECRETARIAT_KEY=...
-ADMIN_COUNCIL_KEY=...
 PAYMENT_WEBHOOK_SECRET=...
 CERTIFICATE_SECRET=...
 PAYSTACK_SECRET_KEY=sk_test_...
 ```
+
+**Note**: Admin users are now managed in the database using email/password authentication. See [ADMIN_AUTHENTICATION.md](./ADMIN_AUTHENTICATION.md) for details.
 
 ## CORS Configuration
 

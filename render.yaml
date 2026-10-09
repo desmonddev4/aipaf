@@ -43,10 +43,6 @@ services:
         value: AIPAF Website <info@aipafgh.org>
       - key: SECRETARIAT_EMAIL
         value: info@aipafgh.org
-      - key: ADMIN_SECRETARIAT_KEY
-        sync: false
-      - key: ADMIN_COUNCIL_KEY
-        sync: false
       - key: PAYMENT_WEBHOOK_SECRET
         sync: false
       - key: CERTIFICATE_SECRET
