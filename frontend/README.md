@@ -71,7 +71,7 @@ The build script (`scripts/build.mjs`) will:
 1. Clean the `dist` directory
 2. Copy `public/` to `dist/`
 3. Wrap pages in `src/pages/` and admin content templates in `src/admin/pages/` with the shared layout; keep the standalone admin login page intact
-4. Insert `src/admin/partials/sidebar.html` into admin pages and embed the shared admin console stylesheet
+4. Insert `src/admin/partials/sidebar.html` into admin pages and embed `src/admin/partials/sidebar.css` with the admin console stylesheet
 5. Generate sitemap.xml and robots.txt
 6. Update API_BASE_URL in config.js based on environment variable
 

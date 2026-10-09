@@ -30,13 +30,17 @@ const layout = partial('layout');
 const header = partial('Navbar');
 const footer = partial('footer');
 const adminSidebar = read('src/admin/partials/sidebar.html').trim();
+const adminSidebarStyles = read('src/admin/partials/sidebar.css');
 const year = new Date().getFullYear();
 
 function renderPage(raw, meta, slug, adminStyles = '') {
   const nav = header.replace(/\{\{cur:([a-z-]+)\}\}/g, (_, item) => (item === meta.nav ? 'aria-current="page"' : ''));
   const isAdminPage = /^(admin(?:-|$)|cms-admin$)/.test(slug);
   const content = isAdminPage
-    ? raw.replace(/<main(?=[\s>])/g, '<div').replace(/<\/main>/g, '</div>')
+    ? raw
+      .replace(/<main(?=[\s>])/g, '<div')
+      .replace(/<\/main>/g, '</div>')
+      .replaceAll('class="admin-content"', 'class="admin-content admin-main"')
     : raw;
   const pageLayout = adminStyles
     ? layout.replace('</head>', `<style>\n${adminStyles}\n</style>\n</head>`)
@@ -89,7 +93,7 @@ if (existsSync(join(root, adminDir))) {
     if (!metadataMatch) throw new Error(`${file}: missing JSON metadata comment on first line`);
     const meta = JSON.parse(metadataMatch[1]);
     const slug = file.replace(/\.html$/, '');
-    const adminStyles = slug === 'cms-admin' ? '' : read('public/css/admin.css');
+    const adminStyles = slug === 'cms-admin' ? '' : `${read('public/css/admin.css')}\n${adminSidebarStyles}`;
     let content = raw.slice(metadataMatch[0].length);
     if (/^admin(?:-|$)/.test(slug) && slug !== 'admin-login') {
       const sidebarPlaceholder = '<aside class="admin-sidebar" id="admin-sidebar"></aside>';

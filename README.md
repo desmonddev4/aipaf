@@ -34,7 +34,7 @@ See [SPLIT_DEPLOYMENT.md](./SPLIT_DEPLOYMENT.md) for deployment setup and
 frontend/
   src/pages/          Public pages
   src/admin/pages/    Admin and CMS pages
-  src/admin/partials/ Reusable admin layout pieces, including sidebar.html
+  src/admin/partials/ Reusable admin sidebar HTML and CSS
   src/partials/       Shared public page shell, navbar, and footer
   public/             Frontend assets and admin JavaScript/styles
   scripts/build.mjs   Static-site build

@@ -54,7 +54,7 @@ function generateSidebar() {
     const isActive = section.id === active;
     return `
       <li>
-        <a href="${section.path}" class="nav-link${isActive ? ' nav-link-active' : ''}"${isActive ? ' aria-current="page"' : ''}>
+        <a href="${section.path}"${isActive ? ' aria-current="page"' : ''}>
           ${icons[section.icon]}
           <span>${section.label}</span>
         </a>
