@@ -114,21 +114,48 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rg
 .ai-links a { font-weight: 600; text-decoration: none; }
 .ai-links a:hover { text-decoration: underline; }
 .btn .spinner { width: 1rem; height: 1rem; border-width: 2px; }
+
+/* sign-in layout: compact, centred, fits one screen */
+body { font-size: .94rem; }
+.ai-page { padding: clamp(.75rem, 3vw, 2rem); }
+.ai-card { width: min(100%, 26rem); padding: clamp(1.4rem, 4vw, 2rem); border-radius: 1.4rem; }
+.ai-brand { flex-direction: column; text-align: center; gap: .55rem; margin-bottom: 1.1rem; }
+.ai-logo { display: grid; place-items: center; width: 3.6rem; height: 3.6rem; border-radius: 50%; background: #fff; box-shadow: 0 .6rem 1.4rem -.5rem rgba(0, 0, 0, .6), 0 0 0 4px rgba(255, 255, 255, .12); }
+.ai-logo img { width: 2.3rem; height: 2.3rem; }
+.ai-brand strong { font-size: 1rem; }
+.ai-brand small { font-size: .66rem; }
+h1 { font-size: clamp(1.4rem, 5vw, 1.7rem); text-align: center; }
+.lead { margin: .4rem 0 1.2rem; font-size: .88rem; text-align: center; }
+.field { margin-bottom: .85rem; gap: .35rem; }
+.field label { font-size: .7rem; }
+input:not([type]), input[type="password"], input[type="text"], input[type="email"] { padding: .72rem .95rem; font-size: .92rem; }
+.pw input { padding-right: 3rem; }
+.pw button { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; padding: 0; right: .35rem; border-radius: 50%; }
+.pw button:hover { background: rgba(255, 255, 255, .12); }
+.pw button:focus-visible { outline: 2px solid var(--gold); }
+.pw svg { width: 1.15rem; height: 1.15rem; }
+.pw .eye-off { display: none; }
+.pw button[aria-pressed="true"] .eye { display: none; }
+.pw button[aria-pressed="true"] .eye-off { display: block; }
+.btn { padding: .78rem 1.1rem; font-size: .92rem; }
+.form-status { margin-top: .7rem; min-height: 1.2rem; font-size: .85rem; text-align: center; }
+.ai-links { margin-top: .9rem; padding-top: .9rem; font-size: .84rem; text-align: center; gap: .4rem; }
+@media (max-height: 40rem) { .ai-page { place-items: start center; } }
 </style>
 </head>
 <body>
 <main class="ai-page">
   <section class="ai-card">
     <div class="ai-brand">
-      <img src="/img/logo-mark.svg" alt="" width="45" height="45">
+      <span class="ai-logo"><img src="/img/logo-mark.svg" alt="" width="37" height="37"></span>
       <span><strong>AIPAF</strong><small>Member portal</small></span>
     </div>
-    <h1>Member sign in.</h1>
+    <h1>Member sign in</h1>
     <p class="lead">Access your AIPAF member profile, records and certificates.</p>
     <form id="member-login-form" novalidate>
       <div class="field"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="email" required></div>
       <div class="field"><label for="login-password">Password</label>
-        <div class="pw"><input id="login-password" name="password" type="password" autocomplete="current-password" required><button type="button" id="toggle-pw" aria-label="Show password">Show</button></div>
+        <div class="pw"><input id="login-password" name="password" type="password" autocomplete="current-password" required><button type="button" id="toggle-pw" aria-label="Show password" aria-pressed="false"><svg class="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.6 19 2 12 2 12a18 18 0 0 1 4.1-5M9.9 5.2A9.8 9.8 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div>
       </div>
       <button class="btn" type="submit" id="login-btn">Sign in</button>
       <p class="form-status" role="status" aria-live="polite"></p>
@@ -149,7 +176,7 @@ const pw = document.getElementById('login-password');
 document.getElementById('toggle-pw').addEventListener('click', (e) => {
   const show = pw.type === 'password';
   pw.type = show ? 'text' : 'password';
-  e.currentTarget.textContent = show ? 'Hide' : 'Show';
+  e.currentTarget.setAttribute('aria-pressed', String(show));
   e.currentTarget.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
 });
 form.addEventListener('submit', async (event) => {
