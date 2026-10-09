@@ -11,8 +11,8 @@ The website is frontend only. Everything below is the work left for the backend.
 - [ ] Send a notification email to the Secretariat and an acknowledgement email to the sender. Pick a transactional email provider (Resend, Postmark, SendGrid, or SES).
 - [ ] Store each submission in a database table so nothing is lost if an email fails.
 - [ ] Return `200` with JSON on success and a non-200 status on failure. The frontend shows a thank-you message on `ok` and an error message otherwise.
-- [ ] Then switch the forms on: put the endpoint paths in `public/js/config.js` (`ENDPOINTS.contact`, `ENDPOINTS.membership`). Until then the forms open the visitor's email app, addressed to `CONTACT_EMAIL`.
-- [ ] Replace the placeholder address `info@aipaf.africa` with the Institute's real address in `public/js/config.js` and `src/pages/contact.html`.
+- [x] Then switch the forms on: put the endpoint paths in `public/js/config.js` (`ENDPOINTS.contact`, `ENDPOINTS.membership`). Until then the forms open the visitor's email app, addressed to `CONTACT_EMAIL`.
+- [x] Replace the placeholder address `info@aipaf.africa` with the Institute's real address in `public/js/config.js` and `src/pages/contact.html`.
 
 Suggested approach on Vercel: add an `api/` folder with serverless functions, or use a separate API service and set the endpoints to its full URL (then allow the site's origin with CORS).
 

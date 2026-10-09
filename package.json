@@ -1,0 +1,22 @@
+{
+  "name": "aipaf-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "African Institute of Project Assurance and Forensics - corporate website (frontend)",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "start": "node server.mjs",
+    "test:backend": "node --test test/backend.test.mjs",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "cms:add-downloads": "node scripts/add-downloads-to-cms.mjs",
+    "import:invitations": "node scripts/import-member-invitations.mjs",
+    "create-admin": "node scripts/create-admin.mjs"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "pg": "^8.13.0",
+    "nodemailer": "^6.9.7"
+  }
+}

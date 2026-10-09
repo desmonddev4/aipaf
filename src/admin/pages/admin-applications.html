@@ -1,0 +1,38 @@
+<!--{"title":"Admin Applications | AIPAF","description":"Review and approve membership applications for grade changes.","nav":"admin","noindex":true}-->
+<div class="admin">
+  <main class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+    <div class="admin-content">
+      <header class="band">
+        <div class="wrap">
+          <p class="eyebrow">Membership workflow</p>
+          <h1>Member applications</h1>
+          <p class="lead">Review and approve membership applications for grade changes.</p>
+        </div>
+      </header>
+
+      <div class="shell">
+        <div class="wrap pull">
+          <section class="dashboard is-open" id="admin-dashboard" aria-label="Admin dashboard">
+            <div class="toolbar">
+              <div class="toolbar-actions">
+                <div class="field"><label for="app-status">Status filter</label><select id="app-status"><option value="">All statuses</option><option value="draft">Draft</option><option value="submitted">Submitted</option><option value="under_review">Under Review</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="withdrawn">Withdrawn</option></select></div>
+                <div class="field"><label for="app-grade">Grade filter</label><select id="app-grade"><option value="">All grades</option><option value="student">Student</option><option value="affiliate">Affiliate</option><option value="associate">Associate</option><option value="member">Member</option><option value="fellow">Fellow</option></select></div>
+                <div class="field"><label for="app-limit">Limit</label><select id="app-limit"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></div>
+              </div>
+              <div class="toolbar-actions">
+                <button class="btn btn-ghost" type="button" id="apps-refresh">Load applications</button>
+                <button class="btn btn-ghost" type="button" id="apps-export">Export CSV</button>
+                <span class="records-status" id="apps-status" role="status" aria-live="polite"></span>
+              </div>
+            </div>
+            <div id="apps-table-container" class="table-scroll"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="/js/admin/index.js"></script>

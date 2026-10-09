@@ -1,0 +1,441 @@
+<!--{"title":"Member profile | AIPAF","description":"Manage your AIPAF member profile and membership services.","nav":"members","noindex":true}-->
+<style>
+  .member-page { min-height: calc(100vh - 72px); background: #f3f7f4; color: #172d25; }
+  .member-page .wrap { width: min(980px, calc(100% - 2rem)); margin-inline: auto; }
+  .member-page .shell { padding: clamp(3rem, 7vw, 6rem) 0; }
+  .member-page h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.1rem, 7vw, 4rem); line-height: 1; }
+  .member-page .lead { margin: 1rem 0 2rem; color: #46574f; }
+  .card { padding: clamp(1.5rem, 5vw, 2.5rem); background: #fff; border: 1px solid rgba(15,92,63,.12); border-radius: 24px; box-shadow: 0 30px 60px -38px rgba(10,40,28,.45); }
+  .member-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr 1.2fr; }
+  .avatar { width: 110px; height: 110px; border-radius: 50%; display: grid; place-items: center; background: #0f5c3f; color: #fff; font-size: 2.3rem; font-weight: 700; }
+  .meta { color: #46574f; }
+  .status { display: inline-block; padding: .3rem .7rem; border-radius: 999px; background: #dfeee7; color: #0f5c3f; font-size: .85rem; font-weight: 700; }
+  .status.unverified { background: #f3e7c1; color: #5d4900; }
+  .member-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .btn { display: inline-flex; min-height: 3rem; padding: .8rem 1.5rem; border: 0; border-radius: 999px; background: #0f5c3f; color: #fff; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .btn.secondary { background: #e8f0eb; color: #172d25; }
+  .member-section { margin-top: 1.25rem; }
+  .service-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mini-card { padding: 1.25rem; border: 1px solid rgba(15,92,63,.12); border-radius: 18px; background: #f8faf8; }
+  .mini-card h3 { margin: .2rem 0 .5rem; }
+  .mini-card p { margin: 0; color: #46574f; }
+  #profile-form { margin-top: 1.25rem; }
+  #security-form { margin-top: 1.25rem; }
+  .field-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .field { margin-bottom: .25rem; }
+  .field-full { grid-column: 1 / -1; }
+  label { display: block; margin-bottom: .45rem; font-weight: 600; }
+  input, select, textarea { width: 100%; padding: .8rem 1rem; border: 1.5px solid rgba(16,35,28,.15); border-radius: 12px; font: inherit; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #0f5c3f; box-shadow: 0 0 0 4px rgba(15,92,63,.12); }
+  textarea { resize: vertical; }
+  .form-status { min-height: 1.5rem; margin: 1rem 0 0; color: #b3261e; }
+  .form-status.ok { color: #12704a; }
+  .status-tag { display: inline-block; margin-left: .5rem; padding: .15rem .55rem; border-radius: 999px; background: #dfeee7; color: #0f5c3f; font-size: .75rem; font-weight: 700; }
+  .record-list { display: grid; gap: .75rem; }
+  .record-item { padding: 1rem; border: 1px solid rgba(15,92,63,.12); border-radius: 12px; background: #fff; }
+  .record-item strong { display: block; }
+  .empty { color: #46574f; }
+  .login-required { padding: 2rem; border-radius: 20px; background: #fff; text-align: center; }
+  @media (max-width: 760px) { .member-grid, .field-grid, .service-grid { grid-template-columns: 1fr; } }
+</style>
+<div class="member-page">
+  <main class="shell">
+    <div class="wrap">
+      <h1>Member profile.</h1>
+      <p class="lead">Your account, membership status, and available services.</p>
+      <div id="profile-content" hidden>
+        <div class="card member-grid">
+          <div>
+            <div class="avatar" id="profile-avatar" aria-hidden="true">A</div>
+            <p class="meta" id="profile-email"></p>
+            <p><span class="status" id="profile-status"></span></p>
+          </div>
+          <div>
+            <h2 id="profile-name"></h2>
+            <p id="profile-grade" class="meta"></p>
+            <p id="profile-organisation" class="meta"></p>
+            <p id="profile-designation" class="meta"></p>
+            <div class="member-actions">
+              <button class="btn" type="button" id="profile-toggle-edit">Edit profile</button>
+              <button class="btn secondary" type="button" id="member-verify-email-button">Verify email</button>
+              <button class="btn" type="button" id="member-signout">Sign out</button>
+            </div>
+          </div>
+        </div>
+
+        <form id="profile-form" class="card" hidden>
+          <h2>Edit profile</h2>
+          <div class="field-grid">
+            <div class="field"><label for="profile-first-name">First name</label><input id="profile-first-name" name="firstName" required></div>
+            <div class="field"><label for="profile-last-name">Last name</label><input id="profile-last-name" name="lastName" required></div>
+            <div class="field"><label for="profile-country">Country</label><input id="profile-country" name="country"></div>
+            <div class="field"><label for="profile-organisation">Organisation</label><input id="profile-organisation" name="organisation"></div>
+            <div class="field"><label for="profile-designation">Designation</label><input id="profile-designation" name="designation"></div>
+            <div class="field"><label for="profile-phone">Phone</label><input id="profile-phone" name="phone" type="tel"></div>
+            <div class="field"><label for="profile-website">Website</label><input id="profile-website" name="website" type="url"></div>
+            <div class="field"><label for="profile-linkedin">LinkedIn</label><input id="profile-linkedin" name="linkedIn" type="url"></div>
+            <div class="field"><label for="profile-public-email">Public email</label><input id="profile-public-email" name="publicEmail" type="email"></div>
+            <div class="field field-full"><label for="profile-bio">Bio</label><textarea id="profile-bio" name="bio" rows="5" maxlength="2000"></textarea></div>
+          </div>
+          <div class="member-actions">
+            <button class="btn" type="submit">Save changes</button>
+            <button class="btn secondary" type="button" id="profile-cancel">Cancel</button>
+          </div>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <form id="security-form" class="card">
+          <h2>Account security</h2>
+          <div class="field-grid">
+            <div class="field"><label for="current-password">Current password</label><input id="current-password" name="currentPassword" type="password" autocomplete="current-password" required></div>
+            <div class="field"><label for="new-password">New password</label><input id="new-password" name="newPassword" type="password" autocomplete="new-password" minlength="12" required></div>
+          </div>
+          <p class="meta">Use at least 12 characters. Do not reuse the current password.</p>
+          <div class="member-actions">
+            <button class="btn" type="submit">Update password</button>
+          </div>
+          <p class="form-status" id="security-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <section class="card member-section" aria-labelledby="membership-services-title">
+          <h2 id="membership-services-title">Membership services</h2>
+          <div class="service-grid">
+            <article class="mini-card">
+              <h3>Payments</h3>
+              <p>Create a payment record for membership, examinations, or subscriptions.</p>
+            </article>
+            <article class="mini-card">
+              <h3>Examinations</h3>
+              <p>View open examinations and register for an assessment.</p>
+            </article>
+            <article class="mini-card">
+              <h3>CPD</h3>
+              <p>Submit learning activities and track their approval status.</p>
+            </article>
+            <article class="mini-card">
+              <h3>Certificates</h3>
+              <p>View verified credentials once they are issued.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="card member-section" aria-labelledby="payment-title">
+          <h2 id="payment-title">Create a payment</h2>
+          <form id="payment-form">
+            <div class="field-grid">
+              <div class="field"><label for="payment-email">Email for payment receipt</label><input id="payment-email" name="email" type="email" autocomplete="email" required></div>
+              <div class="field"><label for="payment-amount">Amount</label><input id="payment-amount" name="amount" type="number" min="0.01" step="0.01" required></div>
+              <div class="field"><label for="payment-purpose">Purpose</label><select id="payment-purpose" name="purpose"><option value="membership">Membership</option><option value="examination">Examination</option><option value="subscription">Subscription</option><option value="other">Other</option></select></div>
+            </div>
+            <p class="meta">Payments are processed securely through Paystack. You will be redirected to Paystack to complete the transaction.</p>
+            <button class="btn" type="submit">Pay with Paystack</button>
+            <p class="form-status" id="payment-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="card member-section" aria-labelledby="examination-title">
+          <h2 id="examination-title">Examinations</h2>
+          <div id="examination-list" class="record-list"></div>
+          <p class="form-status" id="examination-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="card member-section" aria-labelledby="cpd-title">
+          <h2 id="cpd-title">Continuing professional development</h2>
+          <form id="cpd-form">
+            <div class="field-grid">
+              <div class="field"><label for="cpd-title-input">Activity title</label><input id="cpd-title-input" name="title" required></div>
+              <div class="field"><label for="cpd-category">Category</label><select id="cpd-category" name="category"><option value="education">Education</option><option value="practice">Practice</option><option value="research">Research</option><option value="service">Service</option><option value="other">Other</option></select></div>
+              <div class="field"><label for="cpd-provider">Provider</label><input id="cpd-provider" name="provider"></div>
+              <div class="field"><label for="cpd-hours">Hours</label><input id="cpd-hours" name="hours" type="number" min="0.01" step="0.01" required></div>
+              <div class="field field-full"><label for="cpd-date">Completion date</label><input id="cpd-date" name="completionDate" type="date" required></div>
+            </div>
+            <button class="btn" type="submit">Submit CPD record</button>
+            <p class="form-status" id="cpd-status" role="status" aria-live="polite"></p>
+          </form>
+          <div id="cpd-list" class="record-list"></div>
+        </section>
+
+        <section class="card member-section" aria-labelledby="certificate-title">
+          <h2 id="certificate-title">Certificates</h2>
+          <div id="certificate-list" class="record-list"></div>
+          <p class="form-status" id="certificate-status" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+      <div id="profile-required" class="login-required card">
+        <h2>Sign in required</h2>
+        <p>You need an active member account to access this page.</p>
+        <a class="btn" href="/member-login">Sign in</a>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  var token = document.cookie.split('; ').find(function (cookie) { return cookie.startsWith('aipaf_session='); });
+  var content = document.querySelector('#profile-content');
+  var required = document.querySelector('#profile-required');
+  var form = document.querySelector('#profile-form');
+  var status = form.querySelector('.form-status');
+  var memberData;
+
+  function renderProfile(member) {
+    memberData = member;
+    document.querySelector('#profile-email').textContent = member.email;
+    document.querySelector('#profile-name').textContent = member.first_name + ' ' + member.last_name;
+    document.querySelector('#profile-grade').textContent = 'Grade: ' + (member.membership_grade || 'Not assigned');
+    document.querySelector('#profile-organisation').textContent = member.organisation ? 'Organisation: ' + member.organisation : 'Organisation: Not provided';
+    document.querySelector('#profile-designation').textContent = member.designation ? 'Designation: ' + member.designation : 'Designation: Not provided';
+    document.querySelector('#profile-status').textContent = member.membership_status;
+    document.querySelector('#profile-status').className = 'status ' + (member.membership_status || 'unverified');
+    document.querySelector('#profile-avatar').textContent = (member.first_name || 'A').charAt(0).toUpperCase();
+
+    document.querySelector('#profile-first-name').value = member.first_name || '';
+    document.querySelector('#profile-last-name').value = member.last_name || '';
+    document.querySelector('#profile-country').value = member.country || '';
+    document.querySelector('#profile-organisation').value = member.organisation || '';
+    document.querySelector('#profile-designation').value = member.designation || '';
+    document.querySelector('#profile-phone').value = member.phone || '';
+    document.querySelector('#profile-website').value = member.website || '';
+    document.querySelector('#profile-linkedin').value = member.linked_in || '';
+    document.querySelector('#profile-public-email').value = member.public_email || '';
+    document.querySelector('#profile-bio').value = member.bio || '';
+  }
+
+  function loadProfile() {
+    fetch('/api/member-profile')
+      .then(function (response) { if (!response.ok) throw new Error('Authentication required.'); return window.readApiJson(response); })
+      .then(function (payload) {
+        renderProfile(payload.member);
+        content.hidden = false;
+        required.hidden = true;
+        loadServices();
+      })
+      .catch(function () { required.hidden = false; content.hidden = true; });
+  }
+
+  function renderRecords(list, container, emptyText) {
+    container.innerHTML = '';
+    if (!list.length) {
+      var empty = document.createElement('p');
+      empty.className = 'empty';
+      empty.textContent = emptyText;
+      container.appendChild(empty);
+      return;
+    }
+    list.forEach(function (item) {
+      var row = document.createElement('article');
+      row.className = 'record-item';
+      var title = document.createElement('strong');
+      title.textContent = item.name || item.title || 'Record';
+      row.appendChild(title);
+      var details = document.createElement('p');
+      details.textContent = item.code ? item.code + ' • ' : '';
+      if (item.status) details.textContent += 'Status: ' + item.status;
+      if (item.hours) details.textContent += ' • ' + item.hours + ' hours';
+      if (item.completion_date) details.textContent += ' • Completed ' + item.completion_date;
+      row.appendChild(details);
+      container.appendChild(row);
+    });
+  }
+
+  async function loadServices() {
+    try {
+      var examResponse = await fetch('/api/member-records?action=examinations');
+      var examPayload = await window.readApiJson(examResponse);
+      if (!examResponse.ok) throw new Error(examPayload.message || 'Unable to load examinations.');
+      var openExams = (examPayload.items || []).filter(function (item) { return item.status === 'open'; });
+      var examinationList = document.querySelector('#examination-list');
+      if (!openExams.length) {
+        renderRecords([], examinationList, 'No open examinations are available at the moment.');
+      } else {
+        examinationList.innerHTML = '';
+        openExams.forEach(function (exam) {
+          var row = document.createElement('article');
+          row.className = 'record-item';
+          var title = document.createElement('strong');
+          title.textContent = exam.name;
+          var details = document.createElement('p');
+          details.textContent = exam.code + ' • Opens ' + (exam.opens_at || 'immediately') + ' • Closes ' + (exam.closes_at || 'not specified');
+          var button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'btn secondary';
+          button.textContent = 'Register';
+          button.addEventListener('click', function () { registerForExamination(exam.id); });
+          row.appendChild(title); row.appendChild(details); row.appendChild(button);
+          examinationList.appendChild(row);
+        });
+      }
+
+      var cpdResponse = await fetch('/api/member-records?action=my-cpd');
+      var cpdPayload = await window.readApiJson(cpdResponse);
+      if (!cpdResponse.ok) throw new Error(cpdPayload.message || 'Unable to load CPD records.');
+      renderRecords(cpdPayload.items || [], document.querySelector('#cpd-list'), 'No CPD records submitted yet.');
+
+      var certResponse = await fetch('/api/certificates?action=my-certificates');
+      var certPayload = await window.readApiJson(certResponse);
+      if (!certResponse.ok) throw new Error(certPayload.message || 'Unable to load certificates.');
+      renderRecords((certPayload.items || []).map(function (item) {
+        return { name: item.name, status: item.grade, code: item.type.toUpperCase(), completion_date: item.issued_at };
+      }), document.querySelector('#certificate-list'), 'No certificates have been issued yet.');
+    } catch (error) {
+      document.querySelector('#examination-status').textContent = error.message;
+    }
+  }
+
+  async function registerForExamination(examinationId) {
+    var status = document.querySelector('#examination-status');
+    status.className = 'form-status'; status.textContent = 'Registering…';
+    try {
+      var response = await fetch('/api/member-records?action=register-examination', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ examinationId: examinationId })
+      });
+      var payload = await window.readApiJson(response);
+      if (!response.ok) throw new Error(payload.message || 'Unable to register for this examination.');
+      status.classList.add('ok');
+      status.textContent = 'Registration submitted.';
+      await loadServices();
+    } catch (error) {
+      status.textContent = error.message;
+    }
+  }
+
+  if (!token) { required.hidden = false; return; }
+  loadProfile();
+
+  document.querySelector('#profile-toggle-edit').addEventListener('click', function () {
+    form.hidden = false;
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.querySelector('#profile-cancel').addEventListener('click', function () {
+    status.className = 'form-status';
+    status.textContent = '';
+    form.hidden = true;
+    renderProfile(memberData);
+  });
+
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    status.className = 'form-status';
+    status.textContent = '';
+    var button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+
+    try {
+      var response = await fetch('/api/member-profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form).entries())),
+      });
+      var payload = await window.readApiJson(response);
+      if (!response.ok) throw new Error(payload.message || 'Unable to update your profile.');
+      status.classList.add('ok');
+      status.textContent = 'Profile updated.';
+      content.querySelector('#profile-organisation').textContent = 'Organisation: ' + (payload.member.organisation || 'Not provided');
+      content.querySelector('#profile-designation').textContent = 'Designation: ' + (payload.member.designation || 'Not provided');
+      await loadProfile();
+      form.hidden = true;
+    } catch (error) {
+      status.textContent = error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  document.querySelector('#security-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    var securityStatus = document.querySelector('#security-status');
+    securityStatus.className = 'form-status';
+    securityStatus.textContent = '';
+    var button = event.currentTarget.querySelector('button[type="submit"]');
+    button.disabled = true;
+
+    try {
+      var response = await fetch('/api/member-profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'change-password', ...Object.fromEntries(new FormData(event.currentTarget).entries()) }),
+      });
+      var payload = await window.readApiJson(response);
+      if (!response.ok) throw new Error(payload.message || 'Unable to update your password.');
+      securityStatus.classList.add('ok');
+      securityStatus.textContent = 'Password updated.';
+      event.currentTarget.reset();
+    } catch (error) {
+      securityStatus.textContent = error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  document.querySelector('#payment-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    var status = document.querySelector('#payment-status');
+    status.className = 'form-status';
+    status.textContent = '';
+    var button = event.currentTarget.querySelector('button[type="submit"]');
+    button.disabled = true;
+
+    try {
+      var response = await fetch('/api/member-records?action=checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget).entries()))
+      });
+      var payload = await window.readApiJson(response);
+      if (!response.ok) throw new Error(payload.message || 'Unable to create the payment record.');
+      if (payload.checkout && payload.checkout.authorizationUrl) {
+        status.classList.add('ok');
+        status.textContent = 'Redirecting you to Paystack to complete payment...';
+        window.location.href = payload.checkout.authorizationUrl;
+        return;
+      }
+      status.classList.add('ok');
+      status.textContent = 'Payment record created. Reference: ' + payload.checkout.reference + '. Awaiting provider confirmation.';
+      event.currentTarget.reset();
+    } catch (error) {
+      status.textContent = error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  document.querySelector('#cpd-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    var status = document.querySelector('#cpd-status');
+    status.className = 'form-status';
+    status.textContent = '';
+    var button = event.currentTarget.querySelector('button[type="submit"]');
+    button.disabled = true;
+
+    try {
+      var response = await fetch('/api/member-records?action=cpd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget).entries()))
+      });
+      var payload = await window.readApiJson(response);
+      if (!response.ok) throw new Error(payload.message || 'Unable to submit the CPD record.');
+      status.classList.add('ok');
+      status.textContent = 'CPD record submitted for review.';
+      event.currentTarget.reset();
+      await loadServices();
+    } catch (error) {
+      status.textContent = error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  document.querySelector('#member-verify-email-button').addEventListener('click', function () {
+    window.location.href = '/member-verify-email';
+  });
+
+  document.querySelector('#member-signout').addEventListener('click', function () {
+    document.cookie = 'aipaf_session=; Max-Age=0; Path=/; Secure; SameSite=Lax';
+    window.location.href = '/member-login';
+  });
+})();
+</script>
