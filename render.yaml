@@ -13,7 +13,6 @@ services:
     name: aipaf-backend
     env: node
     plan: free
-    rootDir: aipaf-website
     buildCommand: npm install
     startCommand: node server.mjs
     envVars:
