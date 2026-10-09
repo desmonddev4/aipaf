@@ -61,7 +61,7 @@ async function createManualInvitation(data) {
   }
 }
 
-const GRADES = ['fellow', 'member', 'associate', 'affiliate', 'graduate'];
+const GRADES = ['fellow', 'member', 'associate', 'affiliate', 'student'];
 const cap = (value) => String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

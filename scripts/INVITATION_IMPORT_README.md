@@ -18,8 +18,8 @@ No,Full name,Professional qualification,Class,Institutional affiliation and addr
 - **Full name**: Complete name of the invitee (required)
 - **Professional qualification**: Highest qualification (e.g., PhD, MSc, BSc) (optional)
 - **Class**: Membership class from Schedule of Members (required)
-  - Valid values: Fellow, Member, Associate, Affiliate, Honorary Fellow, Graduate
-  - Maps to database grades: fellow, member, associate, affiliate, affiliate (graduate)
+  - Valid values: Fellow, Member, Associate, Affiliate, Honorary Fellow, Student
+  - Maps to database grades: fellow, member, associate, affiliate, student
 - **Institutional affiliation and address for service**: Must include email address (required)
   - Email can be anywhere in this field
   - System extracts email using regex pattern
@@ -61,7 +61,7 @@ Example:
 npm run import:invitations manual john@example.com "John Doe" fellow "PhD" "University of Ghana"
 ```
 
-Valid grades: fellow, member, associate, affiliate, graduate
+Valid grades: fellow, member, associate, affiliate, student
 
 ## Environment Variables
 
@@ -118,7 +118,7 @@ Features:
 | Associate | associate |
 | Affiliate | affiliate |
 | Honorary Fellow | fellow |
-| Graduate | affiliate |
+| Student | student |
 
 ## Security Features
 

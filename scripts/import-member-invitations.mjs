@@ -27,7 +27,7 @@ function mapGradeToDb(documentClass) {
     'Associate': 'associate',
     'Affiliate': 'affiliate',
     'Honorary Fellow': 'fellow', // Honorary fellows get fellow grade
-    'Graduate': 'affiliate', // Graduates start as affiliate
+    'Student': 'student',
   };
   return mapping[documentClass] || 'affiliate';
 }
@@ -158,7 +158,7 @@ if (command === 'csv' && args[1]) {
 } else if (command === 'manual') {
   if (args.length < 6) {
     console.log('Usage: node scripts/import-member-invitations.mjs manual <email> <fullName> <grade> <qualification> <affiliation>');
-    console.log('Grades: fellow, member, associate, affiliate, graduate');
+    console.log('Grades: fellow, member, associate, affiliate, student');
     process.exit(1);
   }
   createManualInvitation(args[1], args[2], args[3], args[4], args[5]);

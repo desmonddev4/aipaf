@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS member_invitations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT NOT NULL,
   full_name TEXT NOT NULL,
-  proposed_grade TEXT NOT NULL CHECK (proposed_grade IN ('fellow', 'member', 'associate', 'affiliate', 'graduate')),
+  proposed_grade TEXT NOT NULL CHECK (proposed_grade IN ('fellow', 'member', 'associate', 'affiliate', 'student')),
   qualification TEXT,
   affiliation TEXT,
   source TEXT,
@@ -268,6 +268,9 @@ CREATE INDEX IF NOT EXISTS password_reset_tokens_member_idx ON password_reset_to
 CREATE INDEX IF NOT EXISTS email_verification_tokens_token_idx ON email_verification_tokens (token);
 CREATE INDEX IF NOT EXISTS email_verification_tokens_member_idx ON email_verification_tokens (member_id, expires_at);
 CREATE INDEX IF NOT EXISTS data_deletion_requests_status_idx ON data_deletion_requests (status, created_at DESC);
+ALTER TABLE member_invitations DROP CONSTRAINT IF EXISTS member_invitations_proposed_grade_check;
+UPDATE member_invitations SET proposed_grade = 'student' WHERE proposed_grade = 'graduate';
+ALTER TABLE member_invitations ADD CONSTRAINT member_invitations_proposed_grade_check CHECK (proposed_grade IN ('fellow', 'member', 'associate', 'affiliate', 'student'));
 CREATE INDEX IF NOT EXISTS member_invitations_token_idx ON member_invitations (invitation_token);
 CREATE INDEX IF NOT EXISTS member_invitations_email_idx ON member_invitations (email);
 CREATE INDEX IF NOT EXISTS member_invitations_status_idx ON member_invitations (status, created_at DESC);

@@ -6,7 +6,7 @@ import { sendAcknowledgementEmail } from './email.mjs';
 import { createPasswordHash, validateMemberRegistration } from './member-core.mjs';
 import { createSessionToken, createSignedSession } from './member-auth.mjs';
 
-const VALID_GRADES = ['fellow', 'member', 'associate', 'affiliate', 'graduate'];
+const VALID_GRADES = ['fellow', 'member', 'associate', 'affiliate', 'student'];
 const VALID_STATUSES = ['pending', 'sent', 'accepted', 'declined', 'expired'];
 
 function generateInvitationToken() {
@@ -125,7 +125,7 @@ export default async function handler(request) {
           `INSERT INTO members (email, password_hash, first_name, last_name, membership_grade, membership_status, email_verified)
            VALUES ($1, $2, $3, $4, $5, 'active', TRUE)
            RETURNING id, email, first_name, last_name, membership_grade`,
-          [inv.email, passwordHash, firstName, lastName, inv.proposed_grade === 'graduate' ? 'student' : inv.proposed_grade]
+          [inv.email, passwordHash, firstName, lastName, inv.proposed_grade]
         );
 
         // Update invitation status
