@@ -16,6 +16,10 @@ const partial = (name) => read(`src/partials/${name}.html`);
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 cpSync(join(root, 'public'), dist, { recursive: true });
+cpSync(join(root, 'src/admin/js'), join(dist, 'js/admin'), { recursive: true });
+for (const stylesheet of ['admin.css', 'admin-login.css', 'cms-admin.css']) {
+  cpSync(join(root, 'src/admin/css', stylesheet), join(dist, 'css', stylesheet));
+}
 
 // Update API_BASE_URL in config.js for production
 const configPath = join(dist, 'js', 'config.js');
@@ -31,6 +35,7 @@ const header = partial('Navbar');
 const footer = partial('footer');
 const adminSidebar = read('src/admin/partials/sidebar.html').trim();
 const adminSidebarStyles = read('src/admin/partials/sidebar.css');
+const adminStylesheet = read('src/admin/css/admin.css');
 const year = new Date().getFullYear();
 
 function renderPage(raw, meta, slug, adminStyles = '') {
@@ -93,7 +98,7 @@ if (existsSync(join(root, adminDir))) {
     if (!metadataMatch) throw new Error(`${file}: missing JSON metadata comment on first line`);
     const meta = JSON.parse(metadataMatch[1]);
     const slug = file.replace(/\.html$/, '');
-    const adminStyles = slug === 'cms-admin' ? '' : `${read('public/css/admin.css')}\n${adminSidebarStyles}`;
+    const adminStyles = slug === 'cms-admin' ? '' : `${adminStylesheet}\n${adminSidebarStyles}`;
     let content = raw.slice(metadataMatch[0].length);
     if (/^admin(?:-|$)/.test(slug) && slug !== 'admin-login') {
       const sidebarPlaceholder = '<aside class="admin-sidebar" id="admin-sidebar"></aside>';
