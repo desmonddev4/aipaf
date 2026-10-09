@@ -33,15 +33,16 @@ const year = new Date().getFullYear();
 
 function renderPage(raw, meta, slug, adminStyles = '') {
   const nav = header.replace(/\{\{cur:([a-z-]+)\}\}/g, (_, item) => (item === meta.nav ? 'aria-current="page"' : ''));
-  const content = /^(admin(?:-|$)|cms-admin$)/.test(slug)
+  const isAdminPage = /^(admin(?:-|$)|cms-admin$)/.test(slug);
+  const content = isAdminPage
     ? raw.replace(/<main(?=[\s>])/g, '<div').replace(/<\/main>/g, '</div>')
     : raw;
   const pageLayout = adminStyles
     ? layout.replace('</head>', `<style>\n${adminStyles}\n</style>\n</head>`)
     : layout;
   return pageLayout
-    .replace('{{header}}', nav)
-    .replace('{{footer}}', footer)
+    .replace('{{header}}', isAdminPage ? '' : nav)
+    .replace('{{footer}}', isAdminPage ? '' : footer)
     .replace('{{content}}', content)
     .replaceAll('{{title}}', meta.title)
     .replaceAll('{{description}}', meta.description)
