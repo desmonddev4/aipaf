@@ -7,11 +7,12 @@ services:
     name: aipaf-website
     env: node
     plan: free
+    rootDir: aipaf-website
     buildCommand: npm install
     startCommand: node server.mjs
     envVars:
       - key: NODE_VERSION
-        value: 18
+        value: 20
       - key: DATABASE_URL
         sync: false
       - key: SITE_URL
