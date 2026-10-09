@@ -10,7 +10,7 @@ function parseJsonBody(request) {
 }
 
 function sessionCookie(token) {
-  return `aipaf_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`;
+  return `aipaf_session=${token}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=604800`;
 }
 
 function generateResetToken() {
@@ -23,6 +23,17 @@ const VERIFY_TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 export default async function handler(request) {
   if (request.method === 'POST') {
     const body = await parseJsonBody(request);
+    if (body.action === 'logout') {
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+          'cache-control': 'no-store',
+          'set-cookie': 'aipaf_session=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0',
+        },
+      });
+    }
+
     if (body.action === 'register') {
       const validation = validateMemberRegistration(body);
       if (!validation.ok) return jsonResponse({ ok: false, message: validation.message }, 400);

@@ -202,7 +202,7 @@
   }
 
   function loadProfile() {
-    fetch('/api/member-profile')
+    window.apiFetch('/api/member-profile')
       .then(function (response) { if (!response.ok) throw new Error('Authentication required.'); return window.readApiJson(response); })
       .then(function (payload) {
         renderProfile(payload.member);
@@ -210,7 +210,7 @@
         required.hidden = true;
         loadServices();
       })
-      .catch(function () { required.hidden = false; content.hidden = true; });
+      .catch(function () { required.hidden = false; content.hidden = true; window.location.replace('/member-login?next=profile'); });
   }
 
   function renderRecords(list, container, emptyText) {
@@ -240,7 +240,7 @@
 
   async function loadServices() {
     try {
-      var examResponse = await fetch('/api/member-records?action=examinations');
+      var examResponse = await window.apiFetch('/api/member-records?action=examinations');
       var examPayload = await window.readApiJson(examResponse);
       if (!examResponse.ok) throw new Error(examPayload.message || 'Unable to load examinations.');
       var openExams = (examPayload.items || []).filter(function (item) { return item.status === 'open'; });
@@ -266,12 +266,12 @@
         });
       }
 
-      var cpdResponse = await fetch('/api/member-records?action=my-cpd');
+      var cpdResponse = await window.apiFetch('/api/member-records?action=my-cpd');
       var cpdPayload = await window.readApiJson(cpdResponse);
       if (!cpdResponse.ok) throw new Error(cpdPayload.message || 'Unable to load CPD records.');
       renderRecords(cpdPayload.items || [], document.querySelector('#cpd-list'), 'No CPD records submitted yet.');
 
-      var certResponse = await fetch('/api/certificates?action=my-certificates');
+      var certResponse = await window.apiFetch('/api/certificates?action=my-certificates');
       var certPayload = await window.readApiJson(certResponse);
       if (!certResponse.ok) throw new Error(certPayload.message || 'Unable to load certificates.');
       renderRecords((certPayload.items || []).map(function (item) {
@@ -286,7 +286,7 @@
     var status = document.querySelector('#examination-status');
     status.className = 'form-status'; status.textContent = 'Registering…';
     try {
-      var response = await fetch('/api/member-records?action=register-examination', {
+      var response = await window.apiFetch('/api/member-records?action=register-examination', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ examinationId: examinationId })
@@ -324,7 +324,7 @@
     button.disabled = true;
 
     try {
-      var response = await fetch('/api/member-profile', {
+      var response = await window.apiFetch('/api/member-profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(new FormData(form).entries())),
@@ -353,7 +353,7 @@
     button.disabled = true;
 
     try {
-      var response = await fetch('/api/member-profile', {
+      var response = await window.apiFetch('/api/member-profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'change-password', ...Object.fromEntries(new FormData(event.currentTarget).entries()) }),
@@ -379,7 +379,7 @@
     button.disabled = true;
 
     try {
-      var response = await fetch('/api/member-records?action=checkout', {
+      var response = await window.apiFetch('/api/member-records?action=checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget).entries()))
@@ -411,7 +411,7 @@
     button.disabled = true;
 
     try {
-      var response = await fetch('/api/member-records?action=cpd', {
+      var response = await window.apiFetch('/api/member-records?action=cpd', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget).entries()))
@@ -434,8 +434,9 @@
   });
 
   document.querySelector('#member-signout').addEventListener('click', function () {
-    document.cookie = 'aipaf_session=; Max-Age=0; Path=/; Secure; SameSite=Lax';
-    window.location.href = '/member-login';
+    window.apiFetch('/api/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'logout' }) })
+      .catch(function () {})
+      .then(function () { window.location.href = '/member-login'; });
   });
 })();
 </script>

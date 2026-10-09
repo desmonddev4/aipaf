@@ -82,7 +82,7 @@
   async function loadMembers(query) {
     status.textContent = 'Loading publicly visible members…';
     try {
-      var response = await fetch('/api/member-directory?search=' + encodeURIComponent(query || '') + '&limit=25');
+      var response = await window.apiFetch('/api/member-directory?search=' + encodeURIComponent(query || '') + '&limit=25');
       var payload = await window.readApiJson(response);
       if (!response.ok) throw new Error(payload.message || 'Unable to load the member directory.');
       render(payload.items || []);

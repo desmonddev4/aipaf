@@ -14,7 +14,7 @@ function generateInvitationToken() {
 }
 
 function sessionCookie(token) {
-  return `aipaf_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`;
+  return `aipaf_session=${token}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=604800`;
 }
 
 export default async function handler(request) {

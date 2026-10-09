@@ -35,7 +35,7 @@
       var params = new URLSearchParams(window.location.search);
       var token = params.get('token');
       if (!token) throw new Error('A verification token is required.');
-      var response = await fetch('/api/members', {
+      var response = await window.apiFetch('/api/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'verify-email', token: token })
