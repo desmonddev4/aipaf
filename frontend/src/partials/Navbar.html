@@ -1,0 +1,326 @@
+<!-- =====================================================================
+  AIPAF navbar — self-contained (markup + CSS + JS)
+  Paste this where your old <header class="site-header"> was.
+  All rules hang off #aipaf-header (an ID), so no other stylesheet,
+  including the .cx layer, can out-rank them. It uses its own data-ah-*
+  hooks, so your main.js header code stays harmless and can be deleted later.
+  Keep the {{cur:...}} placeholders; your build step fills them in.
+====================================================================== -->
+<style>
+#aipaf-header, #aipaf-header *, #aipaf-header *::before, #aipaf-header *::after { box-sizing: border-box; }
+#aipaf-header {
+  --ah-g950: #03140a; --ah-g900: #061f10; --ah-g800: #02521d;
+  --ah-gold: #d28503; --ah-gold-hi: #f2ac1f; --ah-gold-soft: #f7d68a;
+  --ah-ease: cubic-bezier(.2, .7, .2, 1);
+  position: fixed; inset: 0 0 auto 0; z-index: 1000;
+  padding: .9rem clamp(.75rem, 3vw, 2rem) 0;
+  pointer-events: none;
+  font-family: "Public Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  font-size: 16px; line-height: 1.2; text-align: left;
+  -webkit-text-size-adjust: 100%;
+  transition: padding .35s var(--ah-ease);
+}
+#aipaf-header.is-scrolled { padding-top: .5rem; }
+#aipaf-header ul { list-style: none; margin: 0; padding: 0; }
+#aipaf-header li { margin: 0; padding: 0; list-style: none; }
+#aipaf-header a { text-decoration: none; color: inherit; background: none; }
+#aipaf-header button { font: inherit; margin: 0; border: 0; background: none; color: inherit; cursor: pointer; -webkit-appearance: none; appearance: none; }
+#aipaf-header svg { display: block; max-width: none; }
+#aipaf-header :focus-visible { outline: 3px solid var(--ah-gold-hi); outline-offset: 2px; border-radius: 10px; }
+
+/* ---------- glass shell ---------- */
+#aipaf-header .ah-shell {
+  pointer-events: auto; position: relative;
+  max-width: 1280px; margin-inline: auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 1.25rem;
+  padding: .55rem .65rem .55rem .75rem;
+  border-radius: 22px; border: 1px solid rgba(255,255,255,.16);
+  background: rgba(6,31,16,.55);
+  -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 10px 40px -18px rgba(0,0,0,.6);
+  transition: background .3s, border-color .3s, box-shadow .3s;
+}
+#aipaf-header.is-scrolled .ah-shell { background: rgba(4,24,12,.9); border-color: rgba(255,255,255,.1); box-shadow: 0 14px 44px -18px rgba(0,0,0,.75); }
+
+/* ---------- brand ---------- */
+#aipaf-header .ah-brand { display: inline-flex; align-items: center; gap: .75rem; color: #fff; flex: none; border-radius: 14px; }
+#aipaf-header .ah-badge { width: 46px; height: 46px; border-radius: 50%; background: #fff; display: grid; place-items: center; flex: none; transition: transform .45s var(--ah-ease); }
+#aipaf-header .ah-badge img { width: 40px; height: 40px; display: block; }
+#aipaf-header .ah-brand:hover .ah-badge { transform: rotate(-8deg) scale(1.05); }
+#aipaf-header .ah-brand-text { display: grid; gap: .22rem; white-space: nowrap; }
+#aipaf-header .ah-word { font: 600 1.35rem/1 "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif; letter-spacing: .06em; }
+#aipaf-header .ah-line { font-size: .74rem; line-height: 1; letter-spacing: .04em; color: var(--ah-gold-soft); }
+
+/* ---------- desktop nav ---------- */
+#aipaf-header .ah-nav { display: flex; align-items: center; gap: 1.1rem; min-width: 0; }
+#aipaf-header .ah-list { display: flex; align-items: center; gap: .1rem; }
+#aipaf-header .ah-link,
+#aipaf-header .ah-trigger {
+  position: relative; display: inline-flex; align-items: center; gap: .4rem;
+  padding: .6rem .85rem; border-radius: 999px;
+  font-weight: 500; font-size: .96rem; line-height: 1.2; white-space: nowrap;
+  color: rgba(255,255,255,.86); text-align: left;
+  transition: color .2s, background .2s;
+}
+#aipaf-header .ah-link::after,
+#aipaf-header .ah-trigger::after {
+  content: ""; position: absolute; left: 50%; bottom: .28rem; width: 1.1rem; height: 2px; margin-left: -.55rem;
+  border-radius: 2px; background: var(--ah-gold-hi); transform: scaleX(0); transition: transform .3s var(--ah-ease);
+}
+#aipaf-header .ah-link:hover, #aipaf-header .ah-trigger:hover,
+#aipaf-header .ah-has-menu.is-open > .ah-trigger { color: #fff; background: rgba(255,255,255,.09); }
+#aipaf-header .ah-link:hover::after, #aipaf-header .ah-trigger:hover::after,
+#aipaf-header .ah-has-menu.is-open > .ah-trigger::after { transform: scaleX(1); }
+#aipaf-header .ah-link[aria-current="page"] { color: var(--ah-gold-hi); }
+#aipaf-header .ah-link[aria-current="page"]::after { transform: scaleX(1); }
+#aipaf-header .ah-has-menu:has([aria-current="page"]) > .ah-trigger { color: var(--ah-gold-hi); }
+#aipaf-header .ah-chev { width: 10px; height: 10px; flex: none; opacity: .75; transition: transform .3s var(--ah-ease); }
+#aipaf-header .ah-has-menu.is-open > .ah-trigger .ah-chev { transform: rotate(180deg); opacity: 1; }
+
+/* ---------- dropdown panel ---------- */
+#aipaf-header .ah-has-menu { position: relative; }
+#aipaf-header .ah-menu {
+  position: absolute; top: calc(100% + .6rem); left: 50%; min-width: 13.5rem; padding: .35rem;
+  border: 1px solid rgba(255,255,255,.14); border-radius: 16px;
+  background: rgba(4,24,12,.97); box-shadow: 0 22px 40px -22px rgba(0,0,0,.85);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translate(-50%, -8px) scale(.98); transform-origin: top center;
+  transition: opacity .2s, transform .28s var(--ah-ease), visibility .2s;
+}
+/* invisible bridge so the pointer can travel from trigger to panel */
+#aipaf-header .ah-menu::before { content: ""; position: absolute; left: 0; right: 0; top: -.7rem; height: .7rem; }
+#aipaf-header .ah-has-menu.is-open > .ah-menu { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
+#aipaf-header .ah-menu li + li { margin-top: .1rem; }
+#aipaf-header .ah-menu a {
+  display: block; padding: .7rem .95rem; border-radius: 11px; white-space: nowrap;
+  font-weight: 500; font-size: .96rem; color: rgba(255,255,255,.86);
+  transition: background .2s, color .2s, padding-left .25s var(--ah-ease);
+}
+#aipaf-header .ah-menu a:hover, #aipaf-header .ah-menu a:focus-visible { background: rgba(255,255,255,.09); color: #fff; padding-left: 1.2rem; }
+#aipaf-header .ah-menu a[aria-current="page"] { color: var(--ah-gold-hi); }
+
+/* ---------- call to action ---------- */
+#aipaf-header .ah-cta {
+  position: relative; overflow: hidden; isolation: isolate; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: .8rem 1.4rem; border-radius: 999px; white-space: nowrap;
+  font-weight: 600; font-size: .95rem; line-height: 1; color: var(--ah-g950);
+  background: linear-gradient(180deg, var(--ah-gold-hi), var(--ah-gold));
+  box-shadow: 0 8px 26px -8px rgba(242,172,31,.55);
+  transition: transform .25s var(--ah-ease), box-shadow .25s var(--ah-ease);
+}
+#aipaf-header .ah-cta::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; transform: translateX(-120%) skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); transition: transform .7s var(--ah-ease);
+}
+#aipaf-header .ah-cta:hover { color: var(--ah-g950); transform: translateY(-2px); box-shadow: 0 14px 32px -8px rgba(242,172,31,.7); }
+#aipaf-header .ah-cta:hover::before { transform: translateX(120%) skewX(-18deg); }
+#aipaf-header .ah-cta:active { transform: translateY(0) scale(.98); }
+
+/* ---------- menu toggle (hidden on desktop) ---------- */
+#aipaf-header .ah-toggle {
+  display: none; position: relative; flex: none; width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.06); transition: background .2s;
+}
+#aipaf-header .ah-toggle:hover { background: rgba(255,255,255,.14); }
+#aipaf-header .ah-bars, #aipaf-header .ah-bars::before, #aipaf-header .ah-bars::after {
+  content: ""; position: absolute; left: 50%; width: 18px; height: 2px; margin-left: -9px; border-radius: 2px; background: #fff;
+  transition: transform .3s var(--ah-ease), background .2s;
+}
+#aipaf-header .ah-bars { top: 50%; margin-top: -1px; }
+#aipaf-header .ah-bars::before { top: -6px; left: 0; margin-left: 0; }
+#aipaf-header .ah-bars::after { top: 6px; left: 0; margin-left: 0; }
+#aipaf-header .ah-toggle[aria-expanded="true"] .ah-bars { background: transparent; }
+#aipaf-header .ah-toggle[aria-expanded="true"] .ah-bars::before { transform: translateY(6px) rotate(45deg); }
+#aipaf-header .ah-toggle[aria-expanded="true"] .ah-bars::after { transform: translateY(-6px) rotate(-45deg); }
+#aipaf-header .ah-sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- laptop: tighten, drop the tagline ---------- */
+@media (max-width: 1239px) {
+  #aipaf-header .ah-line { display: none; }
+  #aipaf-header .ah-link, #aipaf-header .ah-trigger { padding: .6rem .7rem; font-size: .93rem; }
+  #aipaf-header .ah-nav { gap: .8rem; }
+}
+
+/* ---------- tablet and phone: panel menu ---------- */
+@media (max-width: 1100px) {
+  #aipaf-header .ah-line { display: block; }
+  #aipaf-header .ah-toggle { display: block; }
+  #aipaf-header .ah-nav {
+    position: absolute; top: calc(100% + .5rem); left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: .75rem; padding: .85rem;
+    max-height: calc(100vh - 6.5rem); max-height: calc(100dvh - 6.5rem); overflow-y: auto; overscroll-behavior: contain;
+    background: rgba(4,24,12,.97); border: 1px solid rgba(255,255,255,.12); border-radius: 22px;
+    box-shadow: 0 30px 60px -24px rgba(0,0,0,.85);
+    opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-10px);
+    transition: opacity .2s, transform .3s var(--ah-ease), visibility .2s;
+  }
+  #aipaf-header .ah-nav.is-open { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
+  #aipaf-header .ah-list { flex-direction: column; align-items: stretch; gap: .15rem; }
+  #aipaf-header .ah-link, #aipaf-header .ah-trigger { display: flex; width: 100%; padding: .9rem 1rem; border-radius: 14px; font-size: 1.05rem; }
+  #aipaf-header .ah-trigger { justify-content: space-between; }
+  #aipaf-header .ah-link::after, #aipaf-header .ah-trigger::after { display: none; }
+  #aipaf-header .ah-link[aria-current="page"] { background: rgba(242,172,31,.1); }
+  #aipaf-header .ah-chev { width: 12px; height: 12px; }
+  /* dropdowns become accordions */
+  #aipaf-header .ah-menu {
+    position: static; min-width: 0; margin: 0 .25rem; padding: 0 .35rem; border: 0; border-radius: 12px; box-shadow: none;
+    background: rgba(255,255,255,.04); max-height: 0; overflow: hidden;
+    opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+    transition: max-height .35s var(--ah-ease), padding .35s var(--ah-ease), margin .35s var(--ah-ease);
+  }
+  #aipaf-header .ah-menu::before { display: none; }
+  #aipaf-header .ah-has-menu.is-open > .ah-menu { max-height: 14rem; padding: .35rem; margin: .25rem; transform: none; }
+  #aipaf-header .ah-menu a { padding: .8rem .9rem; font-size: 1rem; }
+  #aipaf-header .ah-menu a:hover, #aipaf-header .ah-menu a:focus-visible { padding-left: .9rem; }
+  #aipaf-header .ah-cta { width: 100%; padding: 1rem; font-size: 1rem; }
+}
+
+/* ---------- small phones ---------- */
+@media (max-width: 420px) {
+  #aipaf-header .ah-line { display: none; }
+  #aipaf-header .ah-word { font-size: 1.2rem; }
+  #aipaf-header .ah-badge { width: 42px; height: 42px; }
+  #aipaf-header .ah-badge img { width: 36px; height: 36px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #aipaf-header, #aipaf-header * , #aipaf-header *::before, #aipaf-header *::after { transition: none !important; animation: none !important; }
+}
+</style>
+
+<header id="aipaf-header" data-ah-header>
+  <div class="ah-shell">
+    <a class="ah-brand" href="/" aria-label="AIPAF home">
+      <span class="ah-badge"><img src="/img/logo-mark.svg" alt="" width="40" height="40"></span>
+      <span class="ah-brand-text"><span class="ah-word">AIPAF</span><span class="ah-line">Assurance and Forensics</span></span>
+    </a>
+
+    <button class="ah-toggle" type="button" aria-expanded="false" aria-controls="ah-nav" data-ah-toggle>
+      <span class="ah-sr">Menu</span><span class="ah-bars" aria-hidden="true"></span>
+    </button>
+
+    <nav class="ah-nav" id="ah-nav" aria-label="Primary" data-ah-nav>
+      <ul class="ah-list">
+        <li><a class="ah-link" href="/about" {{cur:about}}>Mandate</a></li>
+        <li><a class="ah-link" href="/lifecycle" {{cur:lifecycle}}>Lifecycle</a></li>
+
+        <li class="ah-has-menu">
+          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-membership">
+            Membership
+            <svg class="ah-chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <ul class="ah-menu" id="ah-menu-membership">
+            <li><a href="/membership" {{cur:membership}}>Membership</a></li>
+            <li><a href="/member-directory" {{cur:member-directory}}>Members</a></li>
+          </ul>
+        </li>
+
+        <li class="ah-has-menu">
+          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-governance">
+            Governance
+            <svg class="ah-chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <ul class="ah-menu" id="ah-menu-governance">
+            <li><a href="/governance" {{cur:governance}}>Governance</a></li>
+            <li><a href="/credentials" {{cur:credentials}}>Credentials</a></li>
+          </ul>
+        </li>
+
+        <li><a class="ah-link" href="/about#why" {{cur:why}}>Why us</a></li>
+        <li><a class="ah-link" href="/contact" {{cur:contact}}>Contact</a></li>
+      </ul>
+      <a class="ah-cta" href="/membership#join">Join AIPAF</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+(function () {
+  var header = document.getElementById('aipaf-header');
+  if (!header) return;
+  var toggle = header.querySelector('[data-ah-toggle]');
+  var nav = header.querySelector('[data-ah-nav]');
+  var items = [].slice.call(header.querySelectorAll('.ah-has-menu'));
+  var desktop = window.matchMedia('(min-width: 1101px)');
+
+  /* darker glass once the page scrolls */
+  function onScroll() { header.classList.toggle('is-scrolled', (window.scrollY || 0) > 24); }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* dropdown helpers */
+  function setItem(li, open) {
+    var t = li.querySelector('.ah-trigger');
+    li.classList.toggle('is-open', open);
+    t.setAttribute('aria-expanded', String(open));
+    if (!open) li._hover = false;
+  }
+  function closeAll(except) { items.forEach(function (li) { if (li !== except) setItem(li, false); }); }
+
+  /* mobile panel */
+  function setMenu(open) {
+    toggle.setAttribute('aria-expanded', String(open));
+    nav.classList.toggle('is-open', open);
+    if (!open) closeAll();
+  }
+  toggle.addEventListener('click', function () { setMenu(toggle.getAttribute('aria-expanded') !== 'true'); });
+
+  items.forEach(function (li) {
+    var t = li.querySelector('.ah-trigger');
+    var timer;
+
+    t.addEventListener('click', function (e) {
+      e.stopPropagation();
+      /* a mouse click right after hover-open should keep the menu open, not flip it shut */
+      if (li._hover && desktop.matches) { li._hover = false; return; }
+      var open = !li.classList.contains('is-open');
+      closeAll(li);
+      setItem(li, open);
+    });
+
+    li.addEventListener('pointerenter', function (e) {
+      if (e.pointerType !== 'mouse' || !desktop.matches) return;
+      clearTimeout(timer);
+      closeAll(li);
+      if (!li.classList.contains('is-open')) { setItem(li, true); li._hover = true; }
+    });
+    li.addEventListener('pointerleave', function (e) {
+      if (e.pointerType !== 'mouse' || !desktop.matches) return;
+      timer = setTimeout(function () { setItem(li, false); }, 160);
+    });
+
+    t.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        closeAll(li); setItem(li, true);
+        var first = li.querySelector('.ah-menu a');
+        if (first) first.focus();
+      }
+    });
+    li.addEventListener('focusout', function (e) {
+      if (!e.relatedTarget || !li.contains(e.relatedTarget)) {
+        if (e.relatedTarget) setItem(li, false);
+      }
+    });
+  });
+
+  /* outside click, Escape, link click, breakpoint change */
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.ah-has-menu')) closeAll();
+    if (nav.classList.contains('is-open') && !e.target.closest('.ah-shell')) setMenu(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var openItem = items.filter(function (li) { return li.classList.contains('is-open'); })[0];
+    var panelOpen = nav.classList.contains('is-open');
+    closeAll();
+    if (panelOpen) setMenu(false);
+    if (openItem) openItem.querySelector('.ah-trigger').focus();
+    else if (panelOpen) toggle.focus();
+  });
+  nav.addEventListener('click', function (e) { if (e.target.closest('a')) { closeAll(); setMenu(false); } });
+  var onBreak = function () { if (desktop.matches) setMenu(false); };
+  if (desktop.addEventListener) desktop.addEventListener('change', onBreak); else desktop.addListener(onBreak);
+})();
+</script>

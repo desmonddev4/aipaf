@@ -1,0 +1,13 @@
+{
+  "name": "aipaf-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "African Institute of Project Assurance and Forensics - Frontend for Vercel deployment",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

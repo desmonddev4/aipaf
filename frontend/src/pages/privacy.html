@@ -1,0 +1,73 @@
+<!--{"title":"Privacy Notice | AIPAF","description":"How AIPAF handles contact and membership submissions and how to request access or deletion.","nav":"privacy"}-->
+<style>
+  .cx {
+    --cx-ink: #10231c; --cx-text: #1f2f28; --cx-muted: #46574f; --cx-green: #0f5c3f; --cx-green-dark: #0a432d; --cx-gold: #c9a24b;
+    --cx-card: rgba(255, 255, 255, .92); --cx-border: rgba(15, 92, 63, .18); --cx-field: #f4f8f5; --cx-shadow: 0 26px 60px -30px rgba(10, 40, 28, .4); --cx-ease: cubic-bezier(.22, .8, .3, 1);
+    color: var(--cx-text); font-size: 1.0625rem; line-height: 1.7;
+  }
+  .cx *, .cx *::before, .cx *::after { box-sizing: border-box; }
+  .cx .wrap { width: min(860px, calc(100% - 2.5rem)); margin-inline: auto; }
+  .cx .page-hero { position: relative; min-height: 22rem; display: grid; align-items: end; overflow: hidden; background: linear-gradient(140deg, #01521d, #0a432d 58%, #021b11); color: #fff; }
+  .cx .page-hero-bg { position: absolute; inset: 0; opacity: .22; }
+  .cx .page-hero-bg img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); }
+  .cx .page-hero .wrap { position: relative; padding: clamp(6rem, 15vw, 9rem) 0 3rem; }
+  .cx .crumbs { margin: 0 0 .7rem; color: rgba(255,255,255,.75); font-size: .9rem; }
+  .cx .crumbs a { color: #fff; }
+  .cx .eyebrow { margin: 0 0 .75rem; font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #f0b84a; }
+  .cx h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.5rem, 7vw, 5rem); line-height: 1; letter-spacing: -.035em; }
+  .cx .lead { max-width: 44rem; margin: 1.25rem 0 0; color: rgba(255,255,255,.8); font-size: clamp(1.08rem, 2.4vw, 1.35rem); }
+  .cx .section { padding: clamp(3rem, 7vw, 6rem) 0; }
+  .cx .card { padding: clamp(1.5rem, 4vw, 2.5rem); background: var(--cx-card); border: 1px solid var(--cx-border); border-radius: 24px; box-shadow: var(--cx-shadow); }
+  .cx .card h2 { margin-top: 0; font-size: 1.5rem; color: var(--cx-ink); }
+  .cx .card > *:first-child { margin-top: 0; }
+  .cx .card > *:last-child { margin-bottom: 0; }
+  .cx .card ol, .cx .card ul { padding-left: 1.25rem; }
+  .cx .callout { margin: 1.5rem 0; padding: 1.2rem 1.35rem; border-left: 4px solid var(--cx-gold); border-radius: 0 14px 14px 0; background: #f7f5ee; }
+  .cx .meta { color: var(--cx-muted); font-size: .92rem; }
+  @media (prefers-reduced-motion: reduce) { .cx *, .cx *::before, .cx *::after { animation: none !important; transition-duration: .01ms !important; } }
+</style>
+
+<div class="cx">
+  <section class="page-hero">
+    <div class="page-hero-bg" aria-hidden="true"><img src="/img/skyline.jpg" alt="" width="1280" height="720"></div>
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Home</a> / Privacy notice</p>
+      <p class="eyebrow">Data protection</p>
+      <h1>Privacy notice.</h1>
+      <p class="lead">How the Institute collects, uses, stores, and deletes personal information submitted through this website.</p>
+    </div>
+  </section>
+
+  <main class="section">
+    <div class="wrap">
+      <article class="card">
+        <h2>Purpose of collection</h2>
+        <p>The Institute uses information submitted through the contact and founding-membership forms to respond to enquiries, assess interest, and maintain the records needed to administer the Institute.</p>
+        <div class="callout"><strong>Consent is required.</strong> You must confirm that you agree to this use before a submission is accepted.</div>
+
+        <h2>Information collected</h2>
+        <p>Depending on the form, AIPAF may collect name, email address, organisation, country, professional area, message content, submission page, and the time taken to submit the form.</p>
+
+        <h2>Storage and retention</h2>
+        <ul>
+          <li>Submissions are stored in a protected PostgreSQL database.</li>
+          <li>Records are retained only while needed for administration, follow-up, and legal or regulatory requirements.</li>
+          <li>Contact and membership records should normally be reviewed and marked handled within a defined operational period.</li>
+          <li>Records are deleted when they are no longer necessary, except where law or professional obligations require their retention.</li>
+        </ul>
+
+        <h2>Access and deletion</h2>
+        <p>To request access to, correction of, or deletion of your personal information, contact the Institute by email at <a href="mailto:info@aipaf.africa">info@aipaf.africa</a>. Please include enough detail to identify the relevant submission.</p>
+        <p>The Institute will acknowledge requests and may need to verify your identity before disclosing or deleting personal data.</p>
+
+        <h2>Security</h2>
+        <p>Administrative access is limited to authorised Secretariat and Council users. Credentials must be supplied through secure Vercel environment variables and must never be committed to the repository.</p>
+
+        <h2>Information for Ghanaian residents</h2>
+        <p>This privacy notice is intended to support compliance with the Ghana Data Protection Act, 2012. Processing is based on consent, legitimate Institute interests, and legal or professional obligations where applicable.</p>
+
+        <p class="meta">Last updated: {{year}}.</p>
+      </article>
+    </div>
+  </main>
+</div>
