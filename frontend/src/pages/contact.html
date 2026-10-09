@@ -16,8 +16,8 @@
     --cx-shadow: 0 24px 60px -24px rgba(10, 40, 28, .35);
     --cx-ease: cubic-bezier(.22, .8, .3, 1);
     color: var(--cx-text);
-    font-size: 1.0625rem;
-    line-height: 1.65;
+    font-size: .95rem;
+    line-height: 1.55;
   }
   
   
@@ -29,7 +29,7 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    padding: clamp(4.5rem, 12vw, 8.5rem) 0 clamp(5rem, 11vw, 8rem);
+    padding: clamp(3rem, 8vw, 5.5rem) 0 clamp(3.25rem, 8vw, 5.5rem);
     color: #fff;
   }
   .cx .page-hero-bg { position: absolute; inset: 0; z-index: -2; }
@@ -43,8 +43,8 @@
     background: linear-gradient(180deg, rgba(6, 30, 21, .78), rgba(6, 30, 21, .55) 55%, rgba(6, 30, 21, .9));
   }
   .cx .hero-panel {
-    max-width: 44rem;
-    padding: clamp(1.5rem, 4vw, 2.5rem);
+    max-width: 38rem;
+    padding: clamp(1.15rem, 3vw, 1.75rem);
     border-radius: 24px;
     background: rgba(255, 255, 255, .09);
     border: 1px solid rgba(255, 255, 255, .22);
@@ -60,11 +60,11 @@
     margin: 0 0 1rem;
     font-family: Georgia, "Times New Roman", serif;
     font-weight: 600;
-    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-size: clamp(1.8rem, 4.5vw, 2.7rem);
     line-height: 1.08;
     letter-spacing: -.015em;
   }
-  .cx .lead { margin: 0; font-size: clamp(1.1rem, 1.6vw, 1.3rem); line-height: 1.55; color: rgba(255, 255, 255, .88); max-width: 36rem; }
+  .cx .lead { margin: 0; font-size: clamp(.95rem, 1.3vw, 1.05rem); line-height: 1.5; color: rgba(255, 255, 255, .88); max-width: 36rem; }
   .cx .ruler {
     position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
     background: linear-gradient(90deg, var(--cx-green), var(--cx-gold) 50%, var(--cx-green));
@@ -72,36 +72,36 @@
   .cx .eyebrow { margin: 0 0 .75rem; font-size: .95rem; font-weight: 600; letter-spacing: .02em; color: var(--cx-green); }
 
   /* ---------- Section + glass ---------- */
-  .cx .section { background: #f7faf8; position: relative; isolation: isolate; padding: clamp(3.5rem, 8vw, 6rem) 0 clamp(4rem, 9vw, 7rem); overflow: hidden; }
+  .cx .section { background: #f7faf8; position: relative; isolation: isolate; padding: clamp(2.25rem, 5vw, 3.5rem) 0 clamp(2.5rem, 6vw, 4rem); overflow: hidden; }
   .cx .section::before, .cx .section::after {
     content: ""; position: absolute; z-index: -1; border-radius: 50%; filter: blur(70px); opacity: .55; pointer-events: none;
   }
   .cx .section::before { width: 420px; height: 420px; top: -80px; right: -60px; background: rgba(201, 162, 75, .45); }
   .cx .section::after { width: 480px; height: 480px; bottom: -140px; left: -120px; background: rgba(15, 92, 63, .35); }
-  .cx .contact-grid { display: grid; gap: clamp(2rem, 5vw, 4rem); grid-template-columns: 1fr; align-items: start; }
+  .cx .contact-grid { display: grid; gap: clamp(1.5rem, 3.5vw, 2.5rem); grid-template-columns: 1fr; align-items: start; }
   @media (min-width: 900px) { .cx .contact-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
 
   .cx .h2 {
-    margin: 0 0 1.5rem;
+    margin: 0 0 1rem;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+    font-size: clamp(1.5rem, 2.6vw, 1.9rem);
     line-height: 1.15; letter-spacing: -.01em;
     color: var(--cx-ink);
   }
   .cx .contact-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
   .cx .contact-list li {
     display: grid; gap: .2rem;
-    padding: 1.1rem 1.25rem;
-    border-radius: 18px;
+    padding: .8rem 1rem;
+    border-radius: 14px;
     background: var(--cx-glass);
     border: 1px solid var(--cx-glass-border);
     box-shadow: 0 10px 30px -18px rgba(10, 40, 28, .35);
     transition: transform .3s var(--cx-ease), box-shadow .3s var(--cx-ease), border-color .3s;
   }
   .cx .contact-list li:hover { transform: translateY(-3px); border-color: rgba(201, 162, 75, .7); box-shadow: 0 18px 36px -18px rgba(10, 40, 28, .45); }
-  .cx .contact-list strong { font-size: .95rem; color: var(--cx-muted); font-weight: 600; }
+  .cx .contact-list strong { font-size: .82rem; color: var(--cx-muted); font-weight: 600; }
   .cx .contact-list a {
-    justify-self: start; font-size: 1.1rem; font-weight: 600; color: var(--cx-green); text-decoration: none;
+    justify-self: start; font-size: .98rem; font-weight: 600; color: var(--cx-green); text-decoration: none;
     background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat;
     transition: background-size .3s var(--cx-ease), color .2s;
   }
@@ -111,25 +111,27 @@
 
   /* ---------- Form ---------- */
   .cx .form-card {
-    padding: clamp(1.5rem, 4vw, 2.5rem);
-    border-radius: 26px;
+    padding: clamp(1.1rem, 2.5vw, 1.6rem);
+    border-radius: 20px;
     background: var(--cx-glass);
     border: 1px solid var(--cx-glass-border);
     box-shadow: var(--cx-shadow), inset 0 1px 0 rgba(255, 255, 255, .6);
   }
-  .cx .form-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+  .cx .form-grid { display: grid; gap: .85rem 1rem; grid-template-columns: 1fr; }
   @media (min-width: 600px) { .cx .form-grid { grid-template-columns: 1fr 1fr; } .cx .field-full { grid-column: 1 / -1; } }
   .cx .field { position: relative; }
-  .cx .field label { display: block; margin-bottom: .45rem; font-size: 1rem; font-weight: 600; color: var(--cx-ink); }
+  .cx .field label { display: block; margin-bottom: .3rem; font-size: .85rem; font-weight: 600; color: var(--cx-ink); }
   .cx .field input, .cx .field select, .cx .field textarea {
-    width: 100%; padding: .9rem 1rem;
-    font: inherit; font-size: 1rem; color: var(--cx-ink);
+    width: 100%; padding: .6rem .8rem;
+    font: inherit; font-size: .92rem; color: var(--cx-ink);
     background: var(--cx-field);
     border: 1.5px solid var(--cx-line);
-    border-radius: 14px;
+    border-radius: 10px;
     transition: border-color .2s, box-shadow .2s, background .2s, transform .2s var(--cx-ease);
   }
-  .cx .field textarea { min-height: 10rem; resize: vertical; }
+  .cx .field label:has(> input[type=checkbox]) { display: flex; align-items: flex-start; gap: .6rem; font-weight: 500; line-height: 1.45; }
+  .cx .field input[type=checkbox] { width: 1.1rem; height: 1.1rem; padding: 0; margin: .15rem 0 0; flex: none; accent-color: var(--cx-green); }
+  .cx .field textarea { min-height: 6.5rem; resize: vertical; }
   .cx .field input:hover, .cx .field select:hover, .cx .field textarea:hover { border-color: rgba(15, 92, 63, .5); }
   .cx .field input:focus, .cx .field select:focus, .cx .field textarea:focus {
     outline: none; border-color: var(--cx-green); background: rgba(255, 255, 255, .92); color: #10231c;
@@ -140,19 +142,19 @@
   .cx .field.is-valid input, .cx .field.is-valid select, .cx .field.is-valid textarea { border-color: var(--cx-ok); }
   .cx .field-error {
     margin: 0; max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-4px);
-    font-size: .9rem; line-height: 1.4; color: var(--cx-error);
+    font-size: .8rem; line-height: 1.35; color: var(--cx-error);
     transition: max-height .25s var(--cx-ease), opacity .25s, transform .25s var(--cx-ease), margin .25s;
   }
   .cx .field-error.show { max-height: 3.5rem; opacity: 1; transform: none; margin-top: .4rem; }
   .cx .counter { position: absolute; right: .25rem; top: 0; font-size: .85rem; color: var(--cx-muted); }
   .cx .hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
-  .cx .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1.75rem; }
+  .cx .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; margin-top: 1.25rem; }
   .cx .btn {
     position: relative; overflow: hidden;
     display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
-    min-height: 3.1rem; padding: .85rem 1.9rem;
-    font: inherit; font-size: 1.05rem; font-weight: 600; letter-spacing: .01em;
+    min-height: 2.6rem; padding: .6rem 1.5rem;
+    font: inherit; font-size: .95rem; font-weight: 600; letter-spacing: .01em;
     color: #fff; cursor: pointer;
     border: 0; border-radius: 999px;
     background: linear-gradient(135deg, var(--cx-green), var(--cx-green-dark));
@@ -174,7 +176,7 @@
     border: 2px solid rgba(255, 255, 255, .4); border-top-color: #fff; animation: cx-spin .7s linear infinite;
   }
   .cx .btn.loading .spin { display: inline-block; }
-  .cx .form-status { margin: 0; font-size: 1rem; font-weight: 500; min-height: 1.5rem; }
+  .cx .form-status { margin: 0; font-size: .9rem; font-weight: 500; min-height: 1.5rem; }
   .cx .form-status.ok { color: var(--cx-ok); }
   .cx .form-status.err { color: var(--cx-error); }
 
