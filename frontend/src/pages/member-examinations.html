@@ -1,4 +1,4 @@
-<!--{"title":"Member profile | AIPAF","description":"Manage your AIPAF member profile.","nav":"members","noindex":true}-->
+<!--{"title":"Examinations | AIPAF","description":"Register for AIPAF examinations.","nav":"members","noindex":true}-->
 <style>
 .mp{--serif: Georgia, "Times New Roman", serif;
   --sans: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
@@ -111,69 +111,16 @@ to { opacity: 1; transform: none; }
 .mp .who{padding:.35rem .9rem;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.07);color:var(--mute);font-size:.82rem;}
 .mp .two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:1.25rem;align-items:start;}
 @media (max-width:56rem){.mp .two{grid-template-columns:1fr;}}
-.mp .mp-hero{display: grid; grid-template-columns: auto 1fr; gap: 1.25rem; align-items: center;}
-.mp .avatar{display: grid; place-items: center; width: 4.6rem; height: 4.6rem; border-radius: 50%; background: linear-gradient(135deg, #f2ac1f, #d28503); color: #2c1b00; font: 700 1.9rem var(--serif); box-shadow: 0 .8rem 1.8rem -1rem rgba(242,172,31,.9);}
-.mp .mp-hero h1{font: 500 clamp(1.6rem, 4vw, 2.3rem)/1.1 var(--serif);}
-.mp .mp-hero .meta{margin: .15rem 0 0; font-size: .9rem;}
-.mp .chips{display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem;}
-.mp .chip{padding: .2rem .7rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.08); color: var(--mute); font-size: .78rem;}
-.mp .status{display: inline-block; padding: .2rem .7rem; border-radius: 999px; background: rgba(242,172,31,.18); color: #ffd277; font-size: .78rem; font-weight: 700; text-transform: capitalize;}
-.mp .status.active{background: rgba(63,191,107,.18); color: #7be3a0;}
-.mp .service-grid{display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .8rem;}
-.mp .mini-card{padding: 1rem 1.1rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 1rem; background: rgba(255,255,255,.06); text-decoration: none; color: inherit;}
-.mp .mini-card h3{font: 600 1rem var(--sans); margin-bottom: .25rem;}
-.mp .mini-card p{color: var(--mute); font-size: .88rem;}
-@media (max-width: 40rem){.mp .mp-hero{grid-template-columns:1fr;}}
 .mp .mp-tabs a[aria-current="page"]{background:linear-gradient(135deg,#f2ac1f,#d28503);color:#2c1b00;}
 </style>
 <div class="mp">
 <div id="page-gate" class="login-required card"><h2>Loading your portal...</h2><p class="meta">If this takes long, you may need to sign in.</p><a class="btn" href="/member-login">Sign in</a></div>
 <div class="mp-main" id="page-content" hidden>
-  <nav class="mp-tabs" aria-label="Member portal"><a href="/member-profile" aria-current="page">Profile</a><a href="/member-payments">Payments</a><a href="/member-examinations">Examinations</a><a href="/member-cpd">CPD</a><a href="/member-certificates">Certificates</a><a href="/member-security">Security</a></nav>
-  <div class="page-head"><div><h1>Member profile</h1><p>Your account and membership status.</p></div><span class="who" id="who"></span></div>
-<section class="card mp-hero" id="overview">
-    <div class="avatar" id="profile-avatar" aria-hidden="true">A</div>
-    <div>
-      <h1 id="profile-name"></h1>
-      <p class="meta" id="profile-email"></p>
-      <div class="chips"><span class="status" id="profile-status"></span><span class="chip" id="profile-grade"></span><span class="chip" id="d-organisation"></span><span class="chip" id="d-designation"></span></div>
-    </div>
-    <div class="mp-actions">
-      <button class="btn" type="button" id="profile-toggle-edit">Edit profile</button>
-      <button class="btn secondary" type="button" id="member-verify-email-button">Verify email</button>
-      <button class="btn secondary" type="button" id="member-signout">Sign out</button>
-    </div>
-  </section>
-  <form id="profile-form" class="card" hidden>
-          <h2>Edit profile</h2><p class="sub">Update how you appear to AIPAF and in the member directory.</p>
-          <div class="field-grid">
-            <div class="field"><label for="profile-first-name">First name</label><input id="profile-first-name" name="firstName" required></div>
-            <div class="field"><label for="profile-last-name">Last name</label><input id="profile-last-name" name="lastName" required></div>
-            <div class="field"><label for="profile-country">Country</label><input id="profile-country" name="country"></div>
-            <div class="field"><label for="profile-organisation">Organisation</label><input id="profile-organisation" name="organisation"></div>
-            <div class="field"><label for="profile-designation">Designation</label><input id="profile-designation" name="designation"></div>
-            <div class="field"><label for="profile-phone">Phone</label><input id="profile-phone" name="phone" type="tel"></div>
-            <div class="field"><label for="profile-website">Website</label><input id="profile-website" name="website" type="url"></div>
-            <div class="field"><label for="profile-linkedin">LinkedIn</label><input id="profile-linkedin" name="linkedIn" type="url"></div>
-            <div class="field"><label for="profile-public-email">Public email</label><input id="profile-public-email" name="publicEmail" type="email"></div>
-            <div class="field field-full"><label for="profile-bio">Bio</label><textarea id="profile-bio" name="bio" rows="5" maxlength="2000"></textarea></div>
-          </div>
-          <div class="mp-actions">
-            <button class="btn" type="submit">Save changes</button>
-            <button class="btn secondary" type="button" id="profile-cancel">Cancel</button>
-          </div>
-          <p class="form-status" role="status" aria-live="polite"></p>
-        </form>
-
-  
-  <section class="card"><h2>Membership services</h2><p class="sub">Jump to what you need.</p>
-    <div class="service-grid">
-      <a class="mini-card" href="/member-payments"><h3>Payments</h3><p>Pay for membership, examinations or subscriptions.</p></a>
-      <a class="mini-card" href="/member-examinations"><h3>Examinations</h3><p>View open examinations and register.</p></a>
-      <a class="mini-card" href="/member-cpd"><h3>CPD</h3><p>Submit learning activities and track approval.</p></a>
-      <a class="mini-card" href="/member-certificates"><h3>Certificates</h3><p>View credentials once they are issued.</p></a>
-      <a class="mini-card" href="/member-security"><h3>Security</h3><p>Change your password.</p></a>
-    </div></section>
+  <nav class="mp-tabs" aria-label="Member portal"><a href="/member-profile">Profile</a><a href="/member-payments">Payments</a><a href="/member-examinations" aria-current="page">Examinations</a><a href="/member-cpd">CPD</a><a href="/member-certificates">Certificates</a><a href="/member-security">Security</a></nav>
+  <div class="page-head"><div><h1>Examinations</h1><p>Open assessments you can register for.</p></div><span class="who" id="who"></span></div>
+<section class="card"><h2>Open examinations</h2><p class="sub">Register for an assessment.</p>
+    <div id="examination-list" class="record-list"></div>
+    <p class="form-status" id="examination-status" role="status" aria-live="polite"></p></section>
 </div>
 </div>
 <script src="/js/member.js"></script>
@@ -182,35 +129,31 @@ to { opacity: 1; transform: none; }
   var member = await window.Member.requireAuth();
   document.querySelector("#who").textContent = member.email;
 
-  var form = document.querySelector('#profile-form');
-  var status = form.querySelector('.form-status');
-  var current = member;
-  function set(id, v) { document.querySelector(id).value = v || ''; }
-  function render(m) {
-    current = m;
-    document.querySelector('#profile-email').textContent = m.email;
-    document.querySelector('#profile-name').textContent = m.first_name + ' ' + m.last_name;
-    document.querySelector('#profile-grade').textContent = 'Grade: ' + (m.membership_grade || 'Not assigned');
-    document.querySelector('#d-organisation').textContent = 'Organisation: ' + (m.organisation || 'Not provided');
-    document.querySelector('#d-designation').textContent = 'Designation: ' + (m.designation || 'Not provided');
-    var st = document.querySelector('#profile-status');
-    st.textContent = m.membership_status; st.className = 'status ' + (m.membership_status || 'unverified');
-    document.querySelector('#profile-avatar').textContent = (m.first_name || 'A').charAt(0).toUpperCase();
-    set('#profile-first-name', m.first_name); set('#profile-last-name', m.last_name); set('#profile-country', m.country);
-    set('#profile-organisation', m.organisation); set('#profile-designation', m.designation); set('#profile-phone', m.phone);
-    set('#profile-website', m.website); set('#profile-linkedin', m.linked_in); set('#profile-public-email', m.public_email);
-    set('#profile-bio', m.bio);
+  var list = document.querySelector('#examination-list');
+  var status = document.querySelector('#examination-status');
+  async function load() {
+    try {
+      var payload = await window.Member.json(await window.apiFetch('/api/member-records?action=examinations'), 'Unable to load examinations.');
+      var open = (payload.items || []).filter(function (i) { return i.status === 'open'; });
+      if (!open.length) { window.Member.renderRecords([], list, 'No open examinations are available at the moment.'); return; }
+      list.innerHTML = '';
+      open.forEach(function (exam) {
+        var row = document.createElement('article'); row.className = 'record-item';
+        var t = document.createElement('strong'); t.textContent = exam.name;
+        var d = document.createElement('p'); d.textContent = exam.code + ' • Opens ' + (exam.opens_at || 'immediately') + ' • Closes ' + (exam.closes_at || 'not specified');
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'btn secondary small'; b.textContent = 'Register';
+        b.addEventListener('click', async function () {
+          status.className = 'form-status'; status.textContent = 'Registering...'; b.disabled = true;
+          try {
+            await window.Member.json(await window.Member.post('/api/member-records?action=register-examination', { examinationId: exam.id }), 'Unable to register for this examination.');
+            status.className = 'form-status ok'; status.textContent = 'Registration submitted.';
+          } catch (e) { status.textContent = e.message; }
+          b.disabled = false;
+        });
+        row.appendChild(t); row.appendChild(d); row.appendChild(b); list.appendChild(row);
+      });
+    } catch (e) { status.textContent = e.message; }
   }
-  render(member);
-  document.querySelector('#profile-toggle-edit').addEventListener('click', function () { form.hidden = false; form.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-  document.querySelector('#profile-cancel').addEventListener('click', function () { status.textContent = ''; form.hidden = true; render(current); });
-  document.querySelector('#member-verify-email-button').addEventListener('click', function () { window.location.href = '/member-verify-email'; });
-  document.querySelector('#member-signout').addEventListener('click', window.Member.signOut);
-  window.Member.bindForm(form, status, async function (data) {
-    var payload = await window.Member.json(await window.Member.post('/api/member-profile', data, 'PUT'), 'Unable to update your profile.');
-    render(Object.assign({}, current, payload.member));
-    form.hidden = true;
-    return null;
-  });
+  load();
 })();
 </script>
