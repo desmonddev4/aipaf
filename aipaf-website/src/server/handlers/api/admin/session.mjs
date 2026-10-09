@@ -28,7 +28,7 @@ function isConfiguredKey(token, role) {
 export function createAdminSession(token) {
   const payload = JSON.stringify({ token, issuedAt: Date.now() });
   const signed = `${Buffer.from(payload).toString('base64url')}.${sign(payload)}`;
-  return `${SESSION_COOKIE}=${encodeURIComponent(signed)}; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}`;
+  return `${SESSION_COOKIE}=${encodeURIComponent(signed)}; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}`;
 }
 
 export function verifyAdminSession(request) {
@@ -66,7 +66,7 @@ export default async function handler(request) {
       status: 200,
       headers: {
         'content-type': 'application/json; charset=utf-8',
-        'set-cookie': `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=0`,
+        'set-cookie': `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=0`,
         'cache-control': 'no-store',
       },
     });
