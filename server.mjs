@@ -40,7 +40,17 @@ createServer(async (req, res) => {
 
   // Only handle API routes
   if (!pathname.startsWith('/api/')) {
-    res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+    const errorHeaders = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': allowedOrigin,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+      'Access-Control-Allow-Credentials': allowedOrigin !== '*' ? 'true' : 'false',
+    };
+    if (allowedOrigin !== '*') {
+      errorHeaders['Vary'] = 'Origin';
+    }
+    res.writeHead(404, errorHeaders);
     return res.end(JSON.stringify({ ok: false, message: 'API only server. Frontend is on Vercel.' }));
   }
 
@@ -48,7 +58,17 @@ createServer(async (req, res) => {
     await handleApiRequest(req, res, pathname, req.headers.origin);
   } catch (error) {
     console.error('API error:', error);
-    res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+    const errorHeaders = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': allowedOrigin,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+      'Access-Control-Allow-Credentials': allowedOrigin !== '*' ? 'true' : 'false',
+    };
+    if (allowedOrigin !== '*') {
+      errorHeaders['Vary'] = 'Origin';
+    }
+    res.writeHead(500, errorHeaders);
     res.end(JSON.stringify({ ok: false, message: 'Internal server error.' }));
   }
 }).listen(port, () => console.log(`AIPAF API server running on port ${port}`));
@@ -90,7 +110,17 @@ async function handleApiRequest(req, res, pathname, origin) {
   const route = routeMap[apiPath] || routeMap[apiPath.replace(/\/$/, '')];
 
   if (!route) {
-    res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+    const errorHeaders = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': allowedOrigin,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+      'Access-Control-Allow-Credentials': allowedOrigin !== '*' ? 'true' : 'false',
+    };
+    if (allowedOrigin !== '*') {
+      errorHeaders['Vary'] = 'Origin';
+    }
+    res.writeHead(404, errorHeaders);
     return res.end(JSON.stringify({ ok: false, message: 'Route not found.' }));
   }
 
