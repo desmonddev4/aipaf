@@ -154,6 +154,8 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
 .btn { padding: .65rem 1rem; margin-top: .2rem; }
 .form-status { margin-top: .4rem; min-height: 1rem; }
 .ai-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .3rem 1rem; margin-top: .5rem; padding-top: .7rem; font-size: .8rem; }
+.ai-home { margin-top: .8rem; padding: .6rem 1rem; font-size: .85rem; }
+.ai-home:hover { color: #fff; background: rgba(255, 255, 255, .18); }
 </style>
 </head>
 <body>
@@ -178,6 +180,10 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
       <span>Need an account? <a href="/member-register">Register now</a></span>
       <a href="/member-verify-email">Verify your email</a>
     </div>
+    <a class="btn btn-ghost ai-home" href="/">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      Back to main website
+    </a>
   </section>
 </main>
 <script type="module">
