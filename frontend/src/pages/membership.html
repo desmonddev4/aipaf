@@ -87,28 +87,30 @@
   .cx tbody tr:hover { background: var(--cx-row); }
 
   /* Form */
-  .cx .form-card { padding: clamp(1.5rem, 4vw, 2.5rem); border-radius: 26px; }
-  .cx .form-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+  .cx .form-card { padding: clamp(1.1rem, 2.5vw, 1.6rem); border-radius: 20px; }
+  .cx .form-grid { display: grid; gap: .85rem 1rem; grid-template-columns: 1fr; }
   @media (min-width: 600px) { .cx .form-grid { grid-template-columns: 1fr 1fr; } .cx .field-full { grid-column: 1 / -1; } }
-  .cx .field label { display: block; margin-bottom: .45rem; font-size: 1rem; font-weight: 600; color: var(--cx-ink); }
+  .cx .field label { display: block; margin-bottom: .3rem; font-size: .85rem; font-weight: 600; color: var(--cx-ink); }
   .cx .hint { font-weight: 400; color: var(--cx-muted); }
-  .cx .field input, .cx .field select, .cx .field textarea { width: 100%; padding: .9rem 1rem; font: inherit; font-size: 1rem; color: var(--cx-ink); background: var(--cx-field); border: 1.5px solid var(--cx-line); border-radius: 14px; transition: border-color .2s, box-shadow .2s, background .2s; }
-  .cx .field textarea { min-height: 8.5rem; resize: vertical; }
+  .cx .field input, .cx .field select, .cx .field textarea { width: 100%; padding: .6rem .8rem; font: inherit; font-size: .92rem; color: var(--cx-ink); background: var(--cx-field); border: 1.5px solid var(--cx-line); border-radius: 10px; transition: border-color .2s, box-shadow .2s, background .2s; }
+  .cx .field label:has(> input[type=checkbox]) { display: flex; align-items: flex-start; gap: .6rem; font-weight: 500; line-height: 1.45; }
+  .cx .field input[type=checkbox] { width: 1.1rem; height: 1.1rem; padding: 0; margin: .15rem 0 0; flex: none; accent-color: var(--cx-green); }
+  .cx .field textarea { min-height: 6rem; resize: vertical; }
   .cx .field input:hover, .cx .field select:hover, .cx .field textarea:hover { border-color: rgba(2, 82, 29, .5); }
   .cx .field input:focus, .cx .field select:focus, .cx .field textarea:focus { outline: none; border-color: var(--cx-green); background: rgba(255, 255, 255, .92); color: #10231c; box-shadow: 0 0 0 4px rgba(2, 82, 29, .18); }
   .cx .field [aria-invalid="true"] { border-color: var(--cx-error); }
   .cx .field [aria-invalid="true"]:focus { box-shadow: 0 0 0 4px rgba(179, 38, 30, .16); }
   .cx .field.is-valid input, .cx .field.is-valid select { border-color: var(--cx-ok); }
-  .cx .field-error { margin: 0; max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-4px); font-size: .9rem; line-height: 1.4; color: var(--cx-error); transition: max-height .25s var(--cx-ease), opacity .25s, transform .25s var(--cx-ease), margin .25s; }
+  .cx .field-error { margin: 0; max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-4px); font-size: .8rem; line-height: 1.35; color: var(--cx-error); transition: max-height .25s var(--cx-ease), opacity .25s, transform .25s var(--cx-ease), margin .25s; }
   .cx .field-error.show { max-height: 3.5rem; opacity: 1; transform: none; margin-top: .4rem; }
   .cx .hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-  .cx .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1.75rem; }
-  .cx .form-status { margin: 0; font-size: 1rem; font-weight: 500; min-height: 1.5rem; }
+  .cx .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; margin-top: 1.25rem; }
+  .cx .form-status { margin: 0; font-size: .9rem; font-weight: 500; min-height: 1.5rem; }
   .cx .form-status.ok { color: var(--cx-ok); } .cx .form-status.err { color: var(--cx-error); }
-  .cx .form-note { margin: 1.25rem 0 0; font-size: .95rem; color: var(--cx-muted); }
+  .cx .form-note { margin: .9rem 0 0; font-size: .85rem; color: var(--cx-muted); }
 
   /* Buttons */
-  .cx .btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 3.1rem; padding: .85rem 1.9rem; font: inherit; font-size: 1.05rem; font-weight: 600; cursor: pointer; color: #fff; border: 0; border-radius: 999px; background: linear-gradient(135deg, var(--cx-green), var(--cx-green-dark)); box-shadow: 0 12px 24px -10px rgba(1, 58, 20, .7), inset 0 1px 0 rgba(255, 255, 255, .25); transition: transform .25s var(--cx-ease), box-shadow .25s var(--cx-ease), filter .2s; }
+  .cx .btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 2.6rem; padding: .6rem 1.5rem; font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; color: #fff; border: 0; border-radius: 999px; background: linear-gradient(135deg, var(--cx-green), var(--cx-green-dark)); box-shadow: 0 12px 24px -10px rgba(1, 58, 20, .7), inset 0 1px 0 rgba(255, 255, 255, .25); transition: transform .25s var(--cx-ease), box-shadow .25s var(--cx-ease), filter .2s; }
   .cx .btn::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .35) 50%, transparent 70%); transform: translateX(-120%); transition: transform .6s var(--cx-ease); }
   .cx .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 30px -12px rgba(1, 58, 20, .8), inset 0 1px 0 rgba(255, 255, 255, .3); }
   .cx .btn:hover::after { transform: translateX(120%); }
