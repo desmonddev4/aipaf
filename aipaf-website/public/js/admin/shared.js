@@ -21,7 +21,12 @@ export function statusBadge(value) {
 }
 
 export function readJson(response) {
-  return window.readApiJson(response);
+  try {
+    return response.json();
+  } catch (error) {
+    console.error('The server returned an invalid API response.', error);
+    throw new Error('We could not complete your request right now. Please try again.');
+  }
 }
 
 /* ---------- new helpers ---------- */
