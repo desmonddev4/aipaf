@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 const SITE_URL = process.env.SITE_URL || 'https://aipafgh.org'; // TODO: set SITE_URL in Vercel once the domain is final
-const API_BASE_URL = process.env.API_BASE_URL || 'https://aipaf-backend.onrender.com'; // Render backend URL
+const API_BASE_URL = process.env.API_BASE_URL || 'https://aipaf-website.onrender.com'; // Render backend URL
 
 const read = (p) => readFileSync(join(root, p), 'utf8');
 const partial = (name) => read(`src/partials/${name}.html`);

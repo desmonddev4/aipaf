@@ -2,7 +2,7 @@
 export const CONTACT_EMAIL = 'info@aipafgh.org';
 
 // Render backend API URL (update this to your actual Render backend URL)
-export const API_BASE_URL = 'https://aipaf-backend.onrender.com';
+export const API_BASE_URL = 'https://aipaf-website.onrender.com';
 
 export const ENDPOINTS = {
   contact: `${API_BASE_URL}/api/contact`,
