@@ -2,7 +2,7 @@ import { withDb } from '../db.mjs';
 import { jsonResponse } from '../_shared.mjs';
 import { requireAdmin } from '../_auth.mjs';
 import { createPasswordHash } from '../member-core.mjs';
-import { logAuditEntry } from '../../middleware/audit-logger.mjs';
+import { logAuditEntry } from '../../../middleware/audit-logger.mjs';
 
 const ALLOWED_STATUSES = ['unverified', 'pending', 'active', 'suspended', 'expired'];
 const ALLOWED_GRADES = ['student', 'affiliate', 'associate', 'member', 'fellow'];
