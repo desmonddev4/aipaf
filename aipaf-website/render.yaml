@@ -1,0 +1,33 @@
+# Render deployment configuration for AIPAF website
+services:
+  - type: web
+    name: aipaf-website
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.mjs
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: SITE_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: SECRETARIAT_EMAIL
+        sync: false
+      - key: ADMIN_SECRETARIAT_KEY
+        sync: false
+      - key: ADMIN_COUNCIL_KEY
+        sync: false
+      - key: PAYMENT_WEBHOOK_SECRET
+        sync: false
+      - key: CERTIFICATE_SECRET
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
