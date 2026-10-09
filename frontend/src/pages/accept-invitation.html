@@ -68,6 +68,19 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rg
 .ai-meter[data-s="2"] i:nth-child(-n+2) { background: #f2ac1f; }
 .ai-meter[data-s="3"] i:nth-child(-n+3) { background: #9be37b; }
 .ai-meter[data-s="4"] i { background: #3fbf6b; }
+.ai-card:has(.ai-grid:not([hidden])) { width: min(100%, 60rem); }
+@media (min-width: 52rem) {
+  .ai-grid:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: start; }
+  .ai-grid .lead { margin-bottom: 1.2rem; }
+  .ai-grid .ai-details { margin-bottom: 0; }
+  .ai-grid form { padding: 1.4rem; border: 1px solid var(--line); border-radius: 1.2rem; background: rgba(0, 12, 6, .25); }
+  .ai-grid .ai-check { margin: .8rem 0 1rem; }
+  .ai-grid .form-status { margin-top: .6rem; min-height: 1.2rem; }
+}
+.ai-grid .meta { margin-bottom: 1.4rem; }
+@media (min-width: 52rem) { .ai-grid .meta { margin-bottom: 0; } }
+.ai-scroll { white-space: nowrap; position: fixed; left: 50%; bottom: 1rem; z-index: 5; transform: translateX(-50%); display: inline-flex; align-items: center; gap: .4rem; padding: .55rem 1rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(10, 44, 22, .9); color: #fff; font-size: .85rem; font-weight: 700; cursor: pointer; box-shadow: 0 .8rem 1.6rem -.8rem #000; animation: bob 1.4s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translate(-50%, 4px); } }
 .ai-hint { margin-top: .35rem; color: var(--mute); font-size: .8rem; }
 
 .ai-check { display: flex; align-items: flex-start; gap: .7rem; margin: 1.2rem 0; color: var(--mute); font-size: .92rem; }
@@ -108,7 +121,8 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rg
 
     <div id="loading" class="ai-state" role="status"><div class="spinner"></div><p class="lead" style="margin:0">Checking your invitation…</p></div>
 
-    <div id="invitation-form-container" hidden>
+    <div id="invitation-form-container" class="ai-grid" hidden>
+      <div class="ai-intro">
       <h1>Welcome, <span id="first-name"></span>.</h1>
       <p class="lead">You have been invited to join the African Institute of Project Assurance and Forensics. Create a password to activate your account.</p>
 
@@ -117,17 +131,19 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rg
         <div><span>Invited as</span><strong><b class="ai-grade" id="grade-display"></b></strong></div>
         <div id="qualification-container"><span>Qualification</span><strong id="qualification-display"></strong></div>
       </div>
+      <p class="meta">Questions? Contact the <a href="/contact">Secretariat</a>.</p>
+      </div>
 
       <form id="accept-form" novalidate>
         <div class="field">
           <label for="password">Create your password</label>
-          <div class="pw"><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" required><button type="button" data-toggle>Show</button></div>
+          <div class="pw"><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required><button type="button" data-toggle>Show</button></div>
           <div class="ai-meter" id="meter" data-s="0" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-          <p class="ai-hint">At least 12 characters. Mix letters, numbers and symbols.</p>
+          <p class="ai-hint">At least 8 characters. Mix letters, numbers and symbols for a stronger password.</p>
         </div>
         <div class="field">
           <label for="confirm-password">Confirm password</label>
-          <div class="pw"><input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="12" required><button type="button" data-toggle>Show</button></div>
+          <div class="pw"><input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required><button type="button" data-toggle>Show</button></div>
         </div>
         <label class="ai-check" for="consent">
           <input id="consent" name="consent" type="checkbox" required>
@@ -136,7 +152,6 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rg
         <button class="btn" type="submit">Accept invitation &amp; create account</button>
         <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
       </form>
-      <p class="meta">Questions? Contact the <a href="/contact">Secretariat</a>.</p>
     </div>
 
     <div id="success" class="ai-state ok" hidden role="status">
@@ -154,6 +169,7 @@ input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rg
     </div>
   </div>
 </main>
+<button class="ai-scroll" id="scroll-hint" type="button" hidden>Scroll down <span aria-hidden="true">↓</span></button>
 
 <script type="module">
 import { apiUrl } from '/js/config.js';
@@ -212,7 +228,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const password = $('password').value;
   const confirmPassword = $('confirm-password').value;
-  if (password.length < 12) return say('Password must be at least 12 characters.');
+  if (password.length < 8) return say('Password must be at least 8 characters.');
   if (password !== confirmPassword) return say('Passwords do not match.');
   if (!$('consent').checked) return say('You must accept the privacy notice and code of conduct.');
 
@@ -236,6 +252,19 @@ form.addEventListener('submit', async (event) => {
 });
 
 check();
+
+(function () {
+  var hint = document.getElementById('scroll-hint');
+  function check() {
+    var box = document.getElementById('invitation-form-container');
+    var more = box && !box.hidden && (window.scrollY + innerHeight < document.documentElement.scrollHeight - 80);
+    hint.hidden = !more;
+  }
+  hint.addEventListener('click', function () { document.getElementById('password').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  addEventListener('scroll', check, { passive: true });
+  addEventListener('resize', check);
+  setInterval(check, 700);
+})();
 </script>
 </body>
 </html>
