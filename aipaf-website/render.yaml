@@ -1,5 +1,15 @@
-# Render deployment configuration for AIPAF website
+# Render Blueprint for AIPAF Website
+# This blueprint creates both the web service and PostgreSQL database
+
 services:
+  # PostgreSQL Database
+  - type: pserv
+    name: aipaf-database
+    plan: free
+    databaseName: aipaf
+    user: aipaf_user
+
+  # Web Service
   - type: web
     name: aipaf-website
     env: node
@@ -9,9 +19,11 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 18
-      - key: SITE_URL
-        sync: false
       - key: DATABASE_URL
+        fromDatabase:
+          name: aipaf-database
+          property: connectionString
+      - key: SITE_URL
         sync: false
       - key: SESSION_SECRET
         sync: false

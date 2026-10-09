@@ -1,69 +1,93 @@
 # Render Deployment Guide for AIPAF Website
 
-This guide explains how to deploy the AIPAF website backend on Render.com.
+This guide explains how to deploy the AIPAF website backend on Render.com using the Blueprint for a simple one-click deployment.
 
 ## Prerequisites
 
-1. A Render account (free tier available)
-2. A PostgreSQL database (Render Postgres recommended)
-3. A Resend account for email
-4. (Optional) Paystack account for payments
+1. A Render account (free tier available) - Sign up at https://render.com
+2. A Resend account for email - Sign up at https://resend.com
+3. (Optional) Paystack account for payments - Sign up at https://paystack.co
 
-## 1. Database Setup
+## Quick Deploy (Blueprint Method - Recommended)
 
-### Create PostgreSQL Database on Render
+The `render.yaml` blueprint automatically creates:
+- ✅ PostgreSQL database
+- ✅ Web service with automatic database connection
+- ✅ All required environment variables
 
-1. Go to Render Dashboard → New → PostgreSQL
-2. Choose a name (e.g., `aipaf-db`)
-3. Select the Free tier
-4. Create the database
-5. Copy the **Internal Database URL** from the database dashboard
-6. This is your `DATABASE_URL`
+### Steps:
 
-### Run Database Migration
+1. **Push your code to GitHub** (if not already done)
+   ```bash
+   git add .
+   git commit -m "Ready for Render deployment"
+   git push origin main
+   ```
 
-Once you have the `DATABASE_URL`, run the migration locally:
+2. **Deploy using Blueprint**
+   - Go to Render Dashboard → New → Blueprint
+   - Connect your GitHub repository
+   - Render will automatically detect `render.yaml`
+   - Review the configuration (shows web service + database)
+   - Click **Apply** to deploy
 
-```bash
-# Set the DATABASE_URL environment variable
-export DATABASE_URL="postgresql://user:password@host:5432/dbname"
+3. **Configure Environment Variables**
+   - After deployment, go to your web service → Settings → Environment Variables
+   - Fill in the required variables (see below)
+   - The `DATABASE_URL` is already set automatically by the blueprint
 
-# Run the migration
-npm run db:migrate
-```
+4. **Run Database Migration**
+   - Go to your PostgreSQL database in Render
+   - Click **Connect** → **External Connection**
+   - Copy the **Internal Database URL**
+   - Run migration locally:
+     ```bash
+     export DATABASE_URL="paste_your_database_url_here"
+     npm run db:migrate
+     ```
 
-## 2. Deploy the Web Service
+That's it! Your site is now deployed.
 
-### Option A: Using render.yaml (Recommended)
+---
 
-1. Push your code to GitHub
-2. Go to Render Dashboard → New → Blueprint
-3. Connect your GitHub repository
-4. Render will automatically detect `render.yaml`
-5. Review the configuration and deploy
+## Manual Setup (Alternative)
 
-### Option B: Manual Setup
+If you prefer not to use the Blueprint, you can set up manually:
 
-1. Go to Render Dashboard → New → Web Service
-2. Connect your GitHub repository
-3. Configure:
-   - **Name**: aipaf-website
-   - **Region**: Oregon (or closest to your users)
-   - **Branch**: main
-   - **Runtime**: Node
-   - **Build Command**: `npm install`
-   - **Start Command**: `node server.mjs`
-4. Click **Create Web Service**
+1. **Create PostgreSQL Database**
+   - Go to Render Dashboard → New → PostgreSQL
+   - Name it `aipaf-database`
+   - Select Free tier
+   - Create and copy the Internal Database URL
 
-## 3. Configure Environment Variables
+2. **Create Web Service**
+   - Go to Render Dashboard → New → Web Service
+   - Connect your GitHub repository
+   - Configure:
+     - **Name**: aipaf-website
+     - **Region**: Oregon (or closest to your users)
+     - **Branch**: main
+     - **Runtime**: Node
+     - **Build Command**: `npm install`
+     - **Start Command**: `node server.mjs`
+   - Click **Create Web Service**
 
-In your Render web service, add the following environment variables:
+3. **Add DATABASE_URL**
+   - In web service → Settings → Environment Variables
+   - Add `DATABASE_URL` with the database URL you copied
+
+Then continue with the environment variables configuration above.
+
+---
+
+## Configure Environment Variables
+
+In your Render web service (Settings → Environment Variables), add the following:
 
 ### Required Variables
 
 ```text
 SITE_URL=https://your-app-name.onrender.com
-DATABASE_URL=postgresql://user:password@host:5432/dbname
 SESSION_SECRET=a_very_long_random_string_at_least_32_chars
 RESEND_API_KEY=re_xxxxxxxxxxxxx
 EMAIL_FROM=AIPAF Website <noreply@your-domain.com>
@@ -72,6 +96,8 @@ ADMIN_SECRETARIAT_KEY=a_very_long_random_string_at_least_32_chars
 ADMIN_COUNCIL_KEY=a_different_very_long_random_string_at_least_32_chars
 CERTIFICATE_SECRET=a_very_long_random_string_at_least_32_chars
 ```
+
+**Note:** `DATABASE_URL` is automatically set by the blueprint - no need to configure it manually.
 
 ### Optional Variables (for payments)
 
@@ -88,28 +114,28 @@ Run this command to generate secure random strings:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-## 4. Configure Email (Resend)
+## Configure Email (Resend)
 
 1. Create a Resend account at https://resend.com
 2. Go to API Keys and create an API key
-3. Copy the API key as `RESEND_API_KEY`
+3. Copy the API key as `RESEND_API_KEY` in Render
 4. Configure your sending domain in Resend
 5. Add the required DNS records (SPF, DKIM, DMARC) to your domain
 6. Set `EMAIL_FROM` to use your verified domain
 7. Set `SECRETARIAT_EMAIL` to the email that should receive notifications
 
-## 5. Configure Paystack (Optional)
+## Configure Paystack (Optional)
 
 1. Create a Paystack account at https://paystack.co
 2. Go to Settings → API Keys
-3. Copy the Secret Key as `PAYSTACK_SECRET_KEY`
-4. Generate a webhook secret and set it as `PAYMENT_WEBHOOK_SECRET`
+3. Copy the Secret Key as `PAYSTACK_SECRET_KEY` in Render
+4. Generate a webhook secret and set it as `PAYMENT_WEBHOOK_SECRET` in Render
 5. Configure the webhook URL in Paystack:
    ```
    https://your-app-name.onrender.com/api/member-records?action=webhook
    ```
 
-## 6. Post-Deployment Verification
+## Post-Deployment Verification
 
 After deployment, verify the following:
 
