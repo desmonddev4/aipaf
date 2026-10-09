@@ -1,4 +1,4 @@
-# Render Deployment Guide for AIPAF Website
+# Render Deployment Guide for AIPAF Backend
 
 This guide explains how to deploy the AIPAF website backend on Render.com using the Blueprint for a simple one-click deployment.
 
@@ -64,7 +64,7 @@ If you prefer not to use the Blueprint, you can set up manually:
    - Go to Render Dashboard → New → Web Service
    - Connect your GitHub repository
    - Configure:
-     - **Name**: aipaf-website
+     - **Name**: aipaf-backend
      - **Region**: Oregon (or closest to your users)
      - **Branch**: main
      - **Runtime**: Node

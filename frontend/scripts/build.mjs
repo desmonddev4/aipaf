@@ -29,6 +29,7 @@ writeFileSync(configPath, updatedConfig, 'utf8');
 const layout = partial('layout');
 const header = partial('Navbar');
 const footer = partial('footer');
+const adminSidebar = read('src/admin/partials/sidebar.html').trim();
 const year = new Date().getFullYear();
 
 function renderPage(raw, meta, slug, adminStyles = '') {
@@ -89,7 +90,15 @@ if (existsSync(join(root, adminDir))) {
     const meta = JSON.parse(metadataMatch[1]);
     const slug = file.replace(/\.html$/, '');
     const adminStyles = slug === 'cms-admin' ? '' : read('public/css/admin.css');
-    writeFileSync(join(dist, file), renderPage(raw.slice(metadataMatch[0].length), meta, slug, adminStyles));
+    let content = raw.slice(metadataMatch[0].length);
+    if (/^admin(?:-|$)/.test(slug) && slug !== 'admin-login') {
+      const sidebarPlaceholder = '<aside class="admin-sidebar" id="admin-sidebar"></aside>';
+      if (!content.includes(sidebarPlaceholder)) {
+        throw new Error(`${file}: missing admin sidebar placeholder`);
+      }
+      content = content.replace(sidebarPlaceholder, adminSidebar);
+    }
+    writeFileSync(join(dist, file), renderPage(content, meta, slug, adminStyles));
   }
 }
 

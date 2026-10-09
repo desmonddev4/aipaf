@@ -47,32 +47,21 @@ function generateSidebar() {
   if (!sidebar) return;
 
   const active = getCurrentSectionFromPath();
+  const navList = sidebar.querySelector('#admin-section-links');
+  if (!navList) throw new Error('Admin sidebar is missing #admin-section-links');
 
-  sidebar.innerHTML = `
-    <div class="sidebar-header">
-      <h2>Admin Dashboard</h2>
-      <p class="sidebar-user" id="sidebar-user-name">Loading…</p>
-    </div>
-    <nav class="sidebar-nav" aria-label="Admin navigation">
-      <ul>
-        ${adminSections.map((section) => {
-          const isActive = section.id === active;
-          return `
-          <li>
-            <a href="${section.path}" class="nav-link${isActive ? ' nav-link-active' : ''}"${isActive ? ' aria-current="page"' : ''}>
-              ${icons[section.icon]}
-              <span>${section.label}</span>
-            </a>
-          </li>`;
-        }).join('')}
-      </ul>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn btn-ghost btn-sm" type="button" id="admin-signout">Sign out</button>
-    </div>
-  `;
+  navList.innerHTML = adminSections.map((section) => {
+    const isActive = section.id === active;
+    return `
+      <li>
+        <a href="${section.path}" class="nav-link${isActive ? ' nav-link-active' : ''}"${isActive ? ' aria-current="page"' : ''}>
+          ${icons[section.icon]}
+          <span>${section.label}</span>
+        </a>
+      </li>`;
+  }).join('');
 
-  document.getElementById('admin-signout')?.addEventListener('click', handleSignout);
+  sidebar.querySelector('#admin-signout')?.addEventListener('click', handleSignout);
 }
 
 // Sign out

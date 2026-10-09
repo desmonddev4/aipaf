@@ -149,11 +149,11 @@ Then continue with the database migration step above.
 1. **Import the repository into Vercel**
    - Go to Vercel Dashboard → Add New Project
    - Import your GitHub repository
-   - Select the `aipaf-website` directory
+   - Select the `frontend` directory
 
 2. **Configure Vercel Project**
    - **Framework Preset**: Other
-   - **Root Directory**: aipaf-website
+   - **Root Directory**: `frontend`
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
 

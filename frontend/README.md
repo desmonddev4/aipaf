@@ -56,8 +56,8 @@ frontend/
 ├── src/
 │   ├── pages/           # HTML page templates
 │   ├── admin/pages/     # Admin page templates
+│   ├── admin/partials/  # Reusable admin layout, including the sidebar
 │   ├── partials/        # Reusable components (layout, navbar, footer)
-│   └── server/          # Server-side files (not used in Vercel)
 └── public/              # Static assets
     ├── css/             # Stylesheets
     ├── js/              # JavaScript files
@@ -71,7 +71,7 @@ The build script (`scripts/build.mjs`) will:
 1. Clean the `dist` directory
 2. Copy `public/` to `dist/`
 3. Wrap pages in `src/pages/` and admin content templates in `src/admin/pages/` with the shared layout; keep the standalone admin login page intact
-4. Embed the shared admin console stylesheet in generated admin pages
+4. Insert `src/admin/partials/sidebar.html` into admin pages and embed the shared admin console stylesheet
 5. Generate sitemap.xml and robots.txt
 6. Update API_BASE_URL in config.js based on environment variable
 
@@ -103,4 +103,4 @@ npx serve dist
 
 - This is a static site build - no Node.js runtime is required on Vercel
 - The build process uses only Node.js built-in modules (no external dependencies)
-- The backend API should be deployed separately (e.g., on Render, Railway, or another platform)
+- The backend API source is maintained at the repository root and deployed separately to Render.

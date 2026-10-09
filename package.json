@@ -1,12 +1,12 @@
 {
-  "name": "aipaf-website",
+  "name": "aipaf-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "African Institute of Project Assurance and Forensics - corporate website (frontend)",
+  "description": "African Institute of Project Assurance and Forensics API backend",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "dev": "node scripts/dev.mjs",
+    "build": "npm --prefix frontend run build",
+    "dev": "npm --prefix frontend run dev",
     "start": "node server.mjs",
     "test:backend": "node --test test/backend.test.mjs",
     "db:migrate": "node scripts/db-migrate.mjs",
