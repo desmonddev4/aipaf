@@ -1,4 +1,4 @@
-import { apiFetch, cell, escapeHtml, statusBadge, emptyState, toast, setBusy, formatDate } from './shared.js';
+import { confirmDialog, apiFetch, cell, escapeHtml, statusBadge, emptyState, toast, setBusy, formatDate } from './shared.js';
 
 async function fetchInvitations(status, limit) {
   try {
@@ -32,6 +32,16 @@ async function sendInvitation(id) {
     console.error('Error sending invitation:', error);
     throw error;
   }
+}
+
+async function deleteInvitation(id) {
+  const response = await apiFetch('/api/member-invitations?action=delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.ok) throw new Error(result.message || 'Failed to delete invitation');
 }
 
 async function createManualInvitation(data) {
@@ -72,7 +82,9 @@ function renderInvitationsTable(invitations) {
   const rows = invitations.map((inv) => {
     const send = inv.status === 'pending'
       ? `<button class="btn btn-gold btn-sm" type="button" data-action="send" data-id="${escapeHtml(inv.id)}">Send email</button>`
-      : '<span class="iv-done">—</span>';
+      : '';
+    const remove = inv.status === 'accepted' ? ''
+      : `<button class="btn btn-danger btn-sm" type="button" data-action="delete" data-id="${escapeHtml(inv.id)}" data-name="${escapeHtml(inv.full_name)}">Delete</button>`;
     return '<tr>'
       + cell('Invitee', `<span class="iv-person"><strong>${escapeHtml(inv.full_name)}</strong><small>${escapeHtml(inv.email)}</small></span>`)
       + cell('Grade', `<span class="iv-grade">${escapeHtml(cap(inv.proposed_grade))}</span>`)
@@ -80,7 +92,7 @@ function renderInvitationsTable(invitations) {
       + cell('Status', statusBadge(inv.status))
       + cell('Sent', inv.sent_at ? formatDate(inv.sent_at) : '—')
       + cell('Expires', inv.expires_at ? formatDate(inv.expires_at) : '—')
-      + cell('Actions', `<div class="row-actions">${send}</div>`)
+      + cell('Actions', `<div class="row-actions">${send}${remove}${send || remove ? '' : '<span class="iv-done">—</span>'}</div>`)
       + '</tr>';
   }).join('');
 
@@ -191,6 +203,21 @@ export function initInvitations() {
   searchInput.addEventListener('input', show);
 
   tableContainer.addEventListener('click', async (event) => {
+    const del = event.target.closest('[data-action="delete"]');
+    if (del) {
+      const ok = await confirmDialog({ title: 'Delete this invitation?', message: `The invitation for ${del.dataset.name || 'this person'} will be removed and its link will stop working.`, confirmLabel: 'Delete', danger: true });
+      if (!ok) return;
+      setBusy(del, true);
+      try {
+        await deleteInvitation(del.dataset.id);
+        toast('Invitation deleted.', 'ok');
+        load();
+      } catch (error) {
+        toast(error.message || 'Failed to delete invitation.', 'err');
+        setBusy(del, false);
+      }
+      return;
+    }
     const button = event.target.closest('[data-action="send"]');
     if (!button) return;
     setBusy(button, true);

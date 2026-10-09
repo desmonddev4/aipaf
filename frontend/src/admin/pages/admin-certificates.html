@@ -204,6 +204,9 @@ td code { color: #f7d68a; }
 .records-grid, .certificate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1rem; }
 .records-actions, .certificate-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1.25rem; }
 /* ---------- certificates ---------- */
+.cert-issued { margin-top: 1.25rem; }
+.cert-issued h2 { margin: 0 0 .5rem; font-size: 1.15rem; }
+.cert-issued .cert-none { color: var(--mute); margin: .5rem 0 0; }
 .cert-layout { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
 .cert-title { margin-bottom: 1.1rem; font: 500 1.4rem/1.2 var(--serif); color: #fff; }
 .cert-member { margin-bottom: 1rem; }
@@ -303,6 +306,10 @@ input[aria-invalid="true"] { border-color: var(--red); }
             <button class="btn btn-ghost btn-sm" type="button" id="certificate-copy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy token</button>
           </div>
         </aside>
+      </section>
+      <section class="panel cert-issued" aria-labelledby="certificate-issued-title">
+        <h2 id="certificate-issued-title">Issued certificates</h2>
+        <div id="certificate-issued-list"><p class="cert-none">Loading…</p></div>
       </section>
     </main>
   </div>

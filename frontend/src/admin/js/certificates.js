@@ -1,4 +1,4 @@
-import { apiFetch, authHeaders, readJson, setBusy, toast, escapeHtml } from './shared.js';
+import { apiFetch, authHeaders, readJson, setBusy, toast, escapeHtml, confirmDialog } from './shared.js';
 
 export function initCertificates() {
   const form = document.querySelector('#certificate-form');
@@ -149,7 +149,7 @@ export function initCertificates() {
 
     try {
       const data = Object.fromEntries(new FormData(form).entries());
-      data.id = [Date.now(), Math.random().toString(16).slice(2)].join('-');
+      data.id = crypto.randomUUID();
       const response = await apiFetch('/api/certificates?action=issue', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
@@ -170,6 +170,7 @@ export function initCertificates() {
       document.querySelector('#certificate-type').value = 'professional';
       issuedInput.value = new Date().toISOString().slice(0, 10);
       updatePreview();
+      loadIssued();
     } catch (error) {
       status.className = 'certificate-status';
       status.textContent = error.message;
@@ -179,6 +180,43 @@ export function initCertificates() {
     }
   });
 
+  const issuedList = $('#certificate-issued-list');
+  async function loadIssued() {
+    try {
+      const response = await apiFetch('/api/certificates?action=list');
+      const payload = await readJson(response);
+      if (!response.ok || !payload.ok) throw new Error(payload.message || 'Unable to load certificates.');
+      const items = payload.items || [];
+      issuedList.innerHTML = items.length
+        ? `<div class="table-scroll"><table><thead><tr><th>Member</th><th>Certificate</th><th>Type</th><th>Issued</th><th>Actions</th></tr></thead><tbody>${items.map((c) => {
+          const who = `${c.first_name || ''} ${c.last_name || ''}`.trim() || c.email || '—';
+          return `<tr><td data-label="Member">${escapeHtml(who)}</td><td data-label="Certificate">${escapeHtml(c.name)}</td><td data-label="Type">${escapeHtml(TYPES[c.type] || c.type)}</td><td data-label="Issued">${escapeHtml(dateText(String(c.issued_at).slice(0, 10)))}</td><td data-label="Actions"><button class="btn btn-danger btn-sm" type="button" data-delete="${escapeHtml(c.id)}" data-name="${escapeHtml(c.name)}">Delete</button></td></tr>`;
+        }).join('')}</tbody></table></div>`
+        : '<p class="cert-none">No certificates have been issued yet.</p>';
+    } catch (error) {
+      issuedList.innerHTML = `<p class="cert-none">${escapeHtml(error.message)}</p>`;
+    }
+  }
+
+  issuedList.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-delete]');
+    if (!button) return;
+    const ok = await confirmDialog({ title: 'Delete this certificate?', message: `"${button.dataset.name}" will be permanently removed and its verification token will stop working.`, confirmLabel: 'Delete', danger: true });
+    if (!ok) return;
+    setBusy(button, true);
+    try {
+      const response = await apiFetch('/api/certificates?action=delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: button.dataset.delete }) });
+      const payload = await readJson(response);
+      if (!response.ok || !payload.ok) throw new Error(payload.message || 'Unable to delete the certificate.');
+      toast('Certificate deleted.', 'ok');
+      loadIssued();
+    } catch (error) {
+      toast(error.message, 'err');
+      setBusy(button, false);
+    }
+  });
+
   issuedInput.value = new Date().toISOString().slice(0, 10);
   updatePreview();
+  loadIssued();
 }

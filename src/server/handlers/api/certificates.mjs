@@ -112,6 +112,39 @@ export default async function handler(request) {
     }
   }
 
+  if (request.method === 'GET' && action === 'list') {
+    const auth = requireAdmin(request);
+    if (auth.status) return jsonResponse({ ok: false, message: auth.message }, auth.status);
+    try {
+      const rows = await withDb(async (client) => client.query(
+        `SELECT c.id, c.name, c.grade, c.type, c.issued_at, c.expires_at, m.email, m.first_name, m.last_name
+         FROM certificates c LEFT JOIN members m ON m.id = c.member_id
+         ORDER BY c.created_at DESC LIMIT 200`,
+      ));
+      return jsonResponse({ ok: true, items: rows.rows });
+    } catch {
+      return jsonResponse({ ok: false, message: 'Unable to load certificates.' }, 503);
+    }
+  }
+
+  if (request.method === 'POST' && action === 'delete') {
+    const auth = requireAdmin(request);
+    if (auth.status) return jsonResponse({ ok: false, message: auth.message }, auth.status);
+    if (auth.role !== 'secretariat') return jsonResponse({ ok: false, message: 'Secretariat access is required.' }, 403);
+    const body = await request.json().catch(() => ({}));
+    const id = String(body.id || '');
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      return jsonResponse({ ok: false, message: 'A valid certificate ID is required.' }, 400);
+    }
+    try {
+      const result = await withDb(async (client) => client.query('DELETE FROM certificates WHERE id = $1', [id]));
+      if (result.rowCount === 0) return jsonResponse({ ok: false, message: 'Certificate not found.' }, 404);
+      return jsonResponse({ ok: true, message: 'Certificate deleted.' });
+    } catch {
+      return jsonResponse({ ok: false, message: 'Unable to delete the certificate.' }, 503);
+    }
+  }
+
   if (request.method === 'GET' && action === 'my-certificates') {
     const session = getSessionFromRequest(request);
     if (!session?.memberId) return jsonResponse({ ok: false, message: 'Authentication required.' }, 401);

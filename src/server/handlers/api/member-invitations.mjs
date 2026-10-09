@@ -396,5 +396,32 @@ export default async function handler(request) {
     }
   }
 
+  // Delete invitations that have not been accepted (accepted ones stay as a record of how the member joined)
+  if (request.method === 'POST' && action === 'delete') {
+    if (auth.role !== 'secretariat') {
+      return jsonResponse({ ok: false, message: 'Secretariat access is required to delete invitations.' }, 403);
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const ids = Array.isArray(body.ids) ? body.ids : (body.id ? [body.id] : []);
+    if (ids.length === 0 || ids.length > 500 || !ids.every((id) => typeof id === 'string' && uuid.test(id))) {
+      return jsonResponse({ ok: false, message: 'Valid invitation IDs are required.' }, 400);
+    }
+
+    try {
+      const deleted = await withDb((client) => client.query(
+        `DELETE FROM member_invitations WHERE id = ANY($1::uuid[]) AND status <> 'accepted' RETURNING id`,
+        [ids]
+      ));
+      if (deleted.rowCount === 0) {
+        return jsonResponse({ ok: false, message: 'Nothing was deleted. Accepted invitations cannot be deleted.' }, 400);
+      }
+      return jsonResponse({ ok: true, message: `Deleted ${deleted.rowCount} invitation${deleted.rowCount === 1 ? '' : 's'}.`, deleted: deleted.rowCount });
+    } catch (error) {
+      return jsonResponse({ ok: false, message: 'Unable to delete invitations.' }, 503);
+    }
+  }
+
   return jsonResponse({ ok: false, message: 'Unsupported action or method.' }, 400);
 }

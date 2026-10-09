@@ -1,4 +1,4 @@
-import { apiFetch, escapeHtml } from './shared.js';
+import { apiFetch, confirmDialog, escapeHtml, toast } from './shared.js';
 
 async function fetchMemberDetails(id) {
   try {
@@ -301,11 +301,11 @@ function showMemberDetailModal(memberData, onRefresh) {
     if (newData) {
       try {
         await updateMemberDetails(member.id, newData);
-        alert('Member details updated successfully.');
+        toast('Member details updated successfully.', 'ok');
         document.body.removeChild(modal);
         onRefresh();
       } catch (error) {
-        alert(error.message || 'Failed to update member details.');
+        toast(error.message || 'Failed to update member details.', 'err');
       }
     }
   });
@@ -317,11 +317,11 @@ function showMemberDetailModal(memberData, onRefresh) {
       if (!confirm(`Change grade to ${newGrade}?`)) return;
       try {
         await changeMemberGrade(member.id, newGrade);
-        alert('Member grade changed successfully.');
+        toast('Member grade changed successfully.', 'ok');
         document.body.removeChild(modal);
         onRefresh();
       } catch (error) {
-        alert(error.message || 'Failed to change member grade.');
+        toast(error.message || 'Failed to change member grade.', 'err');
       }
     }
   });
@@ -333,11 +333,11 @@ function showMemberDetailModal(memberData, onRefresh) {
       if (!confirm(`Change role to ${newRole}?`)) return;
       try {
         await changeMemberRole(member.id, newRole);
-        alert('Member role changed successfully.');
+        toast('Member role changed successfully.', 'ok');
         document.body.removeChild(modal);
         onRefresh();
       } catch (error) {
-        alert(error.message || 'Failed to change member role.');
+        toast(error.message || 'Failed to change member role.', 'err');
       }
     }
   });
@@ -349,11 +349,11 @@ function showMemberDetailModal(memberData, onRefresh) {
       if (!confirm('Verify this member\'s email?')) return;
       try {
         await verifyMemberEmail(member.id);
-        alert('Email verified successfully.');
+        toast('Email verified successfully.', 'ok');
         document.body.removeChild(modal);
         onRefresh();
       } catch (error) {
-        alert(error.message || 'Failed to verify email.');
+        toast(error.message || 'Failed to verify email.', 'err');
       }
     });
   }
@@ -364,34 +364,37 @@ function showMemberDetailModal(memberData, onRefresh) {
     if (newPassword && newPassword.length >= 12) {
       const confirmPass = prompt('Confirm new password:');
       if (newPassword !== confirmPass) {
-        alert('Passwords do not match.');
+        toast('Passwords do not match.', 'err');
         return;
       }
       if (!confirm('Reset this member\'s password? This action cannot be undone.')) return;
       try {
         await resetMemberPassword(member.id, newPassword);
-        alert('Password reset successfully.');
+        toast('Password reset successfully.', 'ok');
       } catch (error) {
-        alert(error.message || 'Failed to reset password.');
+        toast(error.message || 'Failed to reset password.', 'err');
       }
     } else if (newPassword) {
-      alert('Password must be at least 12 characters.');
+      toast('Password must be at least 12 characters.', 'err');
     }
   });
 
   // Delete account
   modal.querySelector('#delete-account').addEventListener('click', async () => {
-    if (!confirm('Are you sure you want to delete this member account? This action cannot be undone and will delete all associated data.')) return;
-    const confirmText = prompt('Type "DELETE" to confirm account deletion:');
-    if (confirmText === 'DELETE') {
-      try {
-        await deleteMemberAccount(member.id);
-        alert('Member account deleted successfully.');
-        document.body.removeChild(modal);
-        onRefresh();
-      } catch (error) {
-        alert(error.message || 'Failed to delete account.');
-      }
+    const ok = await confirmDialog({
+      title: 'Delete this member account?',
+      message: 'This permanently deletes the account and all its associated data (profile, records, registrations). This cannot be undone.',
+      confirmLabel: 'Delete account',
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      await deleteMemberAccount(member.id);
+      toast('Member account deleted.', 'ok');
+      document.body.removeChild(modal);
+      onRefresh();
+    } catch (error) {
+      toast(error.message || 'Failed to delete account.', 'err');
     }
   });
 
@@ -407,9 +410,9 @@ function showMemberDetailModal(memberData, onRefresh) {
       a.download = `member-${member.id}-export.json`;
       a.click();
       URL.revokeObjectURL(url);
-      alert('Member data exported successfully.');
+      toast('Member data exported successfully.', 'ok');
     } catch (error) {
-      alert(error.message || 'Failed to export member data.');
+      toast(error.message || 'Failed to export member data.', 'err');
     }
   });
 
@@ -418,17 +421,17 @@ function showMemberDetailModal(memberData, onRefresh) {
     const targetId = prompt('Enter target member ID to merge this account into:');
     if (!targetId) return;
     if (targetId === member.id) {
-      alert('Cannot merge account into itself.');
+      toast('Cannot merge account into itself.', 'err');
       return;
     }
     if (!confirm(`Merge account ${member.email} into member ID ${targetId}? This will transfer all associated data and delete the source account.`)) return;
     try {
       await mergeMemberAccounts(member.id, targetId);
-      alert('Accounts merged successfully.');
+      toast('Accounts merged successfully.', 'ok');
       document.body.removeChild(modal);
       onRefresh();
     } catch (error) {
-      alert(error.message || 'Failed to merge accounts.');
+      toast(error.message || 'Failed to merge accounts.', 'err');
     }
   });
 
@@ -438,11 +441,11 @@ function showMemberDetailModal(memberData, onRefresh) {
     if (newNotes !== null) {
       try {
         await updateAdminNotes(member.id, newNotes);
-        alert('Admin notes updated successfully.');
+        toast('Admin notes updated successfully.', 'ok');
         document.body.removeChild(modal);
         onRefresh();
       } catch (error) {
-        alert(error.message || 'Failed to update admin notes.');
+        toast(error.message || 'Failed to update admin notes.', 'err');
       }
     }
   });
