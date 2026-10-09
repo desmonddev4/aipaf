@@ -13,54 +13,50 @@ import { initSession } from './session.js';
 import { initSubmissions } from './submissions.js';
 import { toast } from './shared.js';
 
-// Initialize navigation
-initNavigation();
-
 const has = (selector) => Boolean(document.querySelector(selector));
 
-// Initialize modules based on current section
-const submissions = has('#admin-table-container') ? initSubmissions({
-  showLogin: (message) => {
-    if (message === 'Invalid or expired key.') {
-      window.location.replace('/admin-login');
-      return;
-    }
-    toast(message || 'Unable to load admin data.', 'err');
-  },
-}) : { refresh() {} };
-
-if (has('#records-table-container')) initRecords();
-if (has('#certificate-form')) initCertificates();
-if (has('#admin-table-container')) initMemberDetails();
-initSession({
-  onAuthenticated: submissions.refresh,
-});
-
-// Initialize section-specific modules
-if (has('#overview-report')) initOverview();
-if (has('#invitation-status')) initInvitations();
-if (has('#payment-status')) initPayments();
-if (has('#exam-status')) initExaminations();
-if (has('#apps-table-container')) initApplications();
-if (has('#deletions-table-container')) {
-  initDataDeletion({
-    showLogin: (message) => {
-      if (message === 'Invalid or expired key.') {
-        window.location.replace('/admin-login');
-        return;
-      }
-      toast(message || 'Unable to load admin data.', 'err');
-    },
-  });
+// One place decides what happens when a module reports a problem:
+// an expired or invalid session sends you to the login page, anything else is a toast.
+const AUTH_ERROR = /invalid or expired|unauthori[sz]ed|not authenticated|sign in again/i;
+function handleAuthError(message) {
+  if (AUTH_ERROR.test(message || '')) {
+    window.location.replace('/admin-login');
+    return;
+  }
+  toast(message || 'Unable to load admin data.', 'err');
 }
-if (has('#audit-table-container')) {
-  initAudit({
-    showLogin: (message) => {
-      if (message === 'Invalid or expired key.') {
-        window.location.replace('/admin-login');
-        return;
-      }
-      toast(message || 'Unable to load admin data.', 'err');
-    },
-  });
+
+// A failure in one section must not stop the rest of the page from starting.
+function start(name, init) {
+  try {
+    return init();
+  } catch (error) {
+    console.error(`Admin module "${name}" failed to start:`, error);
+    toast(`Part of this page failed to load (${name}).`, 'err');
+    return undefined;
+  }
 }
+
+// Sidebar + sign-out
+start('navigation', initNavigation);
+
+// Members / submissions table
+const noSubmissions = { refresh() {} };
+const submissions = has('#admin-table-container')
+  ? start('submissions', () => initSubmissions({ showLogin: handleAuthError })) || noSubmissions
+  : noSubmissions;
+
+if (has('#records-table-container')) start('records', initRecords);
+if (has('#certificate-form')) start('certificates', initCertificates);
+if (has('#admin-table-container')) start('member details', initMemberDetails);
+
+start('session', () => initSession({ onAuthenticated: submissions.refresh }));
+
+// Section-specific modules (each only runs on the page that has its markup)
+if (has('#overview-report')) start('overview', initOverview);
+if (has('#invitation-status')) start('invitations', initInvitations);
+if (has('#payment-status')) start('payments', initPayments);
+if (has('#exam-status')) start('examinations', initExaminations);
+if (has('#apps-table-container')) start('applications', initApplications);
+if (has('#deletions-table-container')) start('data deletion', () => initDataDeletion({ showLogin: handleAuthError }));
+if (has('#audit-table-container')) start('audit log', () => initAudit({ showLogin: handleAuthError }));
