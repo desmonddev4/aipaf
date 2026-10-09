@@ -1,3 +1,7 @@
+import { withDb } from '../db.mjs';
+import { jsonResponse } from '../_shared.mjs';
+import { requireAdmin } from '../_auth.mjs';
+
 export function buildAdminOverviewReport(data = {}) {
   const members = {
     total: Number(data.members?.total) || 0,
@@ -47,4 +51,73 @@ export function buildAdminOverviewReport(data = {}) {
       completionRate,
     },
   };
+}
+
+async function fetchOverviewData() {
+  return withDb(async (client) => {
+    const [membersResult, paymentsResult, examinationsResult, cpdResult, certificatesResult] = await Promise.all([
+      client.query(`
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE membership_status = 'active') AS active,
+          COUNT(*) FILTER (WHERE membership_status = 'pending') AS pending,
+          COUNT(*) FILTER (WHERE membership_status = 'unverified') AS unverified
+        FROM members
+      `),
+      client.query(`
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE status = 'paid') AS paid,
+          COUNT(*) FILTER (WHERE status = 'pending') AS pending,
+          COUNT(*) FILTER (WHERE status = 'failed') AS failed
+        FROM payments
+      `),
+      client.query(`
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE status = 'completed') AS completed,
+          COUNT(*) FILTER (WHERE status = 'registered' OR status = 'paid') AS pending
+        FROM examination_registrations
+      `),
+      client.query(`
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE status = 'approved') AS approved,
+          COUNT(*) FILTER (WHERE status = 'pending') AS pending,
+          COUNT(*) FILTER (WHERE status = 'rejected') AS rejected
+        FROM cpd_records
+      `),
+      client.query('SELECT COUNT(*) AS total FROM certificates'),
+    ]);
+
+    return {
+      members: membersResult.rows[0],
+      payments: paymentsResult.rows[0],
+      examinations: examinationsResult.rows[0],
+      cpd: cpdResult.rows[0],
+      certificates: certificatesResult.rows[0],
+    };
+  });
+}
+
+export default async function handler(request) {
+  const auth = requireAdmin(request, ['secretariat', 'council']);
+  if (auth.status) return jsonResponse({ ok: false, message: auth.message }, auth.status);
+
+  if (request.method !== 'GET') return jsonResponse({ ok: false, message: 'Method not allowed.' }, 405);
+
+  const url = new URL(request.url);
+  const action = url.searchParams.get('action');
+
+  if (action === 'overview') {
+    try {
+      const data = await fetchOverviewData();
+      const report = buildAdminOverviewReport(data);
+      return jsonResponse({ ok: true, report, role: auth.role });
+    } catch {
+      return jsonResponse({ ok: false, message: 'Unable to generate report.' }, 503);
+    }
+  }
+
+  return jsonResponse({ ok: false, message: 'Unsupported report action.' }, 400);
 }

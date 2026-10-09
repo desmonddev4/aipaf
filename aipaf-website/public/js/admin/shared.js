@@ -77,3 +77,21 @@ export function setBusy(button, busy) {
   button.disabled = busy;
   button.setAttribute('aria-busy', String(busy));
 }
+
+/* Bulk operation helpers */
+export function getSelectedIds(tableContainer) {
+  const checkboxes = tableContainer.querySelectorAll('input[type="checkbox"][data-bulk-select]:checked');
+  return Array.from(checkboxes).map(cb => Number(cb.dataset.id));
+}
+
+export function updateSelectAllCheckbox(selectAllCheckbox, tableContainer) {
+  const checkboxes = tableContainer.querySelectorAll('input[type="checkbox"][data-bulk-select]');
+  const checkedCount = tableContainer.querySelectorAll('input[type="checkbox"][data-bulk-select]:checked').length;
+  selectAllCheckbox.checked = checkboxes.length > 0 && checkedCount === checkboxes.length;
+  selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+}
+
+export function toggleAllCheckboxes(selectAllCheckbox, tableContainer) {
+  const checkboxes = tableContainer.querySelectorAll('input[type="checkbox"][data-bulk-select]');
+  checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+}

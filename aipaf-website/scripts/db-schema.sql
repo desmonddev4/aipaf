@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS members (
   role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('member', 'secretariat', 'council')),
   email_verified BOOLEAN NOT NULL DEFAULT FALSE,
   profile_public BOOLEAN NOT NULL DEFAULT FALSE,
+  admin_notes TEXT,
   last_login_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -59,6 +60,71 @@ CREATE TABLE IF NOT EXISTS member_profiles (
   public_email TEXT,
   preferred_name TEXT,
   avatar_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  member_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  token TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS email_verification_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  member_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  token TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS data_deletion_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  request_type TEXT NOT NULL CHECK (request_type IN ('contact_message', 'membership_interest', 'member_account')),
+  reference_id TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'rejected')),
+  processed_at TIMESTAMPTZ,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS member_invitations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  full_name TEXT NOT NULL,
+  proposed_grade TEXT NOT NULL CHECK (proposed_grade IN ('fellow', 'member', 'associate', 'affiliate', 'graduate')),
+  qualification TEXT,
+  affiliation TEXT,
+  source TEXT,
+  invitation_token TEXT NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'accepted', 'declined', 'expired')),
+  sent_at TIMESTAMPTZ,
+  accepted_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ NOT NULL,
+  member_id UUID REFERENCES members(id) ON DELETE SET NULL,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS membership_requirements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  grade TEXT NOT NULL UNIQUE CHECK (grade IN ('student', 'affiliate', 'associate', 'member', 'fellow')),
+  title TEXT NOT NULL,
+  description TEXT,
+  requirements TEXT,
+  examination_requirements TEXT,
+  experience_requirements TEXT,
+  cpd_requirements TEXT,
+  credential_track TEXT,
+  is_public BOOLEAN NOT NULL DEFAULT TRUE,
+  display_order INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -160,6 +226,18 @@ CREATE TABLE IF NOT EXISTS cms_content (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS audit_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_role TEXT NOT NULL CHECK (admin_role IN ('secretariat', 'council')),
+  action_type TEXT NOT NULL,
+  entity_type TEXT,
+  entity_id TEXT,
+  details JSONB NOT NULL DEFAULT '{}'::jsonb,
+  ip_address TEXT,
+  user_agent TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE INDEX IF NOT EXISTS contact_messages_created_at_idx ON contact_messages (created_at DESC);
 CREATE INDEX IF NOT EXISTS membership_interests_created_at_idx ON membership_interests (created_at DESC);
 CREATE INDEX IF NOT EXISTS contact_messages_handled_at_idx ON contact_messages (handled_at);
@@ -171,3 +249,15 @@ CREATE INDEX IF NOT EXISTS payments_member_idx ON payments (member_id, status);
 CREATE INDEX IF NOT EXISTS examination_registrations_member_idx ON examination_registrations (member_id, status);
 CREATE INDEX IF NOT EXISTS cpd_records_member_idx ON cpd_records (member_id, completion_date DESC);
 CREATE INDEX IF NOT EXISTS cms_content_type_status_idx ON cms_content (type, status, published_at DESC);
+CREATE INDEX IF NOT EXISTS password_reset_tokens_token_idx ON password_reset_tokens (token);
+CREATE INDEX IF NOT EXISTS password_reset_tokens_member_idx ON password_reset_tokens (member_id, expires_at);
+CREATE INDEX IF NOT EXISTS email_verification_tokens_token_idx ON email_verification_tokens (token);
+CREATE INDEX IF NOT EXISTS email_verification_tokens_member_idx ON email_verification_tokens (member_id, expires_at);
+CREATE INDEX IF NOT EXISTS data_deletion_requests_status_idx ON data_deletion_requests (status, created_at DESC);
+CREATE INDEX IF NOT EXISTS member_invitations_token_idx ON member_invitations (invitation_token);
+CREATE INDEX IF NOT EXISTS member_invitations_email_idx ON member_invitations (email);
+CREATE INDEX IF NOT EXISTS member_invitations_status_idx ON member_invitations (status, created_at DESC);
+CREATE INDEX IF NOT EXISTS membership_requirements_grade_idx ON membership_requirements (grade);
+CREATE INDEX IF NOT EXISTS audit_log_created_at_idx ON audit_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS audit_log_action_type_idx ON audit_log (action_type, created_at DESC);
+CREATE INDEX IF NOT EXISTS audit_log_admin_role_idx ON audit_log (admin_role, created_at DESC);

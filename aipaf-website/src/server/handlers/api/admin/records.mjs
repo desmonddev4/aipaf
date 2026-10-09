@@ -32,6 +32,53 @@ export function normalizeCpdDecision(input = {}) {
   return { ok: true, id, status };
 }
 
+async function bulkUpdateExaminationResult(items) {
+  if (!Array.isArray(items) || items.length === 0) return { ok: false, message: 'No items provided.', status: 400 };
+
+  const normalized = items.map(normalizeExaminationResult);
+  const invalid = normalized.find(n => !n.ok);
+  if (invalid) return { ok: false, message: invalid.message, status: 400 };
+
+  const result = await withDb(async (client) => {
+    let updated = 0;
+    for (const item of normalized) {
+      const row = await client.query(
+        `UPDATE examination_registrations
+         SET result_score = $1, result_status = $2, status = CASE WHEN $2 = 'pass' THEN 'completed' WHEN $2 = 'fail' THEN 'completed' ELSE status END, updated_at = NOW()
+         WHERE id = $3
+         RETURNING id`,
+        [item.score, item.status, item.id]
+      );
+      if (row.rowCount) updated++;
+    }
+    return { ok: true, updated };
+  });
+
+  return result;
+}
+
+async function bulkUpdateCpdStatus(items) {
+  if (!Array.isArray(items) || items.length === 0) return { ok: false, message: 'No items provided.', status: 400 };
+
+  const normalized = items.map(normalizeCpdDecision);
+  const invalid = normalized.find(n => !n.ok);
+  if (invalid) return { ok: false, message: invalid.message, status: 400 };
+
+  const result = await withDb(async (client) => {
+    let updated = 0;
+    for (const item of normalized) {
+      const row = await client.query(
+        `UPDATE cpd_records SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING id`,
+        [item.status, item.id]
+      );
+      if (row.rowCount) updated++;
+    }
+    return { ok: true, updated };
+  });
+
+  return result;
+}
+
 export default async function handler(request) {
   const auth = requireAdmin(request);
   if (auth.status) return jsonResponse({ ok: false, message: auth.message }, auth.status);
@@ -95,6 +142,18 @@ export default async function handler(request) {
 
     if (!row.rowCount) return jsonResponse({ ok: false, message: 'CPD record not found.' }, 404);
     return jsonResponse({ ok: true, item: row.rows[0] });
+  }
+
+  if (body.action === 'bulk-update-examination-results') {
+    const result = await bulkUpdateExaminationResult(body.items);
+    if (!result.ok) return jsonResponse({ ok: false, message: result.message }, result.status);
+    return jsonResponse({ ok: true, message: `Updated ${result.updated} examination results.`, updated: result.updated });
+  }
+
+  if (body.action === 'bulk-update-cpd-status') {
+    const result = await bulkUpdateCpdStatus(body.items);
+    if (!result.ok) return jsonResponse({ ok: false, message: result.message }, result.status);
+    return jsonResponse({ ok: true, message: `Updated ${result.updated} CPD records.`, updated: result.updated });
   }
 
   return jsonResponse({ ok: false, message: 'Unsupported admin action.' }, 400);

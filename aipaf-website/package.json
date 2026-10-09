@@ -9,7 +9,9 @@
     "dev": "node scripts/dev.mjs",
     "start": "node scripts/dev.mjs",
     "test:backend": "node --test test/backend.test.mjs",
-    "db:migrate": "node scripts/db-migrate.mjs"
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "cms:add-downloads": "node scripts/add-downloads-to-cms.mjs",
+    "import:invitations": "node scripts/import-member-invitations.mjs"
   },
   "engines": { "node": ">=18" },
   "dependencies": {

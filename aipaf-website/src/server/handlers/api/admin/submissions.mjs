@@ -61,6 +61,24 @@ async function markHandled(table, id) {
   return { ok: true };
 }
 
+async function bulkMarkHandled(table, ids) {
+  if (!Array.isArray(ids) || ids.length === 0) return { ok: false, message: 'No submission IDs provided.', status: 400 };
+
+  const numericIds = ids.map(Number).filter(id => Number.isInteger(id) && id > 0);
+  if (numericIds.length === 0) return { ok: false, message: 'Invalid submission identifiers.', status: 400 };
+
+  const result = await withDb(async (client) => {
+    const updated = await client.query(
+      `UPDATE ${table} SET handled_at = NOW(), email_status = 'sent', updated_at = NOW() WHERE id = ANY($1) RETURNING id`,
+      [numericIds]
+    );
+
+    return { ok: true, updated: updated.rowCount };
+  });
+
+  return result;
+}
+
 export default async function handler(request) {
   const auth = requireAdmin(request);
   if (auth.status) return jsonResponse({ ok: false, message: auth.message }, auth.status);
@@ -91,12 +109,18 @@ export default async function handler(request) {
 
   if (request.method === 'POST') {
     const body = await request.json().catch(() => ({}));
-    if (body.action !== 'mark-handled') {
-      return jsonResponse({ ok: false, message: 'Unsupported admin action.' }, 400);
+    if (body.action === 'mark-handled') {
+      const result = await markHandled(table, body.id);
+      if (!result.ok) return jsonResponse({ ok: false, message: result.message }, result.status);
+      return jsonResponse({ ok: true, message: 'Submission marked as handled.', role: auth.role });
     }
 
-    const result = await markHandled(table, body.id);
-    if (!result.ok) return jsonResponse({ ok: false, message: result.message }, result.status);
-    return jsonResponse({ ok: true, message: 'Submission marked as handled.', role: auth.role });
+    if (body.action === 'bulk-mark-handled') {
+      const result = await bulkMarkHandled(table, body.ids);
+      if (!result.ok) return jsonResponse({ ok: false, message: result.message }, result.status);
+      return jsonResponse({ ok: true, message: `Marked ${result.updated} submissions as handled.`, updated: result.updated, role: auth.role });
+    }
+
+    return jsonResponse({ ok: false, message: 'Unsupported admin action.' }, 400);
   }
 }

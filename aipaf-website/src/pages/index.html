@@ -149,6 +149,21 @@
   .cx .ladder li:hover { transform: translateY(-8px); border-color: rgba(210, 133, 3, .6); box-shadow: 0 32px 50px -26px rgba(2, 50, 20, .55); }
   @media (min-width: 960px) { .cx .ladder { grid-template-columns: repeat(5, 1fr); align-items: end; } .cx .ladder li { margin-left: 0; min-height: calc(9.5rem + var(--n) * 2.6rem); } }
 
+  /* Membership requirements accordion */
+  .cx .requirements { margin-top: 3rem; }
+  .cx .requirements-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .cx .requirements-tab { padding: .7rem 1.3rem; border: 1.5px solid var(--cx-border); border-radius: 999px; background: #fff; font-weight: 600; color: var(--cx-text); cursor: pointer; transition: all .25s var(--cx-ease); }
+  .cx .requirements-tab:hover { border-color: var(--cx-green-text); color: var(--cx-green-text); }
+  .cx .requirements-tab[aria-selected="true"] { background: var(--cx-green); border-color: var(--cx-green); color: #fff; }
+  .cx .requirements-content { display: none; padding: 2rem; background: #fff; border: 1px solid var(--cx-border); border-radius: 16px; }
+  .cx .requirements-content[aria-hidden="false"] { display: block; animation: cx-rise .4s var(--cx-ease); }
+  .cx .requirements-content h4 { margin: 0 0 .8rem; font-size: 1.3rem; color: var(--cx-ink); }
+  .cx .requirements-content h5 { margin: 1.2rem 0 .5rem; font-size: 1.05rem; color: var(--cx-green-text); }
+  .cx .requirements-content ul { margin: 0 0 1rem; padding-left: 1.3rem; }
+  .cx .requirements-content li { margin-bottom: .4rem; }
+  .cx .requirements-content p { margin: 0 0 1rem; }
+  .cx .requirements-link { display: inline-block; margin-top: 1rem; font-weight: 600; color: var(--cx-green-text); text-decoration: none; }
+
   /* Why */
   .cx .value-grid { display: grid; gap: clamp(1.75rem, 4vw, 3rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); }
   .cx .value { position: relative; padding-top: 1.6rem; }
@@ -343,6 +358,84 @@
           <li data-reveal><strong>Member (MIPAF)</strong><span>Fully certified and practising under a designation.</span></li>
           <li data-reveal><strong>Fellow (FIPAF)</strong><span>Distinguished standing and sustained contribution.</span></li>
         </ol>
+
+        <div class="requirements" data-reveal>
+          <div class="requirements-tabs" role="tablist" aria-label="Membership grade requirements">
+            <button class="requirements-tab" role="tab" aria-selected="true" aria-controls="req-student" id="tab-student">Student</button>
+            <button class="requirements-tab" role="tab" aria-selected="false" aria-controls="req-affiliate" id="tab-affiliate">Affiliate</button>
+            <button class="requirements-tab" role="tab" aria-selected="false" aria-controls="req-associate" id="tab-associate">Associate</button>
+            <button class="requirements-tab" role="tab" aria-selected="false" aria-controls="req-member" id="tab-member">Member</button>
+            <button class="requirements-tab" role="tab" aria-selected="false" aria-controls="req-fellow" id="tab-fellow">Fellow</button>
+          </div>
+
+          <div class="requirements-content" id="req-student" role="tabpanel" aria-labelledby="tab-student" aria-hidden="false">
+            <h4>Student Member</h4>
+            <p>For undergraduate students enrolled in relevant programmes in project management, construction, engineering, or related fields.</p>
+            <h5>Requirements</h5>
+            <ul>
+              <li>Enrolled in an undergraduate programme at a recognised institution</li>
+              <li>Programme must be relevant to project assurance, delivery, or forensics</li>
+              <li>No experience requirement (in training)</li>
+              <li>No examination requirement initially</li>
+            </ul>
+            <p>Student membership provides access to learning resources, networking events, and student discounts on examinations.</p>
+          </div>
+
+          <div class="requirements-content" id="req-affiliate" role="tabpanel" aria-labelledby="tab-affiliate" aria-hidden="true">
+            <h4>Affiliate Member</h4>
+            <p>For qualified professionals in adjacent disciplines who engage with AIPAF's work.</p>
+            <h5>Requirements</h5>
+            <ul>
+              <li>Qualified in an adjacent discipline (e.g., law, accounting, engineering, architecture)</li>
+              <li>Engagement with AIPAF's work or objectives</li>
+              <li>No initial experience requirement</li>
+              <li>Examinations optional (can pursue certification tracks)</li>
+            </ul>
+            <p>Affiliate membership is for professionals who support the Institute's aims and may wish to pursue certification in the future.</p>
+          </div>
+
+          <div class="requirements-content" id="req-associate" role="tabpanel" aria-labelledby="tab-associate" aria-hidden="true">
+            <h4>Associate Member (AAIPAF)</h4>
+            <p>For practitioners actively working in the profession, pending full assessment of qualifications.</p>
+            <h5>Requirements</h5>
+            <ul>
+              <li>Practising in project management, assurance, or forensics</li>
+              <li>Practical experience in the domain</li>
+              <li>Foundation examination passed</li>
+              <li>Track examination in progress or pending</li>
+            </ul>
+            <p>Associate membership is for practitioners who have begun the certification pathway and are working towards full Member grade.</p>
+          </div>
+
+          <div class="requirements-content" id="req-member" role="tabpanel" aria-labelledby="tab-member" aria-hidden="true">
+            <h4>Member (MAIPAF)</h4>
+            <p>For fully certified practitioners with established professional standing.</p>
+            <h5>Requirements</h5>
+            <ul>
+              <li>Doctoral qualification OR AIPAF credential (CPMP, CPAP, or CPFE)</li>
+              <li>Established practice in the profession</li>
+              <li>Relevant practical experience in the domain</li>
+              <li>Foundation examination + track examination completed</li>
+              <li>CPD: Maintain continuing professional development</li>
+            </ul>
+            <p>Member grade is the full professional grade for certified practitioners operating under an AIPAF designation.</p>
+          </div>
+
+          <div class="requirements-content" id="req-fellow" role="tabpanel" aria-labelledby="tab-fellow" aria-hidden="true">
+            <h4>Fellow (FIPAF)</h4>
+            <p>For distinguished practitioners with professorial rank or equivalent senior standing.</p>
+            <h5>Requirements</h5>
+            <ul>
+              <li>Professorial rank or equivalent standing in the profession</li>
+              <li>Teaching, examining, or senior practice in project assurance and forensics</li>
+              <li>Established senior practice (minimum 10 years)</li>
+              <li>Foundation + track examination + Chartered assessment</li>
+              <li>Sustained contribution to the profession or Institute</li>
+            </ul>
+            <p>Fellowship is the highest grade of the Institute, conferred on members of distinguished standing and sustained contribution.</p>
+          </div>
+        </div>
+
         <p style="margin:2.25rem 0 0" data-reveal><a class="btn btn-green" href="/membership">Explore membership</a></p>
       </div>
     </section>
@@ -392,6 +485,19 @@
   var root = document.querySelector('.cx');
   if (!root) return;
   var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Requirements tabs */
+  var tabs = root.querySelectorAll('.requirements-tab');
+  var contents = root.querySelectorAll('.requirements-content');
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var targetId = tab.getAttribute('aria-controls');
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', 'false'); });
+      contents.forEach(function (c) { c.setAttribute('aria-hidden', 'true'); });
+      tab.setAttribute('aria-selected', 'true');
+      root.querySelector('#' + targetId).setAttribute('aria-hidden', 'false');
+    });
+  });
 
   /* Stagger siblings, then reveal each element once as it enters view */
   root.querySelectorAll('[data-stagger]').forEach(function (g) {

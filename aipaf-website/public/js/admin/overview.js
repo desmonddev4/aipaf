@@ -1,16 +1,19 @@
 import { cell, escapeHtml } from './shared.js';
 
-/* NOTE: these figures are placeholder data, exactly as in the original file.
-   Replace DEMO_REPORT with a fetch to your reporting endpoint when it exists. */
-const DEMO_REPORT = {
-  members: { total: 12, active: 8, pending: 2, unverified: 2 },
-  payments: { total: 24, paid: 15, pending: 6, failed: 3 },
-  examinations: { total: 9, completed: 5, pending: 4 },
-  cpd: { total: 18, approved: 10, pending: 6, rejected: 2 },
-  certificates: { total: 7 },
-};
-
 const percent = (part, whole) => (whole ? Math.round((part / whole) * 100) : 0);
+
+async function fetchOverviewReport() {
+  try {
+    const response = await fetch('/api/admin/reports?action=overview');
+    if (!response.ok) throw new Error('Failed to fetch report');
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.message || 'Failed to load report');
+    return data.report;
+  } catch (error) {
+    console.error('Error fetching overview report:', error);
+    return null;
+  }
+}
 
 export function initOverview() {
   const provider = document.querySelector('#provider-select');
@@ -24,16 +27,22 @@ export function initOverview() {
     return `<div class="stat"><span class="stat-label">${escapeHtml(label)}</span><span class="stat-value">${escapeHtml(value)}</span><span class="stat-sub">${escapeHtml(sub)}</span>${meter}</div>`;
   }
 
-  function render() {
-    const report = DEMO_REPORT;
-    const pendingActions = report.members.pending + report.payments.pending + report.examinations.pending;
-    const totalExamActions = report.examinations.completed + report.examinations.pending;
-    const completionRate = percent(report.examinations.completed, totalExamActions);
+  async function render() {
+    reportElement.innerHTML = '<p class="admin-note">Loading report...</p>';
+
+    const report = await fetchOverviewReport();
+    if (!report) {
+      reportElement.innerHTML = '<p class="admin-note">Unable to load report. Please try again.</p>';
+      return;
+    }
+
+    const pendingActions = report.overview?.pendingActions || 0;
+    const completionRate = report.overview?.completionRate || 0;
 
     const cards = [
       statCard('Active members', report.members.active, `of ${report.members.total} registered`, percent(report.members.active, report.members.total)),
       statCard('Payments received', report.payments.paid, `of ${report.payments.total}, ${report.payments.failed} failed`, percent(report.payments.paid, report.payments.total)),
-      statCard('Exams completed', `${completionRate}%`, `${report.examinations.completed} of ${totalExamActions} sittings`, completionRate),
+      statCard('Exams completed', `${completionRate}%`, `${report.examinations.completed} of ${report.examinations.completed + report.examinations.pending} sittings`, completionRate),
       statCard('CPD approved', report.cpd.approved, `of ${report.cpd.total}, ${report.cpd.rejected} rejected`, percent(report.cpd.approved, report.cpd.total)),
       statCard('Certificates issued', report.certificates.total, 'Public verification ready', null),
       statCard('Pending actions', pendingActions, 'Members, payments and exams', null),
