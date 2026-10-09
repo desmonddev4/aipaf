@@ -1,7 +1,7 @@
-import { jsonResponse } from '../../_shared.mjs';
-import { db } from '../../db.mjs';
-import { hashPassword } from '../../admin-auth.mjs';
-import { requireAdmin } from '../../_auth.mjs';
+import { jsonResponse } from '../_shared.mjs';
+import { db } from '../db.mjs';
+import { hashPassword } from '../admin-auth.mjs';
+import { requireAdmin } from '../_auth.mjs';
 
 export default async function handler(request) {
   const auth = requireAdmin(request, ['secretariat']);

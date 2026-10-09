@@ -5,6 +5,13 @@ const pool = process.env.DATABASE_URL ? new Pool({
   ssl: { rejectUnauthorized: false }
 }) : null;
 
+export const db = {
+  query(text, params) {
+    if (!pool) throw new Error('DATABASE_URL is not configured.');
+    return pool.query(text, params);
+  },
+};
+
 export async function withDb(operation) {
   if (!pool) throw new Error('DATABASE_URL is not configured.');
   const client = await pool.connect();
