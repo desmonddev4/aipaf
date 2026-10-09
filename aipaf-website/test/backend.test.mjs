@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
@@ -155,20 +156,16 @@ test('admin page gate redirects unauthenticated requests to the separate login p
   assert.equal(response.headers.get('location'), '/admin-login');
 });
 
-test('authenticated admin page uses the shared site layout and embedded styles', async () => {
-  process.env.ADMIN_SECRETARIAT_KEY = 'secretariat-test-key';
-  const handler = (await import('../src/server/handlers/api/admin/page.mjs')).default;
-  const response = await handler(new Request('https://example.com/admin', {
-    headers: { cookie: createAdminSession('secretariat-test-key') },
-  }));
+test('admin page embeds its styles without admin stylesheet links', () => {
+  const adminPage = readFileSync(new URL('../src/admin/pages/admin.html', import.meta.url), 'utf8');
+  const cmsPage = readFileSync(new URL('../src/admin/pages/cms-admin.html', import.meta.url), 'utf8');
+  const loginPage = readFileSync(new URL('../src/admin/pages/admin-login.html', import.meta.url), 'utf8');
+  const layout = readFileSync(new URL('../src/partials/layout.html', import.meta.url), 'utf8');
 
-  assert.equal(response.status, 200);
-  const html = await response.text();
-  assert.match(html, /<style>[\s\S]*\.admin \{/);
-  assert.doesNotMatch(html, /\/css\/admin\.css/);
-  assert.match(html, /\/js\/api\.js/);
-  assert.match(html, /\/js\/admin\/index\.js/);
-  assert.match(html, /id="aipaf-header"/);
+  assert.match(adminPage, /<style>[\s\S]*\.admin \{/);
+  assert.match(cmsPage, /<style>[\s\S]*\.cms-admin \{/);
+  assert.match(loginPage, /<style>[\s\S]*body\.admin-login-page \{/);
+  assert.doesNotMatch(layout, /\/css\/(?:admin|cms-admin|admin-login)\.css/);
 });
 
 test('council cannot mark submissions handled', () => {

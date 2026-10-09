@@ -1,0 +1,153 @@
+<!--{"title":"CMS content management | AIPAF","description":"Manage AIPAF website content and publication states.","nav":"admin","noindex":true}-->
+<style>
+.admin, .cms-admin {
+  --g1: #02521d; --g2: #0b6b2b; --g3: #013a14; --gold: #d28503; --gold-soft: #fbf0d6;
+  --ink: #10231c; --mute: #52645a; --line: #d7e2da; --bg: #f3f7f4;
+  --serif: Georgia, "Times New Roman", serif;
+  min-height: 100vh; background: var(--bg); color: var(--ink);
+  font-family: "Public Sans", "Segoe UI", system-ui, sans-serif; line-height: 1.5;
+}
+.admin *, .admin *::before, .admin *::after,
+.cms-admin *, .cms-admin *::before, .cms-admin *::after { box-sizing: border-box; }
+.admin [hidden], .cms-admin [hidden] { display: none !important; }
+.admin h1, .admin h2, .admin p, .cms-admin h1, .cms-admin h2, .cms-admin p { margin: 0; }
+.admin button, .admin input, .admin select, .admin textarea,
+.cms-admin button, .cms-admin input, .cms-admin select, .cms-admin textarea { font: inherit; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.wrap { width: min(100% - 2rem, 78rem); margin-inline: auto; }
+
+.eyebrow {
+  display: inline-block; margin-bottom: .7rem; padding: .25rem .75rem; border-radius: 999px;
+  background: var(--gold-soft); color: #86550a; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+}
+.admin h1, .cms-admin h1 { font: 500 clamp(2rem, 4vw, 3rem)/1.1 var(--serif); letter-spacing: -.01em; }
+.admin h2, .cms-admin h2 { font: 500 1.45rem/1.2 var(--serif); margin-bottom: .4rem; }
+.lead { max-width: 42rem; margin-top: .7rem; font-size: 1.05rem; color: rgba(255, 255, 255, .85); }
+
+/* forms */
+.field { display: grid; gap: .35rem; }
+.field label { font-size: .85rem; font-weight: 600; }
+.admin :is(input, select, textarea), .cms-admin :is(input, select, textarea) {
+  width: 100%; min-height: 2.8rem; padding: .55rem .85rem; color: var(--ink);
+  border: 1.5px solid #cbd8cf; border-radius: .7rem; background: #fbfdfb;
+  transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+.admin :is(input, select, textarea):hover, .cms-admin :is(input, select, textarea):hover { border-color: #8fb79b; }
+.admin :is(input, select, textarea):focus-visible, .cms-admin :is(input, select, textarea):focus-visible {
+  outline: none; border-color: var(--g1); background: #fff; box-shadow: 0 0 0 4px rgba(2, 82, 29, .16);
+}
+.admin input[type="checkbox"], .cms-admin input[type="checkbox"] { width: 1.1rem; min-height: 0; height: 1.1rem; accent-color: var(--g1); }
+.admin textarea, .cms-admin textarea { min-height: 7rem; resize: vertical; }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.8rem; padding: .55rem 1.3rem;
+  border: 1.5px solid transparent; border-radius: 999px; background: linear-gradient(135deg, var(--g2), var(--g3)); color: #fff;
+  font-weight: 650; text-decoration: none; cursor: pointer; white-space: nowrap;
+  box-shadow: 0 .5rem 1.2rem -.8rem rgba(1, 58, 20, .85);
+  transition: transform .2s, filter .2s, background-color .2s, border-color .2s;
+}
+.btn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.08); }
+.btn:active:not(:disabled) { transform: scale(.98); }
+.btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-ghost, .btn.secondary { background: #fff; color: var(--g1); border-color: #b9ccbf; box-shadow: none; }
+.btn-ghost:hover:not(:disabled), .btn.secondary:hover:not(:disabled) { background: #eef5f0; border-color: var(--g1); filter: none; }
+
+/* cards, status text */
+.panel, .card, .toolbar { background: #fff; border: 1px solid var(--line); border-radius: 1.2rem; box-shadow: 0 .8rem 2rem -1.6rem rgba(3, 41, 15, .5); }
+.panel p, .card p { color: var(--mute); }
+.records-status, .certificate-status, .form-status, .admin-note { color: var(--mute); font-size: .9rem; }
+.form-status:empty, .records-status:empty, .certificate-status:empty { display: none; }
+.admin-note { padding: .5rem .25rem 0; text-align: center; }
+
+/* toolbar */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1rem; padding: .9rem 1.1rem; }
+.toolbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.toolbar-actions > :is(select, input) { width: auto; min-width: 10rem; }
+.toolbar-actions:has(.field) { align-items: flex-end; }
+.toolbar-actions .field { min-width: 10rem; }
+.toolbar-actions .records-status { align-self: center; }
+
+/* tables rendered by the admin scripts */
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: .9rem; background: #fff; -webkit-overflow-scrolling: touch; }
+.table-scroll:empty { display: none; }
+.table-scroll table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.table-scroll th { padding: .7rem .9rem; background: #eef5f0; color: #2c4a3a; font-size: .76rem; font-weight: 700; letter-spacing: .05em; text-align: left; text-transform: uppercase; white-space: nowrap; border-bottom: 1px solid var(--line); }
+.table-scroll td { padding: .7rem .9rem; border-bottom: 1px solid #e8efe9; vertical-align: top; }
+.table-scroll tbody tr:last-child td { border-bottom: 0; }
+.table-scroll tbody tr:hover { background: #f8fbf8; }
+.table-scroll td button, .table-scroll td a.btn { min-height: 2rem; padding: .25rem .8rem; font-size: .82rem; }
+
+@media (prefers-reduced-motion: reduce) { .admin *, .cms-admin * { transition-duration: .01ms !important; } }
+.cms-admin .shell { padding: clamp(1.5rem, 4vw, 3rem) 0 3rem; }
+.cms-admin .shell .wrap { display: grid; gap: 1.5rem; }
+.cms-admin .hero { padding: clamp(1.5rem, 5vw, 2.75rem); border-radius: 1.5rem; color: #fff;
+  background: radial-gradient(ellipse at 90% 0, rgba(210, 133, 3, .3), transparent 30rem), linear-gradient(145deg, #03290f, #0b6b2b 85%); }
+.cms-admin .login { width: min(100%, 28rem); margin-inline: auto; padding: 1.75rem; background: #fff; border: 1px solid var(--line); border-radius: 1.2rem; box-shadow: 0 .8rem 2rem -1.6rem rgba(3, 41, 15, .5); }
+.cms-admin .login.is-hidden { display: none; }
+.cms-admin .login p { color: var(--mute); }
+.cms-admin .login form, .cms-admin .card form { display: grid; gap: 1rem; }
+.cms-admin .login form { margin-top: 1.1rem; }
+.cms-admin .dashboard { display: none; }
+.cms-admin .dashboard.is-open { display: grid; gap: 1.5rem; }
+.cms-admin .grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 1.5rem; align-items: start; }
+.cms-admin .card { display: grid; gap: 1rem; padding: clamp(1.1rem, 3vw, 1.75rem); }
+.cms-admin #cms-body { min-height: 14rem; }
+.cms-admin .item-list { display: grid; gap: .6rem; }
+.cms-admin .item-list > * { padding: .8rem 1rem; border: 1px solid var(--line); border-radius: .8rem; background: #fbfdfb; }
+.cms-admin .item-list:empty::before { content: "Nothing here yet."; color: var(--mute); }
+@media (max-width: 860px) { .cms-admin .grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="cms-admin">
+  <main class="shell">
+    <div class="wrap">
+      <header class="hero">
+        <p class="eyebrow">Restricted area</p>
+        <h1>Content management.</h1>
+        <p class="lead">Create drafts, publish updates, and manage the content shown across the website.</p>
+      </header>
+
+      <section class="login" id="cms-login">
+        <h2>Authentication required</h2>
+        <p>You need to sign in to access the content management system.</p>
+        <a href="/admin-login" class="btn">Go to sign in</a>
+        <p class="form-status" id="cms-login-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="dashboard" id="cms-dashboard" aria-label="CMS dashboard">
+        <div class="toolbar">
+          <div class="toolbar-actions">
+            <select id="cms-type" aria-label="Content type"><option value="page">Pages</option><option value="news">News</option><option value="publication">Publications</option><option value="event">Events</option><option value="download">Downloads</option></select>
+            <select id="cms-status" aria-label="Status filter"><option value="draft">Drafts</option><option value="published">Published</option><option value="archived">Archived</option></select>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn" type="button" id="cms-refresh">Refresh</button>
+            <button class="btn secondary" type="button" id="cms-signout">Sign out</button>
+          </div>
+        </div>
+
+        <div class="grid">
+          <form id="cms-form-editor" class="card">
+            <h2>Create or update</h2>
+            <div class="field"><label for="cms-slug">Slug</label><input id="cms-slug" name="slug" required></div>
+            <div class="field"><label for="cms-title">Title</label><input id="cms-title" name="title" required></div>
+            <div class="field"><label for="cms-summary">Summary</label><textarea id="cms-summary" name="summary"></textarea></div>
+            <div class="field"><label for="cms-body">Content</label><textarea id="cms-body" name="body"></textarea></div>
+            <div class="field"><label for="cms-status-editor">Status</label><select id="cms-status-editor" name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+            <button class="btn" type="submit">Save content</button>
+            <p class="form-status" id="cms-editor-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="card">
+            <h2>Content list</h2>
+            <div id="cms-list" class="item-list"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="/js/admin/cms.js"></script>

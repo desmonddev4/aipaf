@@ -1,0 +1,60 @@
+<!--{"title":"Member login | AIPAF","description":"Sign in to your AIPAF member account.","nav":"members"}-->
+<style>
+  .member-page { min-height: calc(100vh - 72px); background: #f3f7f4; color: #172d25; }
+  .member-page .wrap { width: min(520px, calc(100% - 2rem)); margin-inline: auto; }
+  .member-page .shell { padding: clamp(3rem, 7vw, 6rem) 0; }
+  .member-form { padding: clamp(1.5rem, 5vw, 2.5rem); background: #fff; border: 1px solid rgba(15,92,63,.12); border-radius: 24px; box-shadow: 0 30px 60px -38px rgba(10,40,28,.45); }
+  .member-page h1 { margin: 0 0 .5rem; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.1rem, 7vw, 3.6rem); line-height: 1; }
+  .member-page .lead { margin: 0 0 2rem; color: #46574f; }
+  .field { margin-bottom: 1rem; }
+  label { display: block; margin-bottom: .45rem; font-weight: 600; }
+  input { width: 100%; padding: .8rem 1rem; border: 1.5px solid rgba(16,35,28,.15); border-radius: 12px; font: inherit; }
+  input:focus { outline: none; border-color: #0f5c3f; box-shadow: 0 0 0 4px rgba(15,92,63,.12); }
+  .btn { display: inline-flex; min-height: 3rem; padding: .8rem 1.5rem; border: 0; border-radius: 999px; background: #0f5c3f; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .btn[disabled] { cursor: progress; opacity: .7; }
+  .form-status { min-height: 1.5rem; margin: 1rem 0 0; color: #b3261e; }
+  .form-status.ok { color: #12704a; }
+  .meta { margin-top: 1.5rem; color: #46574f; font-size: .95rem; }
+</style>
+<div class="member-page">
+  <main class="shell">
+    <div class="wrap">
+      <h1>Member login.</h1>
+      <p class="lead">Access your member account and services.</p>
+      <form class="member-form" id="member-login-form" novalidate>
+        <div class="field"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+        <button class="btn" type="submit">Sign in</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+        <p class="meta"><a href="/member-forgot-password">Forgot your password?</a></p>
+        <p class="meta">Need an account? <a href="/member-register">Register now</a>.</p>
+        <p class="meta"><a href="/member-verify-email">Verify your email</a></p>
+      </form>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  var form = document.querySelector('#member-login-form');
+  var status = form.querySelector('.form-status');
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    status.className = 'form-status';
+    status.textContent = '';
+    var data = Object.fromEntries(new FormData(form).entries());
+    form.querySelector('button').disabled = true;
+    try {
+      var response = await fetch('/api/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ action: 'login' }, data)) });
+      var payload = await window.readApiJson(response);
+      if (!response.ok) throw new Error(payload.message || 'Unable to sign in.');
+      status.classList.add('ok');
+      status.textContent = 'Signed in. Redirecting...';
+      window.location.href = '/member-profile';
+    } catch (error) {
+      status.textContent = error.message;
+    } finally {
+      form.querySelector('button').disabled = false;
+    }
+  });
+})();
+</script>
