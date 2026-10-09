@@ -4,7 +4,6 @@
 (function () {
   const login = document.querySelector('#cms-login');
   const dashboard = document.querySelector('#cms-dashboard');
-  const token = sessionStorage.getItem('aipaf-cms-token') || '';
   const typeSelect = document.querySelector('#cms-type');
   const statusSelect = document.querySelector('#cms-status');
   const list = document.querySelector('#cms-list');
@@ -25,7 +24,7 @@
     return String(value == null ? '' : value).toLowerCase().replace(/[^a-z0-9_-]/g, '');
   }
   function headers() {
-    return { Authorization: `Bearer ${sessionStorage.getItem('aipaf-cms-token') || ''}` };
+    return {}; // Cookie-based authentication - no custom headers needed
   }
 
   let toastHost;
@@ -61,8 +60,6 @@
   function hideDashboard() {
     login.style.display = 'block';
     dashboard.classList.remove('is-open');
-    sessionStorage.removeItem('aipaf-cms-token');
-    document.querySelector('#cms-token').value = '';
     loginStatus.textContent = '';
     editingSlug = '';
   }
@@ -95,10 +92,10 @@
   function refresh() {
     const seq = ++requestSeq;
     showSkeleton();
-    fetch(`/api/cms?type=${encodeURIComponent(typeSelect.value)}&status=${encodeURIComponent(statusSelect.value)}`, { headers: headers() })
+    fetch(`/api/cms?type=${encodeURIComponent(typeSelect.value)}&status=${encodeURIComponent(statusSelect.value)}`, { credentials: 'include', headers: headers() })
       .then(async (response) => {
-        if (response.status === 401) throw new Error('Invalid or expired key.');
-        const payload = await window.readApiJson(response);
+        if (response.status === 401) throw new Error('You need to sign in to access the CMS.');
+        const payload = await response.json();
         if (!response.ok) throw new Error(payload.message || 'Unable to load content.');
         return payload;
       })
@@ -118,8 +115,8 @@
 
     if (button.dataset.action === 'load') {
       button.disabled = true;
-      fetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { headers: headers() })
-        .then((response) => window.readApiJson(response))
+      fetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { credentials: 'include', headers: headers() })
+        .then((response) => response.json())
         .then((payload) => {
           if (!payload.ok) throw new Error(payload.message || 'Unable to load content.');
           document.querySelector('#cms-slug').value = payload.item.slug;
@@ -141,8 +138,8 @@
     if (button.dataset.action === 'delete') {
       if (!window.confirm('Delete this content item?')) return;
       button.disabled = true;
-      fetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { method: 'DELETE', headers: headers() })
-        .then((response) => window.readApiJson(response))
+      fetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { method: 'DELETE', credentials: 'include', headers: headers() })
+        .then((response) => response.json())
         .then((payload) => {
           if (!payload.ok) throw new Error(payload.message || 'Delete failed.');
           if (slug === editingSlug) { editingSlug = ''; editor.reset(); setEditorMessage(''); }
@@ -153,17 +150,22 @@
     }
   });
 
-  /* ---------- login ---------- */
-  document.querySelector('#cms-form').addEventListener('submit', (event) => {
-    event.preventDefault();
-    const value = document.querySelector('#cms-token').value.trim();
-    if (!value) {
-      loginStatus.textContent = 'Enter your API key.';
-      return;
-    }
-    sessionStorage.setItem('aipaf-cms-token', value);
-    showDashboard();
-  });
+  /* ---------- check authentication ---------- */
+  function checkAuth() {
+    fetch('/api/admin/session', { credentials: 'include' })
+      .then((response) => {
+        if (response.ok) {
+          showDashboard();
+        } else {
+          hideDashboard();
+        }
+      })
+      .catch(() => {
+        hideDashboard();
+      });
+  }
+
+  checkAuth();
 
   /* ---------- save ---------- */
   editor.addEventListener('submit', async (event) => {
@@ -175,12 +177,13 @@
     try {
       const payload = Object.fromEntries(new FormData(editor).entries());
       payload.type = typeSelect.value;
-      const response = await fetch(apiUrl('/api/cms', {
+      const response = await fetch('/api/cms', {
         method: 'POST',
+        credentials: 'include',
         headers: Object.assign({ 'Content-Type': 'application/json' }, headers()),
         body: JSON.stringify(payload),
       });
-      const data = await window.readApiJson(response);
+      const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Unable to save content.');
       setEditorMessage('Content saved.', 'ok');
       toast('Content saved.', 'ok');
@@ -197,7 +200,7 @@
   typeSelect.addEventListener('change', refresh);
   statusSelect.addEventListener('change', refresh);
   document.querySelector('#cms-refresh').addEventListener('click', refresh);
-  document.querySelector('#cms-signout').addEventListener('click', hideDashboard);
-
-  if (token) showDashboard();
+  document.querySelector('#cms-signout').addEventListener('click', () => {
+    window.location.href = '/admin';
+  });
 })();
