@@ -1,0 +1,233 @@
+<style>
+/* Admin sidebar: glass navigation rail (embedded into every admin page by the build) */
+:root { --adm-w: 17.5rem; }
+html.adm-collapsed { --adm-w: 5.2rem; }
+.adm-sidebar {
+  position: fixed; inset: 0 auto 0 0; z-index: 40; display: flex; flex-direction: column; gap: .75rem;
+  width: var(--adm-w); padding: 1rem 1.1rem; overflow-y: auto; overscroll-behavior: contain;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, .03));
+  border-right: 1px solid rgba(255, 255, 255, .12);
+  -webkit-backdrop-filter: blur(22px) saturate(140%); backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: 1.5rem 0 3rem -2rem rgba(0, 0, 0, .7);
+  scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .25) transparent;
+  transition: transform .35s cubic-bezier(.22, .8, .3, 1), width .35s cubic-bezier(.22, .8, .3, 1);
+}
+.adm-sidebar__brand {
+  display: flex; align-items: center; gap: .8rem; padding: .35rem .4rem .9rem; color: #fff; text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+.adm-sidebar__brand img { flex: none; width: 2.8rem; height: 2.8rem; padding: .2rem; border-radius: 50%; background: #fff; transition: transform .45s cubic-bezier(.22, .8, .3, 1); }
+.adm-sidebar__brand:hover img { transform: rotate(-8deg) scale(1.05); }
+.adm-sidebar__brand strong { display: block; font: 600 1.15rem/1.1 Georgia, "Times New Roman", serif; letter-spacing: .08em; }
+.adm-sidebar__brand small { display: block; margin-top: .25rem; color: #f7d68a; font: 500 .75rem/1 "Segoe UI", system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+
+.adm-sidebar__group { margin-bottom: .55rem; }
+.adm-sidebar__group .adm-sidebar__list { gap: .2rem; }
+.adm-sidebar__label { margin: .25rem .6rem .5rem; white-space: nowrap; color: rgba(255, 255, 255, .45); font: 700 .68rem/1 "Segoe UI", system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+.adm-sidebar__nav { flex: 1; }
+.adm-sidebar__nav > .adm-sidebar__list { gap: 0; }
+.adm-sidebar__text { flex: 1; min-width: 0; white-space: nowrap; }
+.adm-sidebar__list { display: grid; gap: .2rem; margin: 0; padding: 0; list-style: none; }
+.adm-sidebar__list a {
+  position: relative; display: flex; align-items: center; gap: .75rem; min-height: 2.6rem; padding: .45rem .8rem;
+  border: 1px solid transparent; border-radius: .85rem; color: rgba(255, 255, 255, .74);
+  font: 500 .93rem/1.2 "Segoe UI", system-ui, sans-serif; text-decoration: none;
+  transition: background-color .2s, color .2s, border-color .2s, transform .2s;
+}
+.adm-sidebar__list a svg { flex: none; color: rgba(255, 255, 255, .55); transition: color .2s, transform .25s cubic-bezier(.22, .8, .3, 1); }
+.adm-sidebar__list a:hover { background: rgba(255, 255, 255, .08); color: #fff; transform: translateX(2px); }
+.adm-sidebar__list a:hover svg { color: #f2ac1f; transform: scale(1.1); }
+.adm-sidebar__list a:focus-visible { outline: 3px solid #d28503; outline-offset: 2px; }
+.adm-sidebar__list a[aria-current="page"] {
+  color: #fff; font-weight: 650; border-color: rgba(242, 172, 31, .35);
+  background: linear-gradient(135deg, rgba(242, 172, 31, .22), rgba(11, 107, 43, .35));
+  box-shadow: 0 .6rem 1.4rem -1rem rgba(0, 0, 0, .8), inset 0 1px 0 rgba(255, 255, 255, .12);
+}
+.adm-sidebar__list a[aria-current="page"] svg { color: #f2ac1f; }
+.adm-sidebar__list a[aria-current="page"]::before { content: ""; position: absolute; left: -1.1rem; top: .65rem; bottom: .65rem; width: 4px; border-radius: 0 4px 4px 0; background: #f2ac1f; }
+
+.adm-sidebar__footer { display: grid; gap: .7rem; padding-top: .9rem; border-top: 1px solid rgba(255, 255, 255, .1); }
+.adm-sidebar__user { display: flex; align-items: center; gap: .7rem; padding: .55rem .65rem; border-radius: .9rem; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); }
+.adm-sidebar__avatar { display: grid; place-items: center; flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: linear-gradient(135deg, #f2ac1f, #b86f00); color: #3a2400; }
+.adm-sidebar__user-meta { min-width: 0; }
+.adm-sidebar__user-role { display: block; color: rgba(255, 255, 255, .5); font: 600 .68rem/1 "Segoe UI", system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.adm-sidebar__user-name { display: block; margin: .2rem 0 0; overflow: hidden; color: #fff; font: 600 .88rem/1.2 "Segoe UI", system-ui, sans-serif; text-overflow: ellipsis; white-space: nowrap; }
+.adm-sidebar__signout {
+  display: flex; align-items: center; justify-content: center; gap: .55rem; width: 100%; min-height: 2.8rem; padding: .6rem 1rem;
+  border: 1px solid rgba(255, 255, 255, .18); border-radius: 999px; background: rgba(255, 255, 255, .06); color: #fff;
+  font: 600 .92rem/1 "Segoe UI", system-ui, sans-serif; cursor: pointer;
+  transition: background-color .2s, border-color .2s, transform .2s, color .2s;
+}
+.adm-sidebar__signout:hover { background: rgba(179, 38, 30, .28); border-color: rgba(255, 140, 130, .6); color: #ffd9d5; transform: translateY(-1px); }
+.adm-sidebar__signout:active { transform: scale(.98); }
+.adm-sidebar__signout:focus-visible { outline: 3px solid #d28503; outline-offset: 2px; }
+.adm-sidebar__signout:disabled { opacity: .6; cursor: progress; }
+
+.adm-sidebar__badge {
+  flex: none; min-width: 1.45rem; padding: .15rem .45rem; border-radius: 999px; background: #f2ac1f; color: #2c1b00;
+  font: 700 .7rem/1.2 "Segoe UI", system-ui, sans-serif; text-align: center; box-shadow: 0 0 0 3px rgba(242, 172, 31, .2);
+}
+.adm-sidebar__badge[hidden] { display: none; }
+
+.adm-sidebar__top { display: flex; align-items: center; gap: .4rem; border-bottom: 1px solid rgba(255, 255, 255, .1); }
+.adm-sidebar__top .adm-sidebar__brand { flex: 1; min-width: 0; border-bottom: 0; }
+.adm-sidebar__brand span { white-space: nowrap; }
+.adm-sidebar__collapse {
+  display: inline-grid; place-items: center; flex: none; width: 2.2rem; height: 2.2rem; border: 1px solid rgba(255, 255, 255, .15); border-radius: 50%;
+  background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .75); cursor: pointer; transition: background-color .2s, color .2s, transform .35s cubic-bezier(.22, .8, .3, 1);
+}
+.adm-sidebar__collapse:hover { background: rgba(255, 255, 255, .15); color: #fff; }
+.adm-sidebar__collapse:focus-visible { outline: 3px solid #d28503; outline-offset: 2px; }
+
+.adm-sidebar__account { position: relative; }
+.adm-sidebar__user { width: 100%; color: inherit; text-align: left; cursor: pointer; transition: background-color .2s, border-color .2s; }
+.adm-sidebar__user:hover, .adm-sidebar__user[aria-expanded="true"] { background: rgba(255, 255, 255, .11); border-color: rgba(242, 172, 31, .4); }
+.adm-sidebar__user:focus-visible { outline: 3px solid #d28503; outline-offset: 2px; }
+.adm-sidebar__user-meta { flex: 1; }
+.adm-sidebar__caret { flex: none; color: rgba(255, 255, 255, .55); transition: transform .25s; }
+.adm-sidebar__user[aria-expanded="true"] .adm-sidebar__caret { transform: rotate(180deg); }
+.adm-sidebar__menu {
+  position: absolute; left: 0; right: 0; bottom: calc(100% + .5rem); display: grid; gap: .2rem; padding: .4rem; border: 1px solid rgba(255, 255, 255, .16); border-radius: 1rem;
+  background: rgba(8, 36, 19, .92); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 1.2rem 2.4rem -1rem rgba(0, 0, 0, .85);
+  animation: adm-pop .22s cubic-bezier(.22, .8, .3, 1) both;
+}
+.adm-sidebar__menu[hidden] { display: none; }
+.adm-sidebar__menu a, .adm-sidebar__menu button {
+  display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 2.6rem; padding: .5rem .75rem; border: 0; border-radius: .7rem; background: none; color: rgba(255, 255, 255, .85);
+  font: 600 .88rem/1 "Segoe UI", system-ui, sans-serif; text-align: left; text-decoration: none; cursor: pointer; transition: background-color .2s, color .2s;
+}
+.adm-sidebar__menu a:hover, .adm-sidebar__menu button:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.adm-sidebar__menu #admin-signout:hover { background: rgba(179, 38, 30, .3); color: #ffd9d5; }
+.adm-sidebar__menu a:focus-visible, .adm-sidebar__menu button:focus-visible { outline: 2px solid #d28503; outline-offset: -2px; }
+.adm-sidebar__menu button:disabled { opacity: .6; cursor: progress; }
+@keyframes adm-pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* collapsed icon rail (desktop only) */
+@media (min-width: 62.01rem) {
+  html.adm-collapsed .adm-sidebar { overflow: visible; padding-inline: .8rem; }
+  html.adm-collapsed .adm-sidebar__collapse { transform: rotate(180deg); }
+  html.adm-collapsed .adm-sidebar__top { flex-direction: column; padding-bottom: .7rem; }
+  html.adm-collapsed .adm-sidebar__top .adm-sidebar__brand { flex: none; padding: .35rem 0; }
+  html.adm-collapsed .adm-sidebar__brand span,
+  html.adm-collapsed .adm-sidebar__text,
+  html.adm-collapsed .adm-sidebar__user-meta,
+  html.adm-collapsed .adm-sidebar__caret,
+  html.adm-collapsed .adm-sidebar__signout-text { display: none; }
+  html.adm-collapsed .adm-sidebar__group { margin-bottom: 0; }
+  html.adm-collapsed .adm-sidebar__label { height: 1px; margin: .35rem .5rem .5rem; overflow: hidden; background: rgba(255, 255, 255, .12); font-size: 0; }
+  html.adm-collapsed .adm-sidebar__list a { justify-content: center; padding-inline: 0; }
+  html.adm-collapsed .adm-sidebar__list a[aria-current="page"]::before { left: -.8rem; }
+  html.adm-collapsed .adm-sidebar__badge { position: absolute; top: .2rem; right: .25rem; min-width: 0; width: .7rem; height: .7rem; padding: 0; font-size: 0; box-shadow: 0 0 0 2px #0a2c16; }
+  html.adm-collapsed .adm-sidebar__user { justify-content: center; padding: .45rem; }
+  html.adm-collapsed .adm-sidebar__menu { left: 0; right: auto; width: 13rem; }
+  html.adm-collapsed .adm-sidebar__list a::after {
+    content: attr(data-tip); position: absolute; left: calc(100% + .9rem); top: 50%; z-index: 5; padding: .4rem .7rem; border-radius: .6rem; background: #0a2c16;
+    border: 1px solid rgba(255, 255, 255, .18); color: #fff; font-size: .82rem; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none;
+    transform: translate(-6px, -50%); transition: opacity .15s, transform .15s; box-shadow: 0 .8rem 1.6rem -.8rem rgba(0, 0, 0, .8);
+  }
+  html.adm-collapsed .adm-sidebar__list a:hover::after, html.adm-collapsed .adm-sidebar__list a:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
+}
+@media (max-width: 62rem) { .adm-sidebar__collapse { display: none; } }
+
+.adm-menu-btn, .adm-backdrop { display: none; }
+@media (max-width: 62rem) {
+  .adm-sidebar { transform: translateX(-102%); width: min(19rem, 86vw); }
+  .adm-sidebar-open .adm-sidebar { transform: none; }
+  .adm-menu-btn {
+    position: fixed; top: .8rem; left: .8rem; z-index: 35; display: inline-grid; place-items: center; width: 2.9rem; height: 2.9rem;
+    border: 1px solid rgba(255, 255, 255, .2); border-radius: 50%; color: #fff; cursor: pointer;
+    background: rgba(10, 44, 22, .7); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    box-shadow: 0 .6rem 1.4rem -.8rem rgba(0, 0, 0, .8);
+  }
+  .adm-menu-btn:focus-visible { outline: 3px solid #d28503; outline-offset: 2px; }
+  .adm-backdrop { position: fixed; inset: 0; z-index: 38; display: block; background: rgba(1, 12, 6, .6); opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .adm-sidebar-open .adm-backdrop { opacity: 1; pointer-events: auto; }
+  .adm-sidebar__list a[aria-current="page"]::before { left: -1.1rem; }
+}
+@media (prefers-reduced-motion: reduce) { .adm-sidebar, .adm-sidebar * { transition: none !important; } }
+</style>
+
+<button class="adm-menu-btn" type="button" id="admin-menu-toggle" aria-label="Open navigation" aria-controls="admin-sidebar" aria-expanded="false">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+</button>
+<div class="adm-backdrop" id="admin-backdrop"></div>
+
+<aside class="adm-sidebar" id="admin-sidebar">
+  <div class="adm-sidebar__top">
+    <a class="adm-sidebar__brand" href="/admin" aria-label="AIPAF admin overview">
+      <img src="/img/logo-mark.svg" alt="" width="45" height="45">
+      <span><strong>AIPAF</strong><small>Admin console</small></span>
+    </a>
+    <button class="adm-sidebar__collapse" type="button" id="admin-collapse" aria-label="Collapse sidebar" aria-pressed="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+  </div>
+
+  <nav class="adm-sidebar__nav" aria-label="Admin navigation">
+    <ul class="adm-sidebar__list" id="admin-section-links"></ul>
+  </nav>
+
+  <div class="adm-sidebar__footer">
+    <div class="adm-sidebar__account">
+      <div class="adm-sidebar__menu" id="admin-account-menu" hidden>
+        <a href="/" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View website
+        </a>
+        <button type="button" id="admin-signout">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span class="adm-sidebar__signout-text">Sign out</span>
+        </button>
+      </div>
+      <button class="adm-sidebar__user" type="button" id="admin-account-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="admin-account-menu" data-tip="Account">
+        <span class="adm-sidebar__avatar" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <span class="adm-sidebar__user-meta">
+          <span class="adm-sidebar__user-role">Signed in</span>
+          <span class="adm-sidebar__user-name" id="sidebar-user-name">Loading...</span>
+        </span>
+        <svg class="adm-sidebar__caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script>
+(function () {
+  var root = document.documentElement, KEY = 'aipaf-admin-collapsed';
+  try { if (localStorage.getItem(KEY) === '1') root.classList.add('adm-collapsed'); } catch (e) {}
+
+  var menuBtn = document.getElementById('admin-menu-toggle'), back = document.getElementById('admin-backdrop');
+  function setOpen(open) {
+    root.classList.toggle('adm-sidebar-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+  }
+  menuBtn.addEventListener('click', function () { setOpen(!root.classList.contains('adm-sidebar-open')); });
+  back.addEventListener('click', function () { setOpen(false); });
+
+  var collapse = document.getElementById('admin-collapse');
+  function syncCollapse() {
+    var c = root.classList.contains('adm-collapsed');
+    collapse.setAttribute('aria-pressed', String(c));
+    collapse.setAttribute('aria-label', c ? 'Expand sidebar' : 'Collapse sidebar');
+  }
+  syncCollapse();
+  collapse.addEventListener('click', function () {
+    var c = root.classList.toggle('adm-collapsed');
+    try { localStorage.setItem(KEY, c ? '1' : '0'); } catch (e) {}
+    syncCollapse();
+  });
+
+  var acct = document.getElementById('admin-account-toggle'), menu = document.getElementById('admin-account-menu');
+  function setMenu(open) { menu.hidden = !open; acct.setAttribute('aria-expanded', String(open)); }
+  acct.addEventListener('click', function (e) { e.stopPropagation(); setMenu(menu.hidden); });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target)) setMenu(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (!menu.hidden) { setMenu(false); acct.focus(); }
+    setOpen(false);
+  });
+})();
+</script>

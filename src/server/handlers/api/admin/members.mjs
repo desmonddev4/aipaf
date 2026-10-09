@@ -7,6 +7,10 @@ import { logAuditEntry } from '../../middleware/audit-logger.mjs';
 const ALLOWED_STATUSES = ['unverified', 'pending', 'active', 'suspended', 'expired'];
 const ALLOWED_GRADES = ['student', 'affiliate', 'associate', 'member', 'fellow'];
 const ALLOWED_ROLES = ['member', 'secretariat', 'council'];
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const isMemberId = (value) => typeof value === 'string' && UUID_PATTERN.test(value);
+const validIds = (ids) => ids.filter(isMemberId);
+
 const SELECT_COLUMNS = 'id, email, first_name, last_name, country, organisation, designation, membership_grade, membership_status, role, email_verified, profile_public, admin_notes, last_login_at, created_at';
 
 function parseLimit(value) {
@@ -45,8 +49,7 @@ async function getMembers(search, status, limit, offset) {
 
 async function updateMemberStatus(id, status, authRole, request) {
   if (!ALLOWED_STATUSES.includes(status)) return { ok: false, message: 'Invalid membership status.', status: 400 };
-  const numeric = Number(id);
-  if (!Number.isInteger(numeric) || numeric <= 0) return { ok: false, message: 'Invalid member identifier.', status: 400 };
+  if (!isMemberId(id)) return { ok: false, message: 'Invalid member identifier.', status: 400 };
 
   const result = await withDb(async (client) => client.query(
     'UPDATE members SET membership_status = $1, updated_at = NOW() WHERE id = $2 RETURNING id',
@@ -255,7 +258,7 @@ async function bulkUpdateMemberStatus(ids, status, authRole, request) {
   if (!ALLOWED_STATUSES.includes(status)) return { ok: false, message: 'Invalid membership status.', status: 400 };
   if (!Array.isArray(ids) || ids.length === 0) return { ok: false, message: 'No member IDs provided.', status: 400 };
 
-  const numericIds = ids.map(Number).filter(id => Number.isInteger(id) && id > 0);
+  const numericIds = validIds(ids);
   if (numericIds.length === 0) return { ok: false, message: 'Invalid member identifiers.', status: 400 };
 
   const result = await withDb(async (client) => {
@@ -275,14 +278,14 @@ async function bulkUpdateMemberStatus(ids, status, authRole, request) {
 }
 
 async function mergeMemberAccounts(sourceId, targetId, authRole, request) {
-  const numericSource = Number(sourceId);
-  const numericTarget = Number(targetId);
+  const numericSource = sourceId;
+  const numericTarget = targetId;
 
-  if (!Number.isInteger(numericSource) || numericSource <= 0) {
+  if (!isMemberId(numericSource)) {
     return { ok: false, message: 'Invalid source member identifier.', status: 400 };
   }
 
-  if (!Number.isInteger(numericTarget) || numericTarget <= 0) {
+  if (!isMemberId(numericTarget)) {
     return { ok: false, message: 'Invalid target member identifier.', status: 400 };
   }
 
@@ -322,7 +325,7 @@ async function mergeMemberAccounts(sourceId, targetId, authRole, request) {
 async function exportMemberData(ids, authRole, request) {
   if (!Array.isArray(ids) || ids.length === 0) return { ok: false, message: 'No member IDs provided.', status: 400 };
 
-  const numericIds = ids.map(Number).filter(id => Number.isInteger(id) && id > 0);
+  const numericIds = validIds(ids);
   if (numericIds.length === 0) return { ok: false, message: 'Invalid member identifiers.', status: 400 };
 
   const result = await withDb(async (client) => {
@@ -348,8 +351,8 @@ async function exportMemberData(ids, authRole, request) {
 }
 
 async function updateAdminNotes(id, notes, authRole, request) {
-  const numericId = Number(id);
-  if (!Number.isInteger(numericId) || numericId <= 0) {
+  const numericId = id;
+  if (!isMemberId(numericId)) {
     return { ok: false, message: 'Invalid member identifier.', status: 400 };
   }
 

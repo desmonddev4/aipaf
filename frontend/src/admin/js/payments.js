@@ -1,4 +1,4 @@
-import { apiFetch, cell, escapeHtml } from './shared.js';
+import { apiFetch, cell, escapeHtml, statusBadge, emptyState, toast, setBusy, formatDate, confirmDialog } from './shared.js';
 
 async function fetchPayments(filters) {
   try {
@@ -54,164 +54,152 @@ async function processRefund(id) {
   }
 }
 
-function renderPaymentsTable(payments) {
-  if (!payments || payments.length === 0) {
-    return '<p class="admin-note">No payments found.</p>';
-  }
+const STATUSES = ['pending', 'authorized', 'paid', 'failed', 'refunded', 'cancelled'];
+const cap = (value) => String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
 
-  const rows = payments.map(p => {
-    const statusClass = p.status === 'paid' ? 'status-ok' : p.status === 'failed' || p.status === 'cancelled' ? 'status-err' : '';
-    const statusLabel = p.status.charAt(0).toUpperCase() + p.status.slice(1);
+function formatMoney(amount, currency) {
+  const number = Number(amount);
+  if (!Number.isFinite(number)) return escapeHtml(`${amount ?? ''} ${currency ?? ''}`.trim());
+  return `<span class="money">${escapeHtml(currency || '')} ${number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`;
+}
+
+function renderSummary(payments) {
+  const sum = (list) => list.reduce((total, p) => total + (Number(p.amount) || 0), 0);
+  const by = (status) => payments.filter((p) => p.status === status);
+  const currency = payments[0]?.currency || '';
+  const money = (value) => `${currency} ${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`.trim();
+  const items = [
+    ['Collected', money(sum(by('paid'))), `${by('paid').length} paid`, 'ok'],
+    ['Awaiting', money(sum([...by('pending'), ...by('authorized')])), `${by('pending').length + by('authorized').length} in progress`, 'warn'],
+    ['Failed or cancelled', String(by('failed').length + by('cancelled').length), 'payments', 'bad'],
+    ['Refunded', money(sum(by('refunded'))), `${by('refunded').length} refunds`, 'mute'],
+  ];
+  return items.map(([label, value, note, tone]) => `<div class="pay-stat ${tone}"><span>${label}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(note)}</small></div>`).join('');
+}
+
+function renderPaymentsTable(payments) {
+  if (!payments || payments.length === 0) return emptyState('No payments match these filters.');
+
+  const rows = payments.map((p) => {
     const canUpdate = p.status !== 'refunded' && p.status !== 'cancelled';
     const canRefund = p.status === 'paid' || p.status === 'authorized';
+    const name = `${p.first_name || ''} ${p.last_name || ''}`.trim();
 
-    const statusOptions = ['pending', 'authorized', 'paid', 'failed', 'refunded', 'cancelled']
-      .map(s => `<option value="${s}" ${p.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`)
-      .join('');
-
-    const updateButton = canUpdate
-      ? `<select class="status-select" data-id="${p.id}">${statusOptions}</select> <button class="btn btn-ghost btn-sm" data-action="update-status" data-id="${p.id}">Update</button>`
-      : '';
-
-    const refundButton = canRefund
-      ? `<button class="btn btn-ghost btn-sm" data-action="refund" data-id="${p.id}">Refund</button>`
-      : '';
+    const options = STATUSES.map((s) => `<option value="${s}" ${p.status === s ? 'selected' : ''}>${cap(s)}</option>`).join('');
+    const actions = (canUpdate
+      ? `<select class="status-select" aria-label="New status" data-id="${escapeHtml(p.id)}">${options}</select><button class="btn btn-ghost btn-sm" type="button" data-action="update-status" data-id="${escapeHtml(p.id)}">Update</button>`
+      : '<span class="pay-final">Final</span>')
+      + (canRefund ? `<button class="btn btn-danger btn-sm" type="button" data-action="refund" data-id="${escapeHtml(p.id)}">Refund</button>` : '');
 
     return '<tr>'
-      + cell('ID', escapeHtml(p.id?.substring(0, 8) || '—'))
-      + cell('Member', escapeHtml(p.email || '—'))
-      + cell('Provider', escapeHtml(p.provider))
-      + cell('Reference', escapeHtml(p.provider_reference || '—'))
-      + cell('Amount', `${escapeHtml(p.amount)} ${escapeHtml(p.currency)}`)
-      + cell('Purpose', escapeHtml(p.purpose))
-      + cell('Status', `<span class="${statusClass}">${escapeHtml(statusLabel)}</span>`)
-      + cell('Paid', escapeHtml(p.paid_at ? new Date(p.paid_at).toLocaleDateString() : '—'))
-      + cell('Actions', updateButton + (refundButton ? ' ' + refundButton : ''))
+      + cell('Member', `<span class="pay-member"><strong>${escapeHtml(name || p.email || '—')}</strong>${name && p.email ? `<small>${escapeHtml(p.email)}</small>` : ''}</span>`)
+      + cell('Amount', formatMoney(p.amount, p.currency))
+      + cell('Purpose', `<span class="pay-purpose">${escapeHtml(p.purpose || '—')}</span>`)
+      + cell('Provider', `<span class="pay-provider">${escapeHtml(p.provider || '—')}</span><small class="pay-ref">${escapeHtml(p.provider_reference || '')}</small>`)
+      + cell('Status', statusBadge(p.status))
+      + cell('Paid', p.paid_at ? formatDate(p.paid_at) : '—')
+      + cell('Actions', `<div class="row-actions">${actions}</div>`)
       + '</tr>';
   }).join('');
 
-  return `<table class="data-table"><thead><tr><th scope="col">ID</th><th scope="col">Member</th><th scope="col">Provider</th><th scope="col">Reference</th><th scope="col">Amount</th><th scope="col">Purpose</th><th scope="col">Status</th><th scope="col">Paid</th><th scope="col">Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+  return `<table class="data-table"><thead><tr><th scope="col">Member</th><th scope="col">Amount</th><th scope="col">Purpose</th><th scope="col">Provider</th><th scope="col">Status</th><th scope="col">Paid</th><th scope="col">Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function exportPaymentsToCsv(payments) {
-  if (!payments || payments.length === 0) return '';
-
   const headers = ['ID', 'Member Email', 'Member Name', 'Provider', 'Reference', 'Amount', 'Currency', 'Purpose', 'Status', 'Paid At', 'Created At'];
   const escape = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-
-  const rows = payments.map(p => [
-    p.id,
-    p.email,
-    `${p.first_name} ${p.last_name}`,
-    p.provider,
-    p.provider_reference,
-    p.amount,
-    p.currency,
-    p.purpose,
-    p.status,
-    p.paid_at,
-    p.created_at
+  const rows = payments.map((p) => [
+    p.id, p.email, `${p.first_name || ''} ${p.last_name || ''}`.trim(), p.provider, p.provider_reference,
+    p.amount, p.currency, p.purpose, p.status, p.paid_at, p.created_at,
   ].map(escape).join(','));
-
   return [headers.join(','), ...rows].join('\n');
 }
 
 export function initPayments() {
-  const statusSelect = document.querySelector('#payment-status');
-  const purposeSelect = document.querySelector('#payment-purpose');
-  const providerSelect = document.querySelector('#payment-provider');
-  const limitSelect = document.querySelector('#payment-limit');
-  const refreshButton = document.querySelector('#payments-refresh');
-  const exportButton = document.querySelector('#payments-export');
-  const statusElement = document.querySelector('#payments-status');
-  const tableContainer = document.querySelector('#payments-table-container');
+  const $ = (selector) => document.querySelector(selector);
+  const filters = { status: $('#payment-status'), purpose: $('#payment-purpose'), provider: $('#payment-provider'), limit: $('#payment-limit') };
+  const searchInput = $('#payment-search');
+  const refreshButton = $('#payments-refresh');
+  const exportButton = $('#payments-export');
+  const countElement = $('#payments-status');
+  const summary = $('#payments-summary');
+  const tableContainer = $('#payments-table-container');
 
   let currentPayments = [];
+  let requestId = 0;
 
   async function load() {
-    tableContainer.innerHTML = '<p class="admin-note">Loading payments...</p>';
-    const filters = {
-      status: statusSelect.value,
-      purpose: purposeSelect.value,
-      provider: providerSelect.value,
-      limit: limitSelect.value
-    };
-    currentPayments = await fetchPayments(filters);
-    if (!currentPayments) {
-      tableContainer.innerHTML = '<p class="admin-note">Unable to load payments. Please try again.</p>';
+    const current = ++requestId;
+    setBusy(refreshButton, true);
+    tableContainer.innerHTML = '<div class="skeleton-rows" aria-hidden="true"><i></i><i></i><i></i><i></i></div>';
+    const result = await fetchPayments({
+      status: filters.status.value, purpose: filters.purpose.value, provider: filters.provider.value,
+      limit: filters.limit.value, search: searchInput.value.trim(),
+    });
+    if (current !== requestId) return;
+    setBusy(refreshButton, false);
+    if (!result) {
+      currentPayments = [];
+      summary.innerHTML = '';
+      countElement.textContent = '';
+      tableContainer.innerHTML = '<div class="empty"><p>We could not load payments. Check your connection and try again.</p></div>';
       return;
     }
-    tableContainer.innerHTML = renderPaymentsTable(currentPayments);
+    currentPayments = result;
+    countElement.textContent = `${result.length} payment${result.length === 1 ? '' : 's'}`;
+    summary.innerHTML = result.length ? renderSummary(result) : '';
+    tableContainer.innerHTML = renderPaymentsTable(result);
   }
 
+  let timer;
+  searchInput.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(load, 350); });
   refreshButton.addEventListener('click', load);
-  statusSelect.addEventListener('change', load);
-  purposeSelect.addEventListener('change', load);
-  providerSelect.addEventListener('change', load);
-  limitSelect.addEventListener('change', load);
+  Object.values(filters).forEach((select) => select.addEventListener('change', load));
 
-  exportButton.addEventListener('click', function () {
-    if (!currentPayments || currentPayments.length === 0) {
-      statusElement.textContent = 'No payments to export.';
-      statusElement.className = 'records-status err';
-      return;
-    }
-
-    const csv = exportPaymentsToCsv(currentPayments);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  exportButton.addEventListener('click', () => {
+    if (currentPayments.length === 0) { toast('No payments to export.', 'info'); return; }
+    const blob = new Blob([exportPaymentsToCsv(currentPayments)], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `payments_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
-    statusElement.textContent = 'Payments exported successfully.';
-    statusElement.className = 'records-status ok';
+    URL.revokeObjectURL(link.href);
+    toast('Payments exported.', 'ok');
   });
 
-  tableContainer.addEventListener('click', async function (event) {
+  tableContainer.addEventListener('click', async (event) => {
     const button = event.target.closest('[data-action]');
     if (!button) return;
-
-    const action = button.dataset.action;
-    const id = button.dataset.id;
+    const { action, id } = button.dataset;
 
     if (action === 'update-status') {
-      const statusSelect = tableContainer.querySelector(`.status-select[data-id="${id}"]`);
-      const newStatus = statusSelect.value;
-
-      if (!confirm(`Update payment status to ${newStatus}?`)) return;
-
-      button.disabled = true;
-      button.textContent = 'Updating...';
-
+      const newStatus = tableContainer.querySelector(`.status-select[data-id="${CSS.escape(id)}"]`).value;
+      const payment = currentPayments.find((p) => String(p.id) === id);
+      if (payment && payment.status === newStatus) { toast('Choose a different status first.', 'info'); return; }
+      const ok = await confirmDialog({ title: 'Update payment status', message: `Change this payment to "${newStatus}"?`, confirmLabel: 'Update status' });
+      if (!ok) return;
+      setBusy(button, true);
       try {
         await updatePaymentStatus(id, newStatus);
-        statusElement.textContent = 'Payment status updated successfully.';
-        statusElement.className = 'records-status ok';
+        toast('Payment status updated.', 'ok');
         load();
       } catch (error) {
-        statusElement.textContent = error.message || 'Failed to update payment status.';
-        statusElement.className = 'records-status err';
-        button.disabled = false;
-        button.textContent = 'Update';
+        toast(error.message || 'Failed to update payment status.', 'err');
+        setBusy(button, false);
       }
     }
 
     if (action === 'refund') {
-      if (!confirm('Are you sure you want to refund this payment? This action cannot be undone.')) return;
-
-      button.disabled = true;
-      button.textContent = 'Processing...';
-
+      const ok = await confirmDialog({ title: 'Refund payment', message: 'This marks the payment as refunded and cannot be undone.', confirmLabel: 'Refund payment', danger: true });
+      if (!ok) return;
+      setBusy(button, true);
       try {
         await processRefund(id);
-        statusElement.textContent = 'Payment refunded successfully.';
-        statusElement.className = 'records-status ok';
+        toast('Payment refunded.', 'ok');
         load();
       } catch (error) {
-        statusElement.textContent = error.message || 'Failed to process refund.';
-        statusElement.className = 'records-status err';
-        button.disabled = false;
-        button.textContent = 'Refund';
+        toast(error.message || 'Failed to process refund.', 'err');
+        setBusy(button, false);
       }
     }
   });

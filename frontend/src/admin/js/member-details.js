@@ -281,7 +281,7 @@ function showMemberDetailModal(memberData, onRefresh) {
             <button class="btn btn-ghost" id="reset-password">Reset Password</button>
             <button class="btn btn-ghost" id="export-data">Export Data</button>
             <button class="btn btn-ghost" id="merge-account">Merge Account</button>
-            <button class="btn btn-ghost" id="delete-account" style="color: var(--a-error)">Delete Account</button>
+            <button class="btn btn-danger" id="delete-account">Delete Account</button>
           </div>
         </div>
       </div>

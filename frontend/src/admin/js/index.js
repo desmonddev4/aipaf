@@ -1,6 +1,7 @@
 import { initNavigation } from './navigation.js';
 import { initApplications } from './applications.js';
 import { initAudit } from './audit.js';
+import { initCms } from './cms.js';
 import { initCertificates } from './certificates.js';
 import { initDataDeletion } from './data-deletion.js';
 import { initExaminations } from './examinations.js';
@@ -60,3 +61,4 @@ if (has('#exam-status')) start('examinations', initExaminations);
 if (has('#apps-table-container')) start('applications', initApplications);
 if (has('#deletions-table-container')) start('data deletion', () => initDataDeletion({ showLogin: handleAuthError }));
 if (has('#audit-table-container')) start('audit log', () => initAudit({ showLogin: handleAuthError }));
+if (has('#cms-list')) start('content', () => initCms({ showLogin: handleAuthError }));

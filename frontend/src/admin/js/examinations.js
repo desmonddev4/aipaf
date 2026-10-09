@@ -1,4 +1,4 @@
-import { apiFetch, cell, escapeHtml } from './shared.js';
+import { apiFetch, cell, escapeHtml, statusBadge, emptyState, toast, setBusy, formatDate, confirmDialog } from './shared.js';
 
 async function fetchExaminations(status, limit) {
   try {
@@ -68,173 +68,191 @@ async function deleteExamination(id) {
   }
 }
 
+const STATUSES = ['draft', 'open', 'closed', 'archived'];
+const cap = (value) => String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
+
+function renderSummary(items) {
+  const count = (status) => items.filter((ex) => ex.status === status).length;
+  const registrations = items.reduce((total, ex) => total + (parseInt(ex.registration_count, 10) || 0), 0);
+  const stats = [
+    ['Open now', count('open'), 'ok'],
+    ['Drafts', count('draft'), 'warn'],
+    ['Closed or archived', count('closed') + count('archived'), 'mute'],
+    ['Registrations', registrations, 'ok'],
+  ];
+  return stats.map(([label, value, tone]) => `<div class="ex-stat ${tone}"><span>${label}</span><strong>${value}</strong></div>`).join('');
+}
+
 function renderExaminationsTable(examinations) {
-  if (!examinations || examinations.length === 0) {
-    return '<p class="admin-note">No examinations found.</p>';
-  }
+  if (!examinations || examinations.length === 0) return emptyState('No examinations found. Create one to get started.');
 
-  const rows = examinations.map(ex => {
-    const statusClass = ex.status === 'open' ? 'status-ok' : ex.status === 'closed' || ex.status === 'archived' ? 'status-err' : '';
-    const statusLabel = ex.status.charAt(0).toUpperCase() + ex.status.slice(1);
-    const hasRegistrations = parseInt(ex.registration_count) > 0;
-
+  const rows = examinations.map((ex) => {
+    const registrations = parseInt(ex.registration_count, 10) || 0;
+    const id = escapeHtml(ex.id);
     return '<tr>'
-      + cell('Code', escapeHtml(ex.code))
-      + cell('Name', escapeHtml(ex.name))
-      + cell('Status', `<span class="${statusClass}">${escapeHtml(statusLabel)}</span>`)
-      + cell('Opens', escapeHtml(ex.opens_at ? new Date(ex.opens_at).toLocaleDateString() : '—'))
-      + cell('Closes', escapeHtml(ex.closes_at ? new Date(ex.closes_at).toLocaleDateString() : '—'))
-      + cell('Registrations', escapeHtml(ex.registration_count || 0))
-      + cell('Actions', `
-        <button class="btn btn-ghost btn-sm" data-action="edit" data-id="${ex.id}">Edit</button>
-        ${!hasRegistrations ? `<button class="btn btn-ghost btn-sm" data-action="delete" data-id="${ex.id}">Delete</button>` : ''}
-      `)
+      + cell('Examination', `<span class="ex-name"><strong>${escapeHtml(ex.name)}</strong><small>${escapeHtml(ex.code)}</small></span>`)
+      + cell('Status', statusBadge(ex.status))
+      + cell('Opens', ex.opens_at ? formatDate(ex.opens_at) : '—')
+      + cell('Closes', ex.closes_at ? formatDate(ex.closes_at) : '—')
+      + cell('Registrations', `<span class="ex-count">${registrations}</span>`)
+      + cell('Actions', `<div class="row-actions">
+          <button class="btn btn-ghost btn-sm" type="button" data-action="edit" data-id="${id}">Edit</button>
+          ${registrations === 0 ? `<button class="btn btn-danger btn-sm" type="button" data-action="delete" data-id="${id}">Delete</button>` : ''}
+        </div>`)
       + '</tr>';
   }).join('');
 
-  return `<table class="data-table"><thead><tr><th scope="col">Code</th><th scope="col">Name</th><th scope="col">Status</th><th scope="col">Opens</th><th scope="col">Closes</th><th scope="col">Registrations</th><th scope="col">Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+  return `<table class="data-table"><thead><tr><th scope="col">Examination</th><th scope="col">Status</th><th scope="col">Opens</th><th scope="col">Closes</th><th scope="col">Registrations</th><th scope="col">Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-function showExaminationModal(examination = null) {
-  const isEdit = examination !== null;
-  const title = isEdit ? 'Edit Examination' : 'Create Examination';
+/* The API stores UTC; datetime-local inputs work in local time. */
+function toLocalInput(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+const fromLocalInput = (value) => (value ? new Date(value).toISOString() : '');
 
-  const modal = document.createElement('div');
-  modal.className = 'modal-overlay';
-  modal.innerHTML = `
-    <div class="modal">
-      <h2>${title}</h2>
-      <form id="exam-form">
-        <div class="field"><label for="exam-code">Code *</label><input id="exam-code" name="code" type="text" required value="${escapeHtml(examination?.code || '')}"></div>
+/* Resolves true when saved, false when dismissed. `save(data)` must throw to keep the dialog open. */
+function showExaminationModal(examination, save) {
+  const isEdit = Boolean(examination);
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exam-title">
+      <h2 id="exam-title">${isEdit ? 'Edit examination' : 'Create examination'}</h2>
+      <form id="exam-form" novalidate>
+        <div class="field-row">
+          <div class="field"><label for="exam-code">Code *</label><input id="exam-code" name="code" type="text" required value="${escapeHtml(examination?.code || '')}"></div>
+          <div class="field"><label for="exam-form-status">Status</label><select id="exam-form-status" name="status">${STATUSES.map((s) => `<option value="${s}" ${(examination?.status || 'draft') === s ? 'selected' : ''}>${cap(s)}</option>`).join('')}</select></div>
+        </div>
         <div class="field"><label for="exam-name">Name *</label><input id="exam-name" name="name" type="text" required value="${escapeHtml(examination?.name || '')}"></div>
-        <div class="field"><label for="exam-description">Description</label><textarea id="exam-description" name="description">${escapeHtml(examination?.description || '')}</textarea></div>
-        <div class="field"><label for="exam-opens">Opens at</label><input id="exam-opens" name="opens_at" type="datetime-local" value="${examination?.opens_at ? examination.opens_at.slice(0, 16) : ''}"></div>
-        <div class="field"><label for="exam-closes">Closes at</label><input id="exam-closes" name="closes_at" type="datetime-local" value="${examination?.closes_at ? examination.closes_at.slice(0, 16) : ''}"></div>
-        <div class="field"><label for="exam-status">Status</label><select id="exam-status" name="status">
-          <option value="draft" ${examination?.status === 'draft' ? 'selected' : ''}>Draft</option>
-          <option value="open" ${examination?.status === 'open' ? 'selected' : ''}>Open</option>
-          <option value="closed" ${examination?.status === 'closed' ? 'selected' : ''}>Closed</option>
-          <option value="archived" ${examination?.status === 'archived' ? 'selected' : ''}>Archived</option>
-        </select></div>
+        <div class="field"><label for="exam-description">Description</label><textarea id="exam-description" name="description" rows="3">${escapeHtml(examination?.description || '')}</textarea></div>
+        <div class="field-row">
+          <div class="field"><label for="exam-opens">Opens at</label><input id="exam-opens" name="opens_at" type="datetime-local" value="${toLocalInput(examination?.opens_at)}"></div>
+          <div class="field"><label for="exam-closes">Closes at</label><input id="exam-closes" name="closes_at" type="datetime-local" value="${toLocalInput(examination?.closes_at)}"></div>
+        </div>
+        <p class="form-status" id="exam-error" role="alert"></p>
         <div class="modal-actions">
-          <button class="btn btn-ghost" type="button" id="exam-cancel">Cancel</button>
-          <button class="btn" type="submit">${isEdit ? 'Update' : 'Create'}</button>
+          <button class="btn btn-ghost" type="button" data-exam="cancel">Cancel</button>
+          <button class="btn" type="submit">${isEdit ? 'Save changes' : 'Create examination'}</button>
         </div>
       </form>
-    </div>
-  `;
-
-  document.body.appendChild(modal);
+    </div>`;
 
   return new Promise((resolve) => {
-    const form = modal.querySelector('#exam-form');
-    const cancelBtn = modal.querySelector('#exam-cancel');
+    const finish = (value) => { document.removeEventListener('keydown', onKey); overlay.remove(); resolve(value); };
+    const onKey = (event) => { if (event.key === 'Escape') finish(false); };
+    document.addEventListener('keydown', onKey);
+    overlay.addEventListener('click', (event) => { if (event.target === overlay) finish(false); });
+    document.body.appendChild(overlay);
 
-    cancelBtn.addEventListener('click', () => {
-      document.body.removeChild(modal);
-      resolve(null);
-    });
+    const form = overlay.querySelector('#exam-form');
+    const error = overlay.querySelector('#exam-error');
+    const submit = form.querySelector('[type="submit"]');
+    overlay.querySelector('[data-exam="cancel"]').addEventListener('click', () => finish(false));
+    form.code.focus();
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-
-      document.body.removeChild(modal);
-      resolve(data);
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.code = data.code.trim();
+      data.name = data.name.trim();
+      if (!data.code || !data.name) { error.textContent = 'Code and name are required.'; return; }
+      if (data.opens_at && data.closes_at && new Date(data.closes_at) <= new Date(data.opens_at)) {
+        error.textContent = 'The closing time must be after the opening time.';
+        return;
+      }
+      data.opens_at = fromLocalInput(data.opens_at);
+      data.closes_at = fromLocalInput(data.closes_at);
+      error.textContent = '';
+      setBusy(submit, true);
+      try {
+        await save(data);
+        finish(true);
+      } catch (err) {
+        error.textContent = err.message || 'Unable to save the examination.';
+        setBusy(submit, false);
+      }
     });
   });
 }
 
 export function initExaminations() {
-  const statusSelect = document.querySelector('#exam-status');
-  const limitSelect = document.querySelector('#exam-limit');
-  const refreshButton = document.querySelector('#exams-refresh');
-  const createButton = document.querySelector('#exam-create');
-  const statusElement = document.querySelector('#exams-status');
-  const tableContainer = document.querySelector('#exams-table-container');
+  const $ = (selector) => document.querySelector(selector);
+  const statusSelect = $('#exam-status');
+  const limitSelect = $('#exam-limit');
+  const refreshButton = $('#exams-refresh');
+  const createButton = $('#exam-create');
+  const countElement = $('#exams-status');
+  const summary = $('#exams-summary');
+  const tableContainer = $('#exams-table-container');
 
   let currentExaminations = [];
+  let requestId = 0;
 
   async function load() {
-    tableContainer.innerHTML = '<p class="admin-note">Loading examinations...</p>';
-    currentExaminations = await fetchExaminations(statusSelect.value, limitSelect.value);
-    if (!currentExaminations) {
-      tableContainer.innerHTML = '<p class="admin-note">Unable to load examinations. Please try again.</p>';
+    const current = ++requestId;
+    setBusy(refreshButton, true);
+    tableContainer.innerHTML = '<div class="skeleton-rows" aria-hidden="true"><i></i><i></i><i></i></div>';
+    const result = await fetchExaminations(statusSelect.value, limitSelect.value);
+    if (current !== requestId) return;
+    setBusy(refreshButton, false);
+    if (!result) {
+      currentExaminations = [];
+      summary.innerHTML = '';
+      countElement.textContent = '';
+      tableContainer.innerHTML = '<div class="empty"><p>We could not load examinations. Check your connection and try again.</p></div>';
       return;
     }
-    tableContainer.innerHTML = renderExaminationsTable(currentExaminations);
+    currentExaminations = result;
+    countElement.textContent = `${result.length} examination${result.length === 1 ? '' : 's'}`;
+    summary.innerHTML = result.length ? renderSummary(result) : '';
+    tableContainer.innerHTML = renderExaminationsTable(result);
   }
 
   refreshButton.addEventListener('click', load);
   statusSelect.addEventListener('change', load);
   limitSelect.addEventListener('change', load);
 
-  createButton.addEventListener('click', async function () {
-    const data = await showExaminationModal();
-    if (!data) return;
-
-    createButton.disabled = true;
-    createButton.textContent = 'Creating...';
-
-    try {
-      await createExamination(data);
-      statusElement.textContent = 'Examination created successfully.';
-      statusElement.className = 'records-status ok';
+  createButton.addEventListener('click', async () => {
+    if (await showExaminationModal(null, createExamination)) {
+      toast('Examination created.', 'ok');
       load();
-    } catch (error) {
-      statusElement.textContent = error.message || 'Failed to create examination.';
-      statusElement.className = 'records-status err';
-    } finally {
-      createButton.disabled = false;
-      createButton.textContent = 'Create examination';
     }
   });
 
-  tableContainer.addEventListener('click', async function (event) {
+  tableContainer.addEventListener('click', async (event) => {
     const button = event.target.closest('[data-action]');
     if (!button) return;
+    const { action, id } = button.dataset;
+    const examination = currentExaminations.find((ex) => String(ex.id) === id);
 
-    const action = button.dataset.action;
-    const id = button.dataset.id;
-    const examination = currentExaminations.find(ex => ex.id === id);
-
-    if (action === 'edit') {
-      const data = await showExaminationModal(examination);
-      if (!data) return;
-
-      button.disabled = true;
-      button.textContent = 'Updating...';
-
-      try {
-        await updateExamination(id, data);
-        statusElement.textContent = 'Examination updated successfully.';
-        statusElement.className = 'records-status ok';
+    if (action === 'edit' && examination) {
+      if (await showExaminationModal(examination, (data) => updateExamination(id, data))) {
+        toast('Examination updated.', 'ok');
         load();
-      } catch (error) {
-        statusElement.textContent = error.message || 'Failed to update examination.';
-        statusElement.className = 'records-status err';
-        button.disabled = false;
-        button.textContent = 'Edit';
       }
     }
 
     if (action === 'delete') {
-      if (!confirm('Are you sure you want to delete this examination? This action cannot be undone.')) return;
-
-      button.disabled = true;
-      button.textContent = 'Deleting...';
-
+      const ok = await confirmDialog({
+        title: 'Delete examination',
+        message: `Delete "${examination?.name || 'this examination'}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        danger: true,
+      });
+      if (!ok) return;
+      setBusy(button, true);
       try {
         await deleteExamination(id);
-        statusElement.textContent = 'Examination deleted successfully.';
-        statusElement.className = 'records-status ok';
+        toast('Examination deleted.', 'ok');
         load();
       } catch (error) {
-        statusElement.textContent = error.message || 'Failed to delete examination.';
-        statusElement.className = 'records-status err';
-        button.disabled = false;
-        button.textContent = 'Delete';
+        toast(error.message || 'Failed to delete examination.', 'err');
+        setBusy(button, false);
       }
     }
   });

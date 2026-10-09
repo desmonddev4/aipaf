@@ -5,6 +5,8 @@ import { requireAdmin } from '../_auth.mjs';
 const VALID_STATUSES = ['pending', 'processing', 'completed', 'rejected'];
 const VALID_TYPES = ['contact_message', 'membership_interest', 'member_account'];
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function parseLimit(value) {
   return Math.min(Math.max(Number(value) || 25, 1), 250);
 }
@@ -45,8 +47,8 @@ async function updateDeletionRequestStatus(id, status, adminNotes) {
     return { ok: false, message: 'Invalid status.', status: 400 };
   }
 
-  const numericId = Number(id);
-  if (!Number.isInteger(numericId) || numericId <= 0) {
+  const requestId = String(id || '');
+  if (!UUID_PATTERN.test(requestId)) {
     return { ok: false, message: 'Invalid request identifier.', status: 400 };
   }
 
@@ -59,7 +61,7 @@ async function updateDeletionRequestStatus(id, status, adminNotes) {
            updated_at = NOW()
        WHERE id = $3
        RETURNING *`,
-      [status, adminNotes || null, numericId]
+      [status, adminNotes || null, requestId]
     );
 
     if (!updated.rowCount) {
@@ -73,15 +75,15 @@ async function updateDeletionRequestStatus(id, status, adminNotes) {
 }
 
 async function processDeletionRequest(id) {
-  const numericId = Number(id);
-  if (!Number.isInteger(numericId) || numericId <= 0) {
+  const requestId = String(id || '');
+  if (!UUID_PATTERN.test(requestId)) {
     return { ok: false, message: 'Invalid request identifier.', status: 400 };
   }
 
   const result = await withDb(async (client) => {
     const request = await client.query(
       'SELECT * FROM data_deletion_requests WHERE id = $1',
-      [numericId]
+      [requestId]
     );
 
     if (!request.rowCount) {
@@ -97,7 +99,7 @@ async function processDeletionRequest(id) {
     // Update status to processing
     await client.query(
       'UPDATE data_deletion_requests SET status = $1, updated_at = NOW() WHERE id = $2',
-      ['processing', numericId]
+      ['processing', requestId]
     );
 
     // Perform deletion based on type
@@ -127,7 +129,7 @@ async function processDeletionRequest(id) {
       `UPDATE data_deletion_requests
        SET status = $1, processed_at = NOW(), updated_at = NOW()
        WHERE id = $2`,
-      ['completed', numericId]
+      ['completed', requestId]
     );
 
     return { ok: true, deleted };

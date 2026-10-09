@@ -1,4 +1,4 @@
-import { apiFetch, cell, escapeHtml } from './shared.js';
+import { apiFetch, cell, escapeHtml, statusBadge, emptyState, toast, setBusy, formatDate } from './shared.js';
 
 async function fetchInvitations(status, limit) {
   try {
@@ -51,107 +51,164 @@ async function createManualInvitation(data) {
   }
 }
 
+const GRADES = ['fellow', 'member', 'associate', 'affiliate', 'graduate'];
+const cap = (value) => String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function renderSummary(items) {
+  const count = (status) => items.filter((i) => i.status === status).length;
+  const stats = [
+    ['Awaiting send', count('pending'), 'warn'],
+    ['Sent', count('sent'), 'info'],
+    ['Accepted', count('accepted'), 'ok'],
+    ['Declined or expired', count('declined') + count('expired'), 'mute'],
+  ];
+  return stats.map(([label, value, tone]) => `<div class="iv-stat ${tone}"><span>${label}</span><strong>${value}</strong></div>`).join('');
+}
+
 function renderInvitationsTable(invitations) {
-  if (!invitations || invitations.length === 0) {
-    return '<p class="admin-note">No invitations found.</p>';
-  }
+  if (!invitations || invitations.length === 0) return emptyState('No invitations match these filters.');
 
-  const rows = invitations.map(inv => {
-    const statusClass = inv.status === 'accepted' ? 'status-ok' : inv.status === 'expired' ? 'status-err' : '';
-    const statusLabel = inv.status.charAt(0).toUpperCase() + inv.status.slice(1);
-    const gradeLabel = inv.proposed_grade.charAt(0).toUpperCase() + inv.proposed_grade.slice(1);
-    const canSend = inv.status === 'pending';
-    const sendButton = canSend
-      ? `<button class="btn btn-ghost btn-sm" data-action="send" data-id="${inv.id}">Send email</button>`
-      : '';
-
+  const rows = invitations.map((inv) => {
+    const send = inv.status === 'pending'
+      ? `<button class="btn btn-gold btn-sm" type="button" data-action="send" data-id="${escapeHtml(inv.id)}">Send email</button>`
+      : '<span class="iv-done">—</span>';
     return '<tr>'
-      + cell('Email', escapeHtml(inv.email))
-      + cell('Name', escapeHtml(inv.full_name))
-      + cell('Grade', escapeHtml(gradeLabel))
+      + cell('Invitee', `<span class="iv-person"><strong>${escapeHtml(inv.full_name)}</strong><small>${escapeHtml(inv.email)}</small></span>`)
+      + cell('Grade', `<span class="iv-grade">${escapeHtml(cap(inv.proposed_grade))}</span>`)
       + cell('Qualification', escapeHtml(inv.qualification || '—'))
-      + cell('Status', `<span class="${statusClass}">${escapeHtml(statusLabel)}</span>`)
-      + cell('Sent', escapeHtml(inv.sent_at ? new Date(inv.sent_at).toLocaleDateString() : '—'))
-      + cell('Actions', sendButton)
+      + cell('Status', statusBadge(inv.status))
+      + cell('Sent', inv.sent_at ? formatDate(inv.sent_at) : '—')
+      + cell('Expires', inv.expires_at ? formatDate(inv.expires_at) : '—')
+      + cell('Actions', `<div class="row-actions">${send}</div>`)
       + '</tr>';
   }).join('');
 
-  return `<table class="data-table"><thead><tr><th scope="col">Email</th><th scope="col">Name</th><th scope="col">Grade</th><th scope="col">Qualification</th><th scope="col">Status</th><th scope="col">Sent</th><th scope="col">Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+  return `<table class="data-table"><thead><tr><th scope="col">Invitee</th><th scope="col">Grade</th><th scope="col">Qualification</th><th scope="col">Status</th><th scope="col">Sent</th><th scope="col">Expires</th><th scope="col">Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/* Resolves true when created. `save(data)` throws to keep the dialog open. */
+function showInvitationModal(save) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="inv-title">
+      <h2 id="inv-title">New manual invitation</h2>
+      <form id="inv-form" novalidate>
+        <div class="field"><label for="inv-email">Email *</label><input id="inv-email" name="email" type="email" autocomplete="off" placeholder="name@example.com"></div>
+        <div class="field"><label for="inv-name">Full name *</label><input id="inv-name" name="fullName" type="text" autocomplete="off"></div>
+        <div class="field"><label for="inv-grade">Proposed grade *</label><select id="inv-grade" name="grade">${GRADES.map((g) => `<option value="${g}" ${g === 'affiliate' ? 'selected' : ''}>${cap(g)}</option>`).join('')}</select></div>
+        <div class="field"><label for="inv-qualification">Qualification <span class="opt">(optional)</span></label><input id="inv-qualification" name="qualification" type="text" autocomplete="off"></div>
+        <div class="field"><label for="inv-affiliation">Affiliation <span class="opt">(optional)</span></label><input id="inv-affiliation" name="affiliation" type="text" autocomplete="off"></div>
+        <p class="form-status" id="inv-error" role="alert"></p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" type="button" data-inv="cancel">Cancel</button>
+          <button class="btn" type="submit">Create invitation</button>
+        </div>
+      </form>
+    </div>`;
+
+  return new Promise((resolve) => {
+    const finish = (value) => { document.removeEventListener('keydown', onKey); overlay.remove(); resolve(value); };
+    const onKey = (event) => { if (event.key === 'Escape') finish(false); };
+    document.addEventListener('keydown', onKey);
+    overlay.addEventListener('click', (event) => { if (event.target === overlay) finish(false); });
+    document.body.appendChild(overlay);
+
+    const form = overlay.querySelector('#inv-form');
+    const error = overlay.querySelector('#inv-error');
+    const submit = form.querySelector('[type="submit"]');
+    overlay.querySelector('[data-inv="cancel"]').addEventListener('click', () => finish(false));
+    form.email.focus();
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.email = data.email.trim();
+      data.fullName = data.fullName.trim();
+      data.qualification = data.qualification.trim() || null;
+      data.affiliation = data.affiliation.trim() || null;
+      if (!EMAIL_PATTERN.test(data.email)) { error.textContent = 'Enter a valid email address.'; form.email.focus(); return; }
+      if (!data.fullName) { error.textContent = 'Enter the invitee\'s full name.'; form.fullName.focus(); return; }
+      error.textContent = '';
+      setBusy(submit, true);
+      try {
+        await save(data);
+        finish(true);
+      } catch (err) {
+        error.textContent = err.message || 'Unable to create the invitation.';
+        setBusy(submit, false);
+      }
+    });
+  });
 }
 
 export function initInvitations() {
-  const statusSelect = document.querySelector('#invitation-status');
-  const limitSelect = document.querySelector('#invitation-limit');
-  const refreshButton = document.querySelector('#invitations-refresh');
-  const createButton = document.querySelector('#invitation-create');
-  const statusElement = document.querySelector('#invitations-status');
-  const tableContainer = document.querySelector('#invitations-table-container');
+  const $ = (selector) => document.querySelector(selector);
+  const statusSelect = $('#invitation-status');
+  const limitSelect = $('#invitation-limit');
+  const searchInput = $('#invitation-search');
+  const refreshButton = $('#invitations-refresh');
+  const createButton = $('#invitation-create');
+  const countElement = $('#invitations-status');
+  const summary = $('#invitations-summary');
+  const tableContainer = $('#invitations-table-container');
+
+  let all = [];
+  let requestId = 0;
+
+  function show() {
+    const term = searchInput.value.trim().toLowerCase();
+    const items = term
+      ? all.filter((i) => [i.full_name, i.email, i.qualification, i.affiliation].some((v) => String(v || '').toLowerCase().includes(term)))
+      : all;
+    countElement.textContent = `${items.length} invitation${items.length === 1 ? '' : 's'}`;
+    summary.innerHTML = all.length ? renderSummary(all) : '';
+    tableContainer.innerHTML = renderInvitationsTable(items);
+  }
 
   async function load() {
-    tableContainer.innerHTML = '<p class="admin-note">Loading invitations...</p>';
-    const invitations = await fetchInvitations(statusSelect.value, limitSelect.value);
-    if (!invitations) {
-      tableContainer.innerHTML = '<p class="admin-note">Unable to load invitations. Please try again.</p>';
+    const current = ++requestId;
+    setBusy(refreshButton, true);
+    tableContainer.innerHTML = '<div class="skeleton-rows" aria-hidden="true"><i></i><i></i><i></i></div>';
+    const result = await fetchInvitations(statusSelect.value, limitSelect.value);
+    if (current !== requestId) return;
+    setBusy(refreshButton, false);
+    if (!result) {
+      all = [];
+      summary.innerHTML = '';
+      countElement.textContent = '';
+      tableContainer.innerHTML = '<div class="empty"><p>We could not load invitations. Check your connection and try again.</p></div>';
       return;
     }
-    tableContainer.innerHTML = renderInvitationsTable(invitations);
+    all = result;
+    show();
   }
 
   refreshButton.addEventListener('click', load);
   statusSelect.addEventListener('change', load);
   limitSelect.addEventListener('change', load);
+  searchInput.addEventListener('input', show);
 
-  tableContainer.addEventListener('click', async function (event) {
+  tableContainer.addEventListener('click', async (event) => {
     const button = event.target.closest('[data-action="send"]');
     if (!button) return;
-
-    const id = button.dataset.id;
-    button.disabled = true;
-    button.textContent = 'Sending...';
-
+    setBusy(button, true);
     try {
-      await sendInvitation(id);
-      statusElement.textContent = 'Invitation sent successfully.';
-      statusElement.className = 'records-status ok';
+      await sendInvitation(button.dataset.id);
+      toast('Invitation email sent.', 'ok');
       load();
     } catch (error) {
-      statusElement.textContent = error.message || 'Failed to send invitation.';
-      statusElement.className = 'records-status err';
-      button.disabled = false;
-      button.textContent = 'Send email';
+      toast(error.message || 'Failed to send invitation.', 'err');
+      setBusy(button, false);
     }
   });
 
-  createButton.addEventListener('click', function () {
-    const email = prompt('Enter email address:');
-    if (!email) return;
-
-    const fullName = prompt('Enter full name:');
-    if (!fullName) return;
-
-    const grade = prompt('Enter grade (fellow, member, associate, affiliate, graduate):', 'affiliate');
-    if (!grade) return;
-
-    const qualification = prompt('Enter qualification (optional):') || null;
-    const affiliation = prompt('Enter affiliation (optional):') || null;
-
-    createButton.disabled = true;
-    createButton.textContent = 'Creating...';
-
-    createManualInvitation({ email, fullName, grade, qualification, affiliation })
-      .then(() => {
-        statusElement.textContent = 'Invitation created successfully.';
-        statusElement.className = 'records-status ok';
-        load();
-      })
-      .catch(error => {
-        statusElement.textContent = error.message || 'Failed to create invitation.';
-        statusElement.className = 'records-status err';
-      })
-      .finally(() => {
-        createButton.disabled = false;
-        createButton.textContent = 'Create manual invitation';
-      });
+  createButton.addEventListener('click', async () => {
+    if (await showInvitationModal(createManualInvitation)) {
+      toast('Invitation created. Send the email when you are ready.', 'ok');
+      load();
+    }
   });
 
   load();

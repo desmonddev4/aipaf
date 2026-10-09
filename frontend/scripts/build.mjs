@@ -17,9 +17,6 @@ rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 cpSync(join(root, 'public'), dist, { recursive: true });
 cpSync(join(root, 'src/admin/js'), join(dist, 'js/admin'), { recursive: true });
-for (const stylesheet of ['admin.css', 'admin-login.css', 'cms-admin.css']) {
-  cpSync(join(root, 'src/admin/css', stylesheet), join(dist, 'css', stylesheet));
-}
 
 // Update API_BASE_URL in config.js for production
 const configPath = join(dist, 'js', 'config.js');
@@ -34,11 +31,10 @@ const layout = partial('layout');
 const header = partial('Navbar');
 const footer = partial('footer');
 const adminSidebar = read('src/admin/partials/sidebar.html').trim();
-const adminSidebarStyles = read('src/admin/partials/sidebar.css');
-const adminStylesheet = read('src/admin/css/admin.css');
+const sidebarMarker = '<!--ADMIN_SIDEBAR-->';
 const year = new Date().getFullYear();
 
-function renderPage(raw, meta, slug, adminStyles = '') {
+function renderPage(raw, meta, slug) {
   const nav = header.replace(/\{\{cur:([a-z-]+)\}\}/g, (_, item) => (item === meta.nav ? 'aria-current="page"' : ''));
   const isAdminPage = /^(admin(?:-|$)|cms-admin$)/.test(slug);
   const content = isAdminPage
@@ -47,10 +43,7 @@ function renderPage(raw, meta, slug, adminStyles = '') {
       .replace(/<\/main>/g, '</div>')
       .replaceAll('class="admin-content"', 'class="admin-content admin-main"')
     : raw;
-  const pageLayout = adminStyles
-    ? layout.replace('</head>', `<style>\n${adminStyles}\n</style>\n</head>`)
-    : layout;
-  return pageLayout
+  return layout
     .replace('{{header}}', isAdminPage ? '' : nav)
     .replace('{{footer}}', isAdminPage ? '' : footer)
     .replace('{{content}}', content)
@@ -82,7 +75,9 @@ for (const page of pages) {
   if (!meta.noindex) sitemap.push(SITE_URL + (urlPath === '/' ? '/' : urlPath));
 }
 
-// Admin templates are content fragments except for the standalone login page.
+// Admin pages are standalone documents that embed their own CSS. Pages containing
+// <!--ADMIN_SIDEBAR--> get the sidebar partial (markup + its own CSS) injected.
+// The CMS page is still a layout fragment.
 const adminDir = 'src/admin/pages';
 if (existsSync(join(root, adminDir))) {
   const adminPages = readdirSync(join(root, adminDir))
@@ -90,7 +85,8 @@ if (existsSync(join(root, adminDir))) {
   for (const file of adminPages) {
     const raw = read(`${adminDir}/${file}`);
     if (/^\s*<!doctype html>/i.test(raw)) {
-      writeFileSync(join(dist, file), raw);
+      if (raw.includes(sidebarMarker)) writeFileSync(join(dist, file), raw.replace(sidebarMarker, () => adminSidebar));
+      else writeFileSync(join(dist, file), raw);
       continue;
     }
 
@@ -98,16 +94,8 @@ if (existsSync(join(root, adminDir))) {
     if (!metadataMatch) throw new Error(`${file}: missing JSON metadata comment on first line`);
     const meta = JSON.parse(metadataMatch[1]);
     const slug = file.replace(/\.html$/, '');
-    const adminStyles = slug === 'cms-admin' ? '' : `${adminStylesheet}\n${adminSidebarStyles}`;
     let content = raw.slice(metadataMatch[0].length);
-    if (/^admin(?:-|$)/.test(slug) && slug !== 'admin-login') {
-      const sidebarPlaceholder = '<aside class="admin-sidebar" id="admin-sidebar"></aside>';
-      if (!content.includes(sidebarPlaceholder)) {
-        throw new Error(`${file}: missing admin sidebar placeholder`);
-      }
-      content = content.replace(sidebarPlaceholder, adminSidebar);
-    }
-    writeFileSync(join(dist, file), renderPage(content, meta, slug, adminStyles));
+    writeFileSync(join(dist, file), renderPage(content, meta, slug));
   }
 }
 

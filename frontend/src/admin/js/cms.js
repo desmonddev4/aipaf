@@ -1,208 +1,205 @@
-import { apiFetch } from './shared.js';
+import { apiFetch, cell, confirmDialog, emptyState, escapeHtml, formatDate, setBusy, statusBadge, toast } from './shared.js';
 
-/* AIPAF CMS dashboard.
-   Plain script (no imports), as in the original. Wrapped in a function so its
-   names cannot clash with other scripts on the page. */
-(function () {
-  const login = document.querySelector('#cms-login');
-  const dashboard = document.querySelector('#cms-dashboard');
-  const typeSelect = document.querySelector('#cms-type');
-  const statusSelect = document.querySelector('#cms-status');
-  const list = document.querySelector('#cms-list');
-  const editor = document.querySelector('#cms-form-editor');
-  const editorStatus = document.querySelector('#cms-editor-status');
-  const loginStatus = document.querySelector('#cms-login-status');
+const TYPES = ['page', 'news', 'publication', 'event', 'download'];
+const cap = (value) => String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
 
-  let requestSeq = 0;   // ignores slow responses that arrive after a newer request
-  let editingSlug = ''; // which list item is loaded in the editor
+export function initCms({ showLogin } = {}) {
+  const $ = (selector) => document.querySelector(selector);
+  const list = $('#cms-list');
+  const typeSelect = $('#cms-type');
+  const statusSelect = $('#cms-status');
+  const search = $('#cms-search');
+  const count = $('#cms-count');
+  let items = [];
+  let seq = 0; // ignores slow responses that arrive after a newer request
 
-  /* ---------- helpers ---------- */
-  function esc(value) {
-    return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
-    })[char]);
-  }
-  function cls(value) {
-    return String(value == null ? '' : value).toLowerCase().replace(/[^a-z0-9_-]/g, '');
-  }
-  function headers() {
-    return {}; // Cookie-based authentication - no custom headers needed
+  const slugify = (text) => String(text || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 120);
+
+  async function request(path, options) {
+    const response = await apiFetch(path, options);
+    let payload = {};
+    try { payload = await response.json(); } catch { /* non-JSON error body */ }
+    if (response.status === 401) { showLogin?.('Please sign in again.'); throw new Error('Please sign in again.'); }
+    if (!response.ok || payload.ok === false) throw new Error(payload.message || 'Request failed.');
+    return payload;
   }
 
-  let toastHost;
-  function toast(message, type) {
-    if (!toastHost) {
-      toastHost = document.createElement('div');
-      toastHost.className = 'cms-toasts';
-      toastHost.setAttribute('role', 'status');
-      toastHost.setAttribute('aria-live', 'polite');
-      document.body.appendChild(toastHost);
-    }
-    const el = document.createElement('div');
-    el.className = `cms-toast ${cls(type || 'info')}`;
-    el.textContent = message;
-    toastHost.appendChild(el);
-    const dismiss = () => { el.classList.add('is-leaving'); setTimeout(() => el.remove(), 260); };
-    const timer = setTimeout(dismiss, 4200);
-    el.addEventListener('click', () => { clearTimeout(timer); dismiss(); });
-  }
-
-  function setEditorMessage(message, kind) {
-    editorStatus.className = `form-status${kind ? ` ${kind}` : ''}`;
-    editorStatus.textContent = message;
-  }
-
-  /* ---------- show / hide ---------- */
-  function showDashboard() {
-    login.style.display = 'none';
-    dashboard.classList.add('is-open');
-    refresh();
-  }
-
-  function hideDashboard() {
-    login.style.display = 'block';
-    dashboard.classList.remove('is-open');
-    loginStatus.textContent = '';
-    editingSlug = '';
-  }
-
-  /* ---------- list ---------- */
-  function renderList(items) {
-    if (!items.length) {
-      list.innerHTML = '<div class="empty">No content matches this filter.</div>';
+  function render() {
+    const term = search.value.trim().toLowerCase();
+    const shown = items.filter((item) => !term || `${item.title} ${item.slug} ${item.summary || ''}`.toLowerCase().includes(term));
+    count.textContent = `${shown.length} item${shown.length === 1 ? '' : 's'}`;
+    if (!shown.length) {
+      list.innerHTML = emptyState(items.length ? 'Nothing matches your search.' : `No ${statusSelect.value} ${typeSelect.value} content yet.`);
       return;
     }
-
-    list.innerHTML = items.map((item) => `
-      <article class="item${item.slug === editingSlug ? ' is-editing' : ''}" data-slug="${esc(item.slug)}">
-        <div class="item-header">
-          <div><strong>${esc(item.title)}</strong><br><small>${esc(item.slug)}</small></div>
-          <span class="tag tag-${cls(item.status)}">${esc(item.status)}</span>
-        </div>
-        ${item.summary ? `<p>${esc(item.summary)}</p>` : ''}
-        <div class="toolbar-actions">
-          <button type="button" class="btn btn-sm secondary" data-action="load" data-slug="${esc(item.slug)}">Edit</button>
-          <button type="button" class="btn btn-sm danger" data-action="delete" data-slug="${esc(item.slug)}">Delete</button>
-        </div>
-      </article>`).join('');
+    const rows = shown.map((item) => {
+      const action = item.status === 'published'
+        ? `<button class="btn btn-sm btn-ghost" type="button" data-act="archive" data-slug="${escapeHtml(item.slug)}">Archive</button>`
+        : `<button class="btn btn-sm btn-gold" type="button" data-act="publish" data-slug="${escapeHtml(item.slug)}">Publish</button>`;
+      return `<tr>`
+        + cell('Title', `<div class="cm-title"><strong>${escapeHtml(item.title)}</strong><small>/${escapeHtml(item.slug)}</small>${item.summary ? `<span>${escapeHtml(item.summary)}</span>` : ''}</div>`)
+        + cell('Status', statusBadge(item.status))
+        + cell('Date', formatDate(item.published_at || item.created_at))
+        + cell('Actions', `<div class="row-actions">
+            <button class="btn btn-sm" type="button" data-act="edit" data-slug="${escapeHtml(item.slug)}">Edit</button>
+            ${action}
+            <button class="btn btn-sm btn-danger" type="button" data-act="delete" data-slug="${escapeHtml(item.slug)}">Delete</button>
+          </div>`)
+        + `</tr>`;
+    }).join('');
+    list.innerHTML = `<table class="data-table"><thead><tr><th scope="col">Title</th><th scope="col">Status</th><th scope="col">Date</th><th scope="col">Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
 
-  function showSkeleton() {
-    list.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
-  }
-
-  function refresh() {
-    const seq = ++requestSeq;
-    showSkeleton();
-    apiFetch(`/api/cms?type=${encodeURIComponent(typeSelect.value)}&status=${encodeURIComponent(statusSelect.value)}`, { headers: headers() })
-      .then(async (response) => {
-        if (response.status === 401) throw new Error('You need to sign in to access the CMS.');
-        const payload = await response.json();
-        if (!response.ok) throw new Error(payload.message || 'Unable to load content.');
-        return payload;
-      })
-      .then((payload) => { if (seq === requestSeq) renderList(payload.items || []); })
-      .catch((error) => {
-        if (seq !== requestSeq) return;
-        hideDashboard();
-        loginStatus.textContent = error.message;
-      });
-  }
-
-  /* Edit and Delete use one delegated listener, so re-rendering the list never leaks handlers. */
-  list.addEventListener('click', (event) => {
-    const button = event.target.closest('button[data-action]');
-    if (!button) return;
-    const slug = button.dataset.slug;
-
-    if (button.dataset.action === 'load') {
-      button.disabled = true;
-      apiFetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { headers: headers() })
-        .then((response) => response.json())
-        .then((payload) => {
-          if (!payload.ok) throw new Error(payload.message || 'Unable to load content.');
-          document.querySelector('#cms-slug').value = payload.item.slug;
-          document.querySelector('#cms-title').value = payload.item.title;
-          document.querySelector('#cms-summary').value = payload.item.summary || '';
-          document.querySelector('#cms-body').value = payload.item.body || '';
-          document.querySelector('#cms-status-editor').value = payload.item.status || 'draft';
-
-          editingSlug = payload.item.slug;
-          list.querySelectorAll('.item').forEach((el) => el.classList.toggle('is-editing', el.dataset.slug === editingSlug));
-          setEditorMessage(`Editing "${payload.item.title}". Saving updates this item.`, 'info');
-          editor.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
-          document.querySelector('#cms-title').focus({ preventScroll: true });
-        })
-        .catch((error) => toast(error.message, 'err'))
-        .finally(() => { button.disabled = false; });
-    }
-
-    if (button.dataset.action === 'delete') {
-      if (!window.confirm('Delete this content item?')) return;
-      button.disabled = true;
-      apiFetch(`/api/cms?slug=${encodeURIComponent(slug)}`, { method: 'DELETE', headers: headers() })
-        .then((response) => response.json())
-        .then((payload) => {
-          if (!payload.ok) throw new Error(payload.message || 'Delete failed.');
-          if (slug === editingSlug) { editingSlug = ''; editor.reset(); setEditorMessage(''); }
-          toast('Content deleted.', 'ok');
-          refresh();
-        })
-        .catch((error) => { button.disabled = false; toast(error.message, 'err'); });
-    }
-  });
-
-  /* ---------- check authentication ---------- */
-  function checkAuth() {
-    apiFetch('/api/admin/session')
-      .then((response) => {
-        if (response.ok) {
-          showDashboard();
-        } else {
-          hideDashboard();
-        }
-      })
-      .catch(() => {
-        hideDashboard();
-      });
-  }
-
-  checkAuth();
-
-  /* ---------- save ---------- */
-  editor.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    setEditorMessage('');
-    const button = editor.querySelector('button[type="submit"]');
-    button.disabled = true;
-
+  async function refresh() {
+    const mine = ++seq;
+    list.innerHTML = '<div class="skeleton-rows"><i></i><i></i><i></i></div>';
+    count.textContent = '';
     try {
-      const payload = Object.fromEntries(new FormData(editor).entries());
-      payload.type = typeSelect.value;
-      const response = await apiFetch('/api/cms', {
-        method: 'POST',
-        credentials: 'include',
-        headers: Object.assign({ 'Content-Type': 'application/json' }, headers()),
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Unable to save content.');
-      setEditorMessage('Content saved.', 'ok');
-      toast('Content saved.', 'ok');
-      editingSlug = '';
-      editor.reset();
+      const payload = await request(`/api/cms?type=${encodeURIComponent(typeSelect.value)}&status=${encodeURIComponent(statusSelect.value)}`);
+      if (mine !== seq) return;
+      items = payload.items || [];
+      render();
+    } catch (error) {
+      if (mine !== seq) return;
+      items = [];
+      list.innerHTML = emptyState(error.message);
+    }
+    updateTabs();
+  }
+
+  function updateTabs() {
+    document.querySelectorAll('[data-type]').forEach((tab) => {
+      const on = tab.dataset.type === typeSelect.value;
+      tab.classList.toggle('is-active', on);
+      tab.setAttribute('aria-selected', String(on));
+    });
+  }
+
+  /* ---------- editor modal ---------- */
+  function openEditor(existing) {
+    const isEdit = Boolean(existing);
+    const item = existing || { slug: '', title: '', summary: '', body: '', status: 'draft' };
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <form class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="cm-modal-title" novalidate>
+        <div class="modal-header">
+          <h2 id="cm-modal-title">${isEdit ? 'Edit' : 'New'} ${escapeHtml(typeSelect.value)}</h2>
+        </div>
+        <div class="modal-body">
+          <div class="field"><label for="cm-title">Title</label><input id="cm-title" name="title" type="text" maxlength="180" required value="${escapeHtml(item.title)}"></div>
+          <div class="cm-row">
+            <div class="field"><label for="cm-slug">Slug (web address)</label><input id="cm-slug" name="slug" type="text" maxlength="120" required value="${escapeHtml(item.slug)}" ${isEdit ? 'readonly' : ''}></div>
+            <div class="field"><label for="cm-status-editor">Status</label>
+              <select id="cm-status-editor" name="status">
+                ${['draft', 'published', 'archived'].map((s) => `<option value="${s}"${item.status === s ? ' selected' : ''}>${cap(s)}</option>`).join('')}
+              </select></div>
+          </div>
+          <div class="field"><label for="cm-summary">Summary</label><textarea id="cm-summary" name="summary" rows="2" maxlength="500">${escapeHtml(item.summary || '')}</textarea></div>
+          <div class="field"><label for="cm-body">Body</label><textarea id="cm-body" name="body" rows="9">${escapeHtml(item.body || '')}</textarea></div>
+          <p class="form-status" id="cm-error" role="alert"></p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+          <button class="btn btn-gold" type="submit">${isEdit ? 'Save changes' : 'Create content'}</button>
+        </div>
+      </form>`;
+    const form = overlay.querySelector('form');
+    const titleInput = form.elements.title;
+    const slugInput = form.elements.slug;
+    let slugTouched = isEdit;
+    slugInput.addEventListener('input', () => { slugTouched = true; });
+    titleInput.addEventListener('input', () => { if (!slugTouched) slugInput.value = slugify(titleInput.value); });
+
+    const close = () => { document.removeEventListener('keydown', onKey); overlay.remove(); };
+    const onKey = (event) => { if (event.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey);
+    overlay.querySelector('[data-close]').addEventListener('click', close);
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const error = overlay.querySelector('#cm-error');
+      error.textContent = '';
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.slug = slugify(data.slug);
+      if (!data.title.trim()) { error.textContent = 'Please enter a title.'; titleInput.focus(); return; }
+      if (!data.slug) { error.textContent = 'Please enter a slug.'; slugInput.focus(); return; }
+      const button = form.querySelector('[type="submit"]');
+      setBusy(button, true);
+      try {
+        await save({ ...data, type: typeSelect.value });
+        close();
+        toast(isEdit ? 'Changes saved.' : 'Content created.', 'ok');
+        refresh();
+      } catch (err) {
+        error.textContent = err.message;
+        setBusy(button, false);
+      }
+    });
+
+    document.body.appendChild(overlay);
+    titleInput.focus();
+  }
+
+  function save(data) {
+    return request('/api/cms', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async function setStatus(item, status, button) {
+    setBusy(button, true);
+    try {
+      await save({ type: item.type || typeSelect.value, slug: item.slug, title: item.title, summary: item.summary || '', body: item.body || '', status });
+      toast(status === 'published' ? 'Published.' : 'Archived.', 'ok');
       refresh();
     } catch (error) {
-      setEditorMessage(error.message);
-    } finally {
-      button.disabled = false;
+      toast(error.message, 'err');
+      setBusy(button, false);
+    }
+  }
+
+  list.addEventListener('click', async (event) => {
+    const button = event.target.closest('button[data-act]');
+    if (!button) return;
+    const item = items.find((entry) => entry.slug === button.dataset.slug);
+    if (!item) return;
+    const act = button.dataset.act;
+
+    if (act === 'edit') {
+      setBusy(button, true);
+      try {
+        const payload = await request(`/api/cms?slug=${encodeURIComponent(item.slug)}`);
+        openEditor(payload.item);
+      } catch (error) { toast(error.message, 'err'); }
+      setBusy(button, false);
+    } else if (act === 'publish' || act === 'archive') {
+      setStatus(item, act === 'publish' ? 'published' : 'archived', button);
+    } else if (act === 'delete') {
+      const ok = await confirmDialog({ title: 'Delete this content?', message: `"${item.title}" will be permanently removed. This cannot be undone.`, confirmLabel: 'Delete', danger: true });
+      if (!ok) return;
+      setBusy(button, true);
+      try {
+        await request(`/api/cms?slug=${encodeURIComponent(item.slug)}`, { method: 'DELETE' });
+        toast('Content deleted.', 'ok');
+        refresh();
+      } catch (error) { toast(error.message, 'err'); setBusy(button, false); }
     }
   });
 
+  document.querySelectorAll('[data-type]').forEach((tab) => tab.addEventListener('click', () => {
+    if (!TYPES.includes(tab.dataset.type)) return;
+    typeSelect.value = tab.dataset.type;
+    refresh();
+  }));
   typeSelect.addEventListener('change', refresh);
   statusSelect.addEventListener('change', refresh);
-  document.querySelector('#cms-refresh').addEventListener('click', refresh);
-  document.querySelector('#cms-signout').addEventListener('click', () => {
-    window.location.href = '/admin';
-  });
-})();
+  search.addEventListener('input', render);
+  $('#cms-refresh').addEventListener('click', refresh);
+  $('#cms-new').addEventListener('click', () => openEditor(null));
+
+  refresh();
+}

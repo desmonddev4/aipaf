@@ -1,17 +1,28 @@
 import { apiFetch, toast } from './shared.js';
 
-// Admin navigation configuration
-const adminSections = [
-  { id: 'overview', label: 'Overview', icon: 'grid', path: '/admin' },
-  { id: 'members', label: 'Members', icon: 'users', path: '/admin-members' },
-  { id: 'payments', label: 'Payments', icon: 'credit-card', path: '/admin-payments' },
-  { id: 'examinations', label: 'Examinations', icon: 'file-text', path: '/admin-examinations' },
-  { id: 'certificates', label: 'Certificates', icon: 'award', path: '/admin-certificates' },
-  { id: 'invitations', label: 'Invitations', icon: 'mail', path: '/admin-invitations' },
-  { id: 'applications', label: 'Applications', icon: 'clipboard', path: '/admin-applications' },
-  { id: 'records', label: 'Records', icon: 'check-circle', path: '/admin-records' },
-  { id: 'data-deletion', label: 'Data Deletion', icon: 'trash-2', path: '/admin-data-deletion' },
-  { id: 'audit', label: 'Audit Log', icon: 'shield', path: '/admin-audit' },
+// Admin navigation configuration, grouped for the sidebar. `badge` names a pending-count key.
+const adminGroups = [
+  { label: 'Workspace', items: [
+    { id: 'overview', label: 'Overview', icon: 'grid', path: '/admin' },
+  ] },
+  { label: 'People', items: [
+    { id: 'members', label: 'Members', icon: 'users', path: '/admin-members', badge: 'members' },
+    { id: 'invitations', label: 'Invitations', icon: 'mail', path: '/admin-invitations' },
+    { id: 'applications', label: 'Applications', icon: 'clipboard', path: '/admin-applications' },
+  ] },
+  { label: 'Finance & learning', items: [
+    { id: 'payments', label: 'Payments', icon: 'credit-card', path: '/admin-payments', badge: 'payments' },
+    { id: 'examinations', label: 'Examinations', icon: 'file-text', path: '/admin-examinations', badge: 'examinations' },
+    { id: 'certificates', label: 'Certificates', icon: 'award', path: '/admin-certificates' },
+    { id: 'records', label: 'Records', icon: 'check-circle', path: '/admin-records', badge: 'records' },
+  ] },
+  { label: 'Compliance', items: [
+    { id: 'data-deletion', label: 'Data Deletion', icon: 'trash-2', path: '/admin-data-deletion' },
+    { id: 'audit', label: 'Audit Log', icon: 'shield', path: '/admin-audit' },
+  ] },
+  { label: 'Website', items: [
+    { id: 'cms', label: 'Content', icon: 'edit', path: '/cms-admin' },
+  ] },
 ];
 
 // SVG icons (decorative; the text label carries the meaning)
@@ -29,6 +40,7 @@ const icons = {
   clipboard: svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line>'),
   'check-circle': svg('<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'),
   'trash-2': svg('<polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>'),
+  edit: svg('<path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path>'),
   shield: svg('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>'),
 };
 
@@ -37,6 +49,7 @@ let currentSection = 'overview';
 // Work out which section the URL belongs to (/admin, /admin-members, /admin-members.html, /admin-members/)
 function getCurrentSectionFromPath() {
   const path = window.location.pathname.replace(/\/+$/, '').replace(/\.html$/, '');
+  if (/\/cms-admin$/.test(path)) return 'cms';
   const match = path.match(/\/admin-?([^/]*)$/);
   return match && match[1] ? match[1] : 'overview';
 }
@@ -50,16 +63,19 @@ function generateSidebar() {
   const navList = sidebar.querySelector('#admin-section-links');
   if (!navList) throw new Error('Admin sidebar is missing #admin-section-links');
 
-  navList.innerHTML = adminSections.map((section) => {
-    const isActive = section.id === active;
-    return `
-      <li>
-        <a href="${section.path}"${isActive ? ' aria-current="page"' : ''}>
-          ${icons[section.icon]}
-          <span>${section.label}</span>
-        </a>
-      </li>`;
-  }).join('');
+  navList.innerHTML = adminGroups.map((group) => `
+    <li class="adm-sidebar__group" role="presentation">
+      <p class="adm-sidebar__label">${group.label}</p>
+      <ul class="adm-sidebar__list">${group.items.map((section) => `
+        <li>
+          <a href="${section.path}" data-tip="${section.label}"${section.id === active ? ' aria-current="page"' : ''}>
+            ${icons[section.icon]}
+            <span class="adm-sidebar__text">${section.label}</span>
+            ${section.badge ? `<span class="adm-sidebar__badge" data-badge="${section.badge}" hidden></span>` : ''}
+          </a>
+        </li>`).join('')}
+      </ul>
+    </li>`).join('');
 
   sidebar.querySelector('#admin-signout')?.addEventListener('click', handleSignout);
 }
@@ -105,11 +121,37 @@ async function loadUserInfo() {
   }
 }
 
+// Pending-work counts shown as badges (one request, failures are silent)
+async function loadBadges() {
+  try {
+    const response = await apiFetch('/api/admin/reports?action=overview');
+    if (!response.ok) return;
+    const data = await response.json();
+    const r = data && data.ok && data.report;
+    if (!r) return;
+    const counts = {
+      members: (r.members?.pending || 0) + (r.members?.unverified || 0),
+      payments: r.payments?.pending || 0,
+      examinations: r.examinations?.pending || 0,
+      records: r.cpd?.pending || 0,
+    };
+    document.querySelectorAll('[data-badge]').forEach((el) => {
+      const n = counts[el.dataset.badge] || 0;
+      el.textContent = n > 99 ? '99+' : String(n);
+      el.setAttribute('aria-label', `${n} pending`);
+      el.hidden = n === 0;
+    });
+  } catch (error) {
+    console.error('Failed to load sidebar badges:', error);
+  }
+}
+
 // Initialize navigation
 export function initNavigation() {
   currentSection = getCurrentSectionFromPath();
   generateSidebar();
   loadUserInfo();
+  loadBadges();
 }
 
 // Navigate to a section

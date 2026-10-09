@@ -1,126 +1,166 @@
-import { apiFetch, authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, statusBadge, toast } from './shared.js';
+import { apiFetch, authHeaders, cell, emptyState, escapeHtml, formatDate, readJson, statusBadge, toast, setBusy } from './shared.js';
+
+const EXAM_RESULTS = ['pending', 'pass', 'fail', 'withheld'];
+const CPD_STATUSES = ['pending', 'approved', 'rejected', 'withdrawn'];
+const cap = (value) => String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
+const options = (values, current) => values.map((v) => `<option value="${v}" ${v === current ? 'selected' : ''}>${cap(v)}</option>`).join('');
+const examResult = (item) => item.result_status || 'pending';
+
+function renderSummary(items, type) {
+  const count = (fn) => items.filter(fn).length;
+  const stats = type === 'cpd'
+    ? [
+      ['Awaiting decision', count((i) => (i.status || 'pending') === 'pending'), 'warn'],
+      ['Approved', count((i) => i.status === 'approved'), 'ok'],
+      ['Rejected', count((i) => i.status === 'rejected'), 'mute'],
+      ['Approved hours', items.filter((i) => i.status === 'approved').reduce((sum, i) => sum + (Number(i.hours) || 0), 0), 'info'],
+    ]
+    : [
+      ['Awaiting result', count((i) => examResult(i) === 'pending'), 'warn'],
+      ['Passed', count((i) => examResult(i) === 'pass'), 'ok'],
+      ['Failed', count((i) => examResult(i) === 'fail'), 'mute'],
+      ['Withheld', count((i) => examResult(i) === 'withheld'), 'info'],
+    ];
+  return stats.map(([name, value, tone]) => `<div class="rc-stat ${tone}"><span>${name}</span><strong>${value}</strong></div>`).join('');
+}
+
+function renderTable(items, type) {
+  if (!items.length) return emptyState(type === 'cpd' ? 'No CPD records match.' : 'No examination records match.');
+
+  const headers = type === 'cpd'
+    ? ['Member', 'Activity', 'Category', 'Hours', 'Status', 'Submitted', 'Decision']
+    : ['Member', 'Examination', 'Code', 'Score', 'Result', 'Registered', 'Record result'];
+
+  const rows = items.map((item) => {
+    const id = escapeHtml(item.id);
+    if (type === 'cpd') {
+      const current = item.status || 'pending';
+      return '<tr>'
+        + cell(headers[0], escapeHtml(item.email || item.member_id || '—'))
+        + cell(headers[1], escapeHtml(item.title || '—'))
+        + cell(headers[2], escapeHtml(item.category || '—'))
+        + cell(headers[3], `<span class="rc-hours">${escapeHtml(item.hours ?? '—')}</span>`)
+        + cell(headers[4], statusBadge(current))
+        + cell(headers[5], formatDate(item.created_at))
+        + cell(headers[6], `<div class="rc-actions"><select aria-label="CPD decision" data-cpd-status="${id}">${options(CPD_STATUSES, current)}</select><button type="button" class="btn btn-gold btn-sm" data-save="${id}">Save</button></div>`)
+        + '</tr>';
+    }
+    const current = examResult(item);
+    return '<tr>'
+      + cell(headers[0], escapeHtml(item.email || item.member_id || '—'))
+      + cell(headers[1], escapeHtml(item.examination_name || '—'))
+      + cell(headers[2], escapeHtml(item.code || '—'))
+      + cell(headers[3], `<span class="rc-result">${escapeHtml(item.result_score ?? '—')}</span>`)
+      + cell(headers[4], statusBadge(current))
+      + cell(headers[5], formatDate(item.registered_at))
+      + cell(headers[6], `<div class="rc-actions"><input class="rc-score" type="number" min="0" max="100" step="0.1" placeholder="Score" data-score="${id}" value="${escapeHtml(item.result_score ?? '')}" aria-label="Score"><select aria-label="Examination result" data-exam-status="${id}">${options(EXAM_RESULTS, current)}</select><button type="button" class="btn btn-gold btn-sm" data-save="${id}">Save</button></div>`)
+      + '</tr>';
+  }).join('');
+
+  return `<table class="data-table"><thead><tr>${headers.map((h) => `<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>`;
+}
 
 export function initRecords() {
-  const typeSelect = document.querySelector('#records-type');
-  const limitSelect = document.querySelector('#records-limit');
-  const status = document.querySelector('#records-status');
-  const table = document.querySelector('#records-table-container');
-  let loadSeq = 0;
+  const $ = (selector) => document.querySelector(selector);
+  const limitSelect = $('#records-limit');
+  const searchInput = $('#records-search');
+  const refreshButton = $('#records-refresh');
+  const countElement = $('#records-status');
+  const summary = $('#records-summary');
+  const table = $('#records-table-container');
+  const tabs = Array.from(document.querySelectorAll('.rc-tab'));
 
-  function render(items, type) {
-    if (!items.length) {
-      table.innerHTML = emptyState('No records are available.');
-      return;
-    }
+  let type = 'examination';
+  let all = [];
+  let requestId = 0;
 
-    const headers = type === 'cpd'
-      ? ['Member', 'Title', 'Category', 'Hours', 'Status', 'Date', 'Action']
-      : ['Member', 'Examination', 'Code', 'Result', 'Status', 'Registered', 'Action'];
-
-    const rows = items.map((item) => {
-      const id = escapeHtml(item.id);
-      if (type === 'cpd') {
-        return '<tr>'
-          + cell(headers[0], escapeHtml(item.email || item.member_id))
-          + cell(headers[1], escapeHtml(item.title))
-          + cell(headers[2], escapeHtml(item.category))
-          + cell(headers[3], escapeHtml(item.hours))
-          + cell(headers[4], statusBadge(item.status || 'pending'))
-          + cell(headers[5], formatDate(item.created_at))
-          + cell(headers[6], `<div class="row-actions"><select aria-label="CPD decision" data-record-action="cpd" data-id="${id}"><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="withdrawn">Withdrawn</option></select></div>`)
-          + '</tr>';
-      }
-      const score = item.result_score ?? '—';
-      return '<tr>'
-        + cell(headers[0], escapeHtml(item.email || item.member_id))
-        + cell(headers[1], escapeHtml(item.examination_name))
-        + cell(headers[2], escapeHtml(item.code))
-        + cell(headers[3], escapeHtml(score))
-        + cell(headers[4], statusBadge(item.result_status || item.status || 'pending'))
-        + cell(headers[5], formatDate(item.registered_at))
-        + cell(headers[6], `<div class="row-actions"><input type="number" min="0" max="100" step="0.1" data-record-score="${id}" value="${escapeHtml(item.result_score ?? '')}" aria-label="Score for ${escapeHtml(item.id || 'record')}"><select aria-label="Examination result" data-record-action="exam" data-id="${id}"><option value="pending">Pending</option><option value="pass">Pass</option><option value="fail">Fail</option><option value="withheld">Withheld</option></select><button type="button" class="btn-sm" data-record-save="${id}">Save</button></div>`)
-        + '</tr>';
-    }).join('');
-
-    table.innerHTML = `<table class="data-table"><thead><tr>${headers.map((header) => `<th scope="col">${header}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>`;
-
-    table.querySelectorAll('[data-record-action]').forEach((select) => {
-      const current = (select.closest('tr').querySelector('.status')?.textContent?.trim() || 'pending').toLowerCase();
-      const allowed = Array.from(select.options, (option) => option.value);
-      select.value = allowed.includes(current) ? current : 'pending';
-      select.addEventListener('change', async () => {
-        select.disabled = true;
-        if (select.dataset.recordAction === 'cpd') await updateCpdStatus(select.dataset.id, select.value);
-        else await updateExaminationResult(select.dataset.id, select.closest('tr').querySelector('[data-record-score]').value, select.value);
-        select.disabled = false;
-      });
-    });
-
-    /* A score can now be saved without having to change the result dropdown first. */
-    table.querySelectorAll('[data-record-save]').forEach((button) => {
-      button.addEventListener('click', async () => {
-        const row = button.closest('tr');
-        button.disabled = true;
-        await updateExaminationResult(
-          button.dataset.recordSave,
-          row.querySelector('[data-record-score]').value,
-          row.querySelector('[data-record-action="exam"]').value,
-        );
-        button.disabled = false;
-      });
-    });
+  function show() {
+    const term = searchInput.value.trim().toLowerCase();
+    const items = term
+      ? all.filter((i) => [i.email, i.title, i.examination_name, i.code, i.category].some((v) => String(v || '').toLowerCase().includes(term)))
+      : all;
+    countElement.textContent = `${items.length} record${items.length === 1 ? '' : 's'}`;
+    summary.innerHTML = all.length ? renderSummary(all, type) : '';
+    table.innerHTML = renderTable(items, type);
   }
 
   async function load() {
-    const seq = ++loadSeq;
-    status.className = 'records-status';
-    status.textContent = 'Loading records…';
-    table.classList.add('is-loading');
+    const current = ++requestId;
+    setBusy(refreshButton, true);
+    table.innerHTML = '<div class="skeleton-rows" aria-hidden="true"><i></i><i></i><i></i></div>';
     try {
-      const response = await apiFetch(`/api/admin/records?type=${typeSelect.value}&limit=${limitSelect.value}`, { headers: authHeaders() });
+      const response = await apiFetch(`/api/admin/records?type=${type}&limit=${limitSelect.value}`, { headers: authHeaders() });
       const payload = await readJson(response);
-      if (seq !== loadSeq) return; // a newer request has replaced this one
-      if (!response.ok) throw new Error(payload.message || 'Unable to load records.');
-      render(payload.items || [], typeSelect.value);
-      status.textContent = 'Records loaded.';
-      status.classList.add('ok');
+      if (current !== requestId) return;
+      if (!response.ok || payload.ok === false) throw new Error(payload.message || 'Unable to load records.');
+      all = payload.items || [];
+      show();
     } catch (error) {
-      if (seq !== loadSeq) return;
-      status.textContent = error.message;
+      if (current !== requestId) return;
+      all = [];
+      summary.innerHTML = '';
+      countElement.textContent = '';
+      table.innerHTML = `<div class="empty"><p>${escapeHtml(error.message || 'We could not load records.')} Check your connection and try again.</p></div>`;
     } finally {
-      if (seq === loadSeq) table.classList.remove('is-loading');
+      if (current === requestId) setBusy(refreshButton, false);
     }
   }
 
-  async function update(action, payload, successMessage, fallbackMessage) {
-    try {
-      const response = await apiFetch('/api/admin/records', {
-        method: 'POST',
-        headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
-        body: JSON.stringify({ action, ...payload }),
-      });
-      const result = await readJson(response);
-      if (!response.ok) throw new Error(result.message || fallbackMessage);
-      status.className = 'records-status ok';
-      status.textContent = successMessage;
-      toast(successMessage, 'ok');
-      await load();
-    } catch (error) {
-      status.className = 'records-status';
-      status.textContent = error.message || fallbackMessage;
-      toast(error.message || fallbackMessage, 'err');
-    }
+  async function save(action, payload, message, fallback) {
+    const response = await apiFetch('/api/admin/records', {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+      body: JSON.stringify({ action, ...payload }),
+    });
+    const result = await readJson(response);
+    if (!response.ok || result.ok === false) throw new Error(result.message || fallback);
+    toast(message, 'ok');
   }
 
-  function updateCpdStatus(id, nextStatus) {
-    return update('update-cpd-status', { id, status: nextStatus }, 'CPD status updated.', 'Unable to update CPD status.');
-  }
+  tabs.forEach((tab) => tab.addEventListener('click', () => {
+    if (tab.dataset.type === type) return;
+    type = tab.dataset.type;
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+    table.setAttribute('aria-labelledby', tab.id);
+    all = [];
+    load();
+  }));
 
-  function updateExaminationResult(id, score, nextStatus) {
-    return update('update-examination-result', { id, score, status: nextStatus }, 'Examination result updated.', 'Unable to update examination result.');
-  }
-
-  document.querySelector('#records-refresh').addEventListener('click', load);
-  typeSelect.addEventListener('change', load);
+  refreshButton.addEventListener('click', load);
   limitSelect.addEventListener('change', load);
+  searchInput.addEventListener('input', show);
+
+  table.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-save]');
+    if (!button) return;
+    const row = button.closest('tr');
+    const id = button.dataset.save;
+    const record = all.find((i) => String(i.id) === id);
+    setBusy(button, true);
+    try {
+      if (type === 'cpd') {
+        const status = row.querySelector('[data-cpd-status]').value;
+        if (record && status === (record.status || 'pending')) { toast('No change to save.', 'info'); setBusy(button, false); return; }
+        await save('update-cpd-status', { id, status }, 'CPD status updated.', 'Unable to update CPD status.');
+      } else {
+        const scoreInput = row.querySelector('[data-score]');
+        const score = scoreInput.value.trim();
+        const status = row.querySelector('[data-exam-status]').value;
+        const number = Number(score);
+        if (!score || !Number.isFinite(number) || number < 0 || number > 100) {
+          toast('Enter a score between 0 and 100.', 'err');
+          scoreInput.focus();
+          setBusy(button, false);
+          return;
+        }
+        await save('update-examination-result', { id, score, status }, 'Examination result updated.', 'Unable to update examination result.');
+      }
+      load();
+    } catch (error) {
+      toast(error.message, 'err');
+      setBusy(button, false);
+    }
+  });
+
+  load();
 }

@@ -23,7 +23,7 @@ export function className(value) {
 }
 
 export function statusBadge(value) {
-  return `<span class="status ${className(value)}">${escapeHtml(value)}</span>`;
+  return `<span class="status ${className(value)}">${escapeHtml(String(value ?? '').replace(/_/g, ' '))}</span>`;
 }
 
 export function readJson(response) {
@@ -89,10 +89,35 @@ export function setBusy(button, busy) {
   button.setAttribute('aria-busy', String(busy));
 }
 
+/* Glass confirmation dialog. Resolves true when confirmed, false otherwise. */
+export function confirmDialog({ title, message, confirmLabel = 'Confirm', danger = false }) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+        <h2 id="confirm-title">${escapeHtml(title)}</h2>
+        <p class="modal-text">${escapeHtml(message)}</p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" type="button" data-confirm="no">Cancel</button>
+          <button class="btn ${danger ? 'btn-danger' : ''}" type="button" data-confirm="yes">${escapeHtml(confirmLabel)}</button>
+        </div>
+      </div>`;
+    const finish = (value) => { document.removeEventListener('keydown', onKey); overlay.remove(); resolve(value); };
+    const onKey = (event) => { if (event.key === 'Escape') finish(false); };
+    document.addEventListener('keydown', onKey);
+    overlay.addEventListener('click', (event) => { if (event.target === overlay) finish(false); });
+    overlay.querySelector('[data-confirm="no"]').addEventListener('click', () => finish(false));
+    overlay.querySelector('[data-confirm="yes"]').addEventListener('click', () => finish(true));
+    document.body.appendChild(overlay);
+    overlay.querySelector('[data-confirm="no"]').focus();
+  });
+}
+
 /* Bulk operation helpers */
 export function getSelectedIds(tableContainer) {
   const checkboxes = tableContainer.querySelectorAll('input[type="checkbox"][data-bulk-select]:checked');
-  return Array.from(checkboxes).map(cb => Number(cb.dataset.id));
+  return Array.from(checkboxes).map(cb => cb.dataset.id);
 }
 
 export function updateSelectAllCheckbox(selectAllCheckbox, tableContainer) {
