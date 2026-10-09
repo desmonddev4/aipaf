@@ -130,7 +130,7 @@ async function handleApiRequest(req, res, pathname, origin) {
   const body = await getRequestBody(req);
   
   const request = {
-    url: url.toString(),
+    url: new URL(req.url, `http://${req.headers.host}`).toString(),
     method: req.method,
     headers: new Headers(req.headers),
     json: async () => JSON.parse(body),
