@@ -12,12 +12,116 @@
   --a-shadow: 0 1px 2px rgba(2, 50, 20, .05), 0 22px 50px -30px rgba(2, 50, 20, .45);
   --a-ease: cubic-bezier(.22, .8, .3, 1);
   --a-nav: 5.5rem; /* clearance for the fixed navbar */
+  --a-sidebar-width: 260px;
   color: var(--a-text); background: linear-gradient(180deg, #eef4ef, #e5eee7 70%);
   min-height: calc(100vh - 72px); font-size: 1rem; line-height: 1.6;
 }
 .admin *, .admin *::before, .admin *::after { box-sizing: border-box; }
 .admin .wrap { width: min(1180px, calc(100% - 2rem)); margin-inline: auto; }
 .admin h1, .admin h2 { font-family: Georgia, "Times New Roman", serif; color: var(--a-ink); }
+
+/* ---------- Admin Layout with Sidebar ---------- */
+.admin .admin-layout {
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - 72px);
+}
+
+.admin .admin-sidebar {
+  position: sticky;
+  top: var(--a-nav);
+  width: var(--a-sidebar-width);
+  height: calc(100vh - var(--a-nav));
+  background: linear-gradient(180deg, #03280f, #06210f);
+  border-right: 1px solid var(--a-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.admin .sidebar-header {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.admin .sidebar-header h2 {
+  margin: 0 0 .5rem;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.admin .sidebar-user {
+  margin: 0;
+  font-size: .85rem;
+  color: var(--a-gold-soft);
+  opacity: .8;
+}
+
+.admin .sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.admin .sidebar-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin .sidebar-nav li {
+  margin: 0;
+  padding: 0;
+}
+
+.admin .nav-link {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  width: 100%;
+  padding: .75rem 1.25rem;
+  color: rgba(255, 255, 255, .85);
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: .95rem;
+  text-decoration: none;
+  transition: background-color .2s, color .2s;
+  cursor: pointer;
+}
+
+.admin .nav-link:hover {
+  background-color: rgba(255, 255, 255, .08);
+  color: #fff;
+}
+
+.admin .nav-link.nav-link-active {
+  background-color: var(--a-green);
+  color: #fff;
+  font-weight: 600;
+}
+
+.admin .nav-link svg {
+  flex-shrink: 0;
+  opacity: .9;
+}
+
+.admin .sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+}
+
+.admin .admin-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin .btn-sm {
+  min-height: 2.4rem;
+  padding: .5rem 1rem;
+  font-size: .9rem;
+}
 
 /* ---------- Header band ---------- */
 .admin .band {
@@ -196,6 +300,39 @@
 }
 
 /* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .admin .admin-layout {
+    flex-direction: column;
+  }
+  .admin .admin-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--a-border);
+  }
+  .admin .sidebar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    padding: .5rem 1rem;
+  }
+  .admin .sidebar-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .admin .nav-link {
+    width: auto;
+    padding: .5rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .08);
+  }
+  .admin .sidebar-footer {
+    display: none;
+  }
+}
+
 @media (max-width: 760px) {
   /* tables become stacked cards: each cell shows its column name (data-label, added by the JS) */
   .admin .table-scroll { max-height: none; background: transparent; border: 0; box-shadow: none; overflow: visible; }
@@ -210,6 +347,12 @@
   .admin table.data-table td:first-child { background: var(--a-row); }
   .admin .stat-grid { padding: 0; }
   .admin .report-note { padding: .9rem 0 0; }
+  .admin .sidebar-nav {
+    flex-direction: column;
+  }
+  .admin .sidebar-nav ul {
+    flex-direction: column;
+  }
 }
 @media (max-width: 640px) {
   .admin .toolbar { position: static; align-items: stretch; }

@@ -1,51 +1,35 @@
-<!--{"title":"Admin submissions | AIPAF","description":"Read, filter, export, and manage AIPAF form submissions.","nav":"admin","noindex":true}-->
+<!--{"title":"Admin Overview | AIPAF","description":"Monitor member activity, payment reconciliation, examination completion, and CPD approvals at a glance.","nav":"admin","noindex":true}-->
 <div class="admin">
-  <main>
-    <header class="band">
-      <div class="wrap">
-        <p class="eyebrow">Restricted area</p>
-        <h1>Submission review.</h1>
-        <p class="lead">Read, search, export, and mark contact and founding-membership submissions as handled.</p>
+  <main class="admin-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+    <!-- Main Content Area -->
+    <div class="admin-content">
+      <header class="band">
+        <div class="wrap">
+          <p class="eyebrow">Restricted area</p>
+          <h1>Overview</h1>
+          <p class="lead">Monitor member activity, payment reconciliation, examination completion, and CPD approvals at a glance.</p>
+        </div>
+      </header>
+
+      <div class="shell">
+        <div class="wrap pull">
+          <section class="dashboard is-open" id="admin-dashboard" aria-label="Admin dashboard">
+            <div class="records-grid">
+              <div class="field"><label for="provider-select">Live provider</label><select id="provider-select"><option value="manual">Manual</option><option value="paystack">Paystack</option><option value="flutterwave">Flutterwave</option></select></div>
+              <div class="field"><label for="report-period">Reporting period</label><select id="report-period"><option value="30d">Last 30 days</option><option value="90d">Last 90 days</option><option value="ytd">Year to date</option></select></div>
+            </div>
+            <div id="overview-report" class="table-scroll"></div>
+          </section>
+        </div>
       </div>
-    </header>
+    </div>
+  </main>
+</div>
 
-    <div class="shell">
-      <div class="wrap pull">
-        <section class="dashboard is-open" id="admin-dashboard" aria-label="Submission dashboard">
-          <div class="toolbar">
-            <div class="toolbar-actions">
-              <label class="sr-only" for="admin-table">Administration section</label>
-              <select id="admin-table">
-                <option value="members">Members</option>
-                <option value="contact">Contact messages</option>
-                <option value="membership">Founding membership</option>
-                <option value="invitations">Member invitations</option>
-                <option value="payments">Payments</option>
-                <option value="applications">Member applications</option>
-              </select>
-              <label class="sr-only" for="admin-status">Status filter</label>
-              <select id="admin-status">
-                <option value="">All statuses</option>
-                <option value="unverified">Unverified</option>
-                <option value="pending">Pending</option>
-                <option value="active">Active</option>
-                <option value="suspended">Suspended</option>
-                <option value="expired">Expired</option>
-                <option value="sent">Sent</option>
-                <option value="failed">Failed</option>
-              </select>
-              <label class="sr-only" for="admin-search">Search records</label>
-              <input id="admin-search" type="search" placeholder="Search">
-            </div>
-            <div class="toolbar-actions">
-              <button class="btn btn-ghost" type="button" id="bulk-actions" disabled>Bulk Actions</button>
-              <button class="btn btn-ghost" type="button" id="admin-refresh">Refresh</button>
-              <button class="btn btn-ghost" type="button" id="admin-export">Export CSV</button>
-              <button class="btn" type="button" id="admin-signout">Sign out</button>
-            </div>
-          </div>
-
-          <div id="admin-table-container" class="table-scroll"></div>
+<script type="module" src="/js/admin/index.js"></script>
 
           <section class="panel certificate-panel" aria-labelledby="certificate-issue-title">
             <div>

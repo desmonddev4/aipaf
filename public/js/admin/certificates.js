@@ -51,7 +51,7 @@ export function initCertificates() {
     try {
       const data = Object.fromEntries(new FormData(form).entries());
       data.id = [Date.now(), Math.random().toString(16).slice(2)].join('-');
-      const response = await fetch(apiUrl('/api/certificates?action=issue', {
+      const response = await fetch('/api/certificates?action=issue', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
         body: JSON.stringify(data),

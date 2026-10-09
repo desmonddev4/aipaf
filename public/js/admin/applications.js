@@ -20,7 +20,7 @@ async function fetchApplications(status, grade, limit) {
 
 async function updateApplicationStatus(id, status, notes) {
   try {
-    const response = await fetch(apiUrl('/api/admin/applications', {
+    const response = await fetch('/api/admin/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'update-status', id, status, notes })

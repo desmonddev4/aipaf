@@ -19,7 +19,7 @@ async function fetchExaminations(status, limit) {
 
 async function createExamination(data) {
   try {
-    const response = await fetch(apiUrl('/api/admin/examinations', {
+    const response = await fetch('/api/admin/examinations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'create', ...data })
@@ -36,7 +36,7 @@ async function createExamination(data) {
 
 async function updateExamination(id, data) {
   try {
-    const response = await fetch(apiUrl('/api/admin/examinations', {
+    const response = await fetch('/api/admin/examinations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'update', id, ...data })
@@ -53,7 +53,7 @@ async function updateExamination(id, data) {
 
 async function deleteExamination(id) {
   try {
-    const response = await fetch(apiUrl('/api/admin/examinations', {
+    const response = await fetch('/api/admin/examinations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'delete', id })

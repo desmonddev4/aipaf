@@ -92,7 +92,7 @@ export function initSubmissions({ showLogin }) {
       select.addEventListener('change', async () => {
         select.disabled = true;
         try {
-          const response = await fetch(apiUrl('/api/admin/members', {
+          const response = await fetch('/api/admin/members', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'update-status', id: select.dataset.id, status: select.value }),
@@ -186,7 +186,7 @@ export function initSubmissions({ showLogin }) {
 
         setBusy(document.querySelector('#bulk-actions'), true);
         try {
-          const response = await fetch(apiUrl('/api/admin/members', {
+          const response = await fetch('/api/admin/members', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action, ids: selectedIds, status: newStatus }),
@@ -205,7 +205,7 @@ export function initSubmissions({ showLogin }) {
 
         setBusy(document.querySelector('#bulk-actions'), true);
         try {
-          const response = await fetch(apiUrl('/api/admin/members', {
+          const response = await fetch('/api/admin/members', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'export-data', ids: selectedIds }),

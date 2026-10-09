@@ -22,7 +22,7 @@ async function fetchPayments(filters) {
 
 async function updatePaymentStatus(id, status) {
   try {
-    const response = await fetch(apiUrl('/api/admin/payments', {
+    const response = await fetch('/api/admin/payments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'update-status', id, status })
@@ -39,7 +39,7 @@ async function updatePaymentStatus(id, status) {
 
 async function processRefund(id) {
   try {
-    const response = await fetch(apiUrl('/api/admin/payments', {
+    const response = await fetch('/api/admin/payments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'refund', id })

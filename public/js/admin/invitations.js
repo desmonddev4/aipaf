@@ -19,7 +19,7 @@ async function fetchInvitations(status, limit) {
 
 async function sendInvitation(id) {
   try {
-    const response = await fetch(apiUrl('/api/member-invitations?action=send', {
+    const response = await fetch('/api/member-invitations?action=send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
@@ -36,7 +36,7 @@ async function sendInvitation(id) {
 
 async function createManualInvitation(data) {
   try {
-    const response = await fetch(apiUrl('/api/member-invitations?action=create', {
+    const response = await fetch('/api/member-invitations?action=create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)

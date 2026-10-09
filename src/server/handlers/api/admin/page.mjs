@@ -7,10 +7,25 @@ const siteRoot = fileURLToPath(new URL('../../../../..', import.meta.url));
 const pageRoot = join(siteRoot, 'src', 'admin', 'pages');
 
 function renderAdminPage(request, pageName) {
-  const page = pageName === 'cms-admin' ? 'cms-admin' : 'admin';
+  // Map paths to HTML files
+  const pageMap = {
+    'admin': 'admin',
+    'admin-members': 'admin-members',
+    'admin-payments': 'admin-payments',
+    'admin-examinations': 'admin-examinations',
+    'admin-certificates': 'admin-certificates',
+    'admin-invitations': 'admin-invitations',
+    'admin-applications': 'admin-applications',
+    'admin-records': 'admin-records',
+    'admin-data-deletion': 'admin-data-deletion',
+    'admin-audit': 'admin-audit',
+    'cms-admin': 'cms-admin',
+  };
+
+  const page = pageMap[pageName] || 'admin';
   const raw = readFileSync(join(pageRoot, `${page}.html`), 'utf8');
   const metadataMatch = raw.match(/^<!--(\{[\s\S]*?\})-->/);
-  if (!metadataMatch) throw new Error(`${pageName}.html is missing its metadata comment.`);
+  if (!metadataMatch) throw new Error(`${page}.html is missing its metadata comment.`);
 
   const metadata = JSON.parse(metadataMatch[1]);
   const content = raw.slice(metadataMatch[0].length);
@@ -18,7 +33,7 @@ function renderAdminPage(request, pageName) {
     .replace(/\{\{cur:([a-z-]+)\}\}/g, (_, slug) => (slug === metadata.nav ? 'aria-current="page"' : ''));
   const footer = readFileSync(join(siteRoot, 'src/partials/footer.html'), 'utf8');
   const url = new URL(request.url);
-  const canonical = `${url.origin}/${page}`;
+  const canonical = `${url.origin}/${pageName}`;
 
   return readFileSync(join(siteRoot, 'src/partials/layout.html'), 'utf8')
     .replace('{{header}}', header)

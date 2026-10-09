@@ -1,0 +1,41 @@
+<!--{"title":"Admin Certificates | AIPAF","description":"Issue professional, examination, and CPD credentials to members.","nav":"admin","noindex":true}-->
+<div class="admin">
+  <main class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+
+    <div class="admin-content">
+      <header class="band">
+        <div class="wrap">
+          <p class="eyebrow">Secretariat workflow</p>
+          <h1>Issue certificates</h1>
+          <p class="lead">Use the member UUID to issue a professional, examination, or CPD credential. The certificate token is generated and stored by the server.</p>
+        </div>
+      </header>
+
+      <div class="shell">
+        <div class="wrap pull">
+          <section class="dashboard is-open" id="admin-dashboard" aria-label="Admin dashboard">
+            <section class="panel certificate-panel" aria-labelledby="certificate-issue-title">
+              <form id="certificate-form" novalidate>
+                <div class="certificate-grid">
+                  <div class="field"><label for="certificate-member-id">Member ID</label><input id="certificate-member-id" name="memberId" type="text" required autocomplete="off"></div>
+                  <div class="field"><label for="certificate-name">Certificate name</label><input id="certificate-name" name="name" type="text" required autocomplete="off"></div>
+                  <div class="field"><label for="certificate-grade">Grade</label><select id="certificate-grade" name="grade"><option value="student">Student</option><option value="affiliate">Affiliate</option><option value="associate">Associate</option><option value="member" selected>Member</option><option value="fellow">Fellow</option></select></div>
+                  <div class="field"><label for="certificate-type">Type</label><select id="certificate-type" name="type"><option value="professional">Professional</option><option value="exam">Examination</option><option value="cpd">CPD</option></select></div>
+                  <div class="field"><label for="certificate-issued">Issue date</label><input id="certificate-issued" name="issuedAt" type="date" required></div>
+                  <div class="field"><label for="certificate-expires">Expiry date</label><input id="certificate-expires" name="expiresAt" type="date"></div>
+                </div>
+                <div class="certificate-actions">
+                  <button class="btn" type="submit">Issue certificate</button>
+                  <span class="certificate-status" id="certificate-status" role="status" aria-live="polite"></span>
+                </div>
+              </form>
+            </section>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="/js/admin/index.js"></script>

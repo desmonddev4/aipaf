@@ -94,7 +94,7 @@ export function initRecords() {
 
   async function update(action, payload, successMessage, fallbackMessage) {
     try {
-      const response = await fetch(apiUrl('/api/admin/records', {
+      const response = await fetch('/api/admin/records', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
         body: JSON.stringify({ action, ...payload }),

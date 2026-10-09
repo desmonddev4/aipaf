@@ -46,7 +46,7 @@ export function initDataDeletion({ showLogin }) {
 
         setBusy(button, true);
         try {
-          const response = await fetch(apiUrl('/api/admin/data-deletion', {
+          const response = await fetch('/api/admin/data-deletion', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'process', id: button.dataset.id }),
@@ -75,7 +75,7 @@ export function initDataDeletion({ showLogin }) {
 
         setBusy(button, true);
         try {
-          const response = await fetch(apiUrl('/api/admin/data-deletion', {
+          const response = await fetch('/api/admin/data-deletion', {
             method: 'POST',
             headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify({ action: 'update-status', id: button.dataset.id, status: newStatus, adminNotes }),
