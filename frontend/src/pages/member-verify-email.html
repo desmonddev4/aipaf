@@ -159,6 +159,10 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
     <h1>Verify your email</h1>
     <p class="lead">Confirm your contact email to enable full member access.</p>
     <button class="btn" id="b" type="button">Verify email</button>
+    <form id="resend" hidden novalidate>
+      <div class="field"><label for="rs-email">Your email</label><input id="rs-email" name="email" type="email" autocomplete="email" required></div>
+      <button class="btn" type="submit" id="rs-btn">Send verification email</button>
+    </form>
     <p class="form-status" role="status" aria-live="polite"></p>
     <div class="ai-links"><a href="/member-login">Back to sign in</a></div>
   </section>
@@ -171,7 +175,24 @@ function togglePw(root) { root.querySelectorAll('.pw button').forEach((b) => b.a
 
 const st = document.querySelector('.form-status'), b = document.getElementById('b');
 const token = new URLSearchParams(location.search).get('token');
-if (!token) { st.textContent = 'A verification token is required. Use the link in your email.'; b.disabled = true; }
+const resend = document.getElementById('resend');
+if (!token) {
+  b.hidden = true; resend.hidden = false;
+  document.querySelector('.lead').textContent = 'Enter your email and we will send you a new verification link.';
+}
+resend.addEventListener('submit', async (e) => {
+  e.preventDefault(); st.className = 'form-status'; st.textContent = '';
+  const email = resend.email.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { st.textContent = 'Enter a valid email address.'; return; }
+  const rb = document.getElementById('rs-btn'); setBusy(rb, true);
+  try {
+    const r = await api('/api/members', { action: 'resend-verification', email });
+    const p = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(p.message || 'Unable to send the email.');
+    st.className = 'form-status ok'; st.textContent = p.message;
+  } catch (err) { st.textContent = err.message; }
+  setBusy(rb, false, 'Send verification email');
+});
 b.addEventListener('click', async () => {
   st.className = 'form-status loading'; st.textContent = 'Verifying...'; setBusy(b, true);
   try {

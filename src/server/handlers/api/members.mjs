@@ -133,6 +133,39 @@ export default async function handler(request) {
       }
     }
 
+    if (body.action === 'resend-verification') {
+      const email = String(body.email || '').trim().toLowerCase();
+      if (!email) return jsonResponse({ ok: false, message: 'Email is required.' }, 400);
+      const message = 'If that account exists and is not yet verified, a new verification email has been sent.';
+
+      try {
+        await withDb(async (client) => {
+          const member = await client.query('SELECT id, email, email_verified FROM members WHERE email = $1', [email]);
+          if (!member.rowCount || member.rows[0].email_verified) return;
+
+          const record = member.rows[0];
+          const verifyToken = generateResetToken();
+          await client.query('DELETE FROM email_verification_tokens WHERE member_id = $1', [record.id]);
+          await client.query(
+            `INSERT INTO email_verification_tokens (member_id, token, expires_at) VALUES ($1, $2, $3)`,
+            [record.id, verifyToken, new Date(Date.now() + VERIFY_TOKEN_TTL_MS)],
+          );
+          try {
+            const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+            await sendAcknowledgementEmail({
+              kind: 'verify-email',
+              data: { email: record.email, verifyUrl: `${siteUrl}/member-verify-email?token=${verifyToken}` },
+            });
+          } catch (emailError) {
+            console.error('Failed to send verification email:', emailError);
+          }
+        });
+        return jsonResponse({ ok: true, message });
+      } catch (error) {
+        return jsonResponse({ ok: false, message: 'Unable to send the verification email right now.' }, 503);
+      }
+    }
+
     if (body.action === 'request-password-reset') {
       const email = String(body.email || '').trim().toLowerCase();
       if (!email) return jsonResponse({ ok: false, message: 'Email is required.' }, 400);
