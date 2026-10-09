@@ -5,23 +5,33 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const port = process.env.PORT || 3000;
-const FRONTEND_URL = process.env.FRONTEND_URL || '*'; // Set to your Vercel domain for better security
+// Allow multiple frontend origins
+const ALLOWED_ORIGINS = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+  : ['https://www.aipafgh.org', 'https://aipafgh.org', 'http://localhost:3000', '*'];
 
 console.log('AIPAF API server starting...');
 
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const pathname = url.pathname;
+  const origin = req.headers.origin;
+
+  // Determine the allowed origin for CORS
+  const allowedOrigin = ALLOWED_ORIGINS.includes('*') 
+    ? '*' 
+    : (origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     const preflightHeaders = {
-      'Access-Control-Allow-Origin': FRONTEND_URL,
+      'Access-Control-Allow-Origin': allowedOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+      'Access-Control-Allow-Credentials': allowedOrigin !== '*' ? 'true' : 'false',
       'Access-Control-Max-Age': '86400',
     };
-    if (FRONTEND_URL !== '*') {
+    if (allowedOrigin !== '*') {
       preflightHeaders['Vary'] = 'Origin';
     }
     res.writeHead(204, preflightHeaders);
@@ -35,7 +45,7 @@ createServer(async (req, res) => {
   }
 
   try {
-    await handleApiRequest(req, res, pathname);
+    await handleApiRequest(req, res, pathname, req.headers.origin);
   } catch (error) {
     console.error('API error:', error);
     res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -43,8 +53,14 @@ createServer(async (req, res) => {
   }
 }).listen(port, () => console.log(`AIPAF API server running on port ${port}`));
 
-async function handleApiRequest(req, res, pathname) {
+async function handleApiRequest(req, res, pathname, origin) {
   const apiPath = pathname.replace(/^\/api\//, '').replace(/^\/api$/, '');
+  
+  // Determine the allowed origin for CORS
+  const allowedOrigin = ALLOWED_ORIGINS.includes('*') 
+    ? '*' 
+    : (origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]);
+
   const routeMap = {
     'contact': () => import('./src/server/handlers/api/contact.mjs').then((module) => module.default),
     'membership-interest': () => import('./src/server/handlers/api/membership-interest.mjs').then((module) => module.default),
@@ -98,12 +114,13 @@ async function handleApiRequest(req, res, pathname) {
   response.headers.forEach((value, key) => {
     headers[key] = value;
   });
-  
+
   // Add CORS headers for Vercel frontend
-  headers['Access-Control-Allow-Origin'] = FRONTEND_URL;
+  headers['Access-Control-Allow-Origin'] = allowedOrigin;
   headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
-  headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
-  if (FRONTEND_URL !== '*') {
+  headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Cookie';
+  headers['Access-Control-Allow-Credentials'] = allowedOrigin !== '*' ? 'true' : 'false';
+  if (allowedOrigin !== '*') {
     headers['Vary'] = 'Origin';
   }
   
