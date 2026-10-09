@@ -360,8 +360,8 @@ function showMemberDetailModal(memberData, onRefresh) {
 
   // Reset password
   modal.querySelector('#reset-password').addEventListener('click', async () => {
-    const newPassword = prompt('Enter new password (min 12 characters):');
-    if (newPassword && newPassword.length >= 12) {
+    const newPassword = prompt('Enter new password (min 8 characters):');
+    if (newPassword && newPassword.length >= 8) {
       const confirmPass = prompt('Confirm new password:');
       if (newPassword !== confirmPass) {
         toast('Passwords do not match.', 'err');
@@ -375,7 +375,7 @@ function showMemberDetailModal(memberData, onRefresh) {
         toast(error.message || 'Failed to reset password.', 'err');
       }
     } else if (newPassword) {
-      toast('Password must be at least 12 characters.', 'err');
+      toast('Password must be at least 8 characters.', 'err');
     }
   });
 

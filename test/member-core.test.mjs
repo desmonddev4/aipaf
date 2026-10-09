@@ -102,7 +102,7 @@ test('password changes require a current password and a sufficiently strong repl
 
   const weak = validateMemberPasswordChange({ currentPassword: 'OldPass!2026', newPassword: 'weak' });
   assert.equal(weak.ok, false);
-  assert.match(weak.message, /12 characters/i);
+  assert.match(weak.message, /8 characters/i);
 
   const same = validateMemberPasswordChange({ currentPassword: 'SamePass!2026', newPassword: 'SamePass!2026' });
   assert.equal(same.ok, false);

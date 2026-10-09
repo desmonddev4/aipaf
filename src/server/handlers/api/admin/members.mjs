@@ -215,8 +215,8 @@ async function verifyMemberEmail(id) {
 }
 
 async function resetMemberPassword(id, newPassword) {
-  if (!newPassword || newPassword.length < 12) {
-    return { ok: false, message: 'Password must be at least 12 characters.', status: 400 };
+  if (!newPassword || newPassword.length < 8) {
+    return { ok: false, message: 'Password must be at least 8 characters.', status: 400 };
   }
 
   const result = await withDb(async (client) => {

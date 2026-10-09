@@ -188,8 +188,8 @@ export default async function handler(request) {
         return jsonResponse({ ok: false, message: 'Token and new password are required.' }, 400);
       }
 
-      if (newPassword.length < 12) {
-        return jsonResponse({ ok: false, message: 'Password must be at least 12 characters.' }, 400);
+      if (newPassword.length < 8) {
+        return jsonResponse({ ok: false, message: 'Password must be at least 8 characters.' }, 400);
       }
 
       try {

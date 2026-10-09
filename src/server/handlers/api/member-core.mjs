@@ -1,6 +1,6 @@
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 
-const PASSWORD_MIN_LENGTH = 12;
+const PASSWORD_MIN_LENGTH = 8;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export function validateMemberRegistration({ firstName, lastName, email, password }) {
@@ -12,7 +12,7 @@ export function validateMemberRegistration({ firstName, lastName, email, passwor
   if (!first || first.length > 100) return { ok: false, message: 'First name is required.' };
   if (!last || last.length > 100) return { ok: false, message: 'Last name is required.' };
   if (!EMAIL_RE.test(address)) return { ok: false, message: 'Enter a valid email address.' };
-  if (pass.length < PASSWORD_MIN_LENGTH) return { ok: false, message: 'Password must be at least 12 characters.' };
+  if (pass.length < PASSWORD_MIN_LENGTH) return { ok: false, message: 'Password must be at least 8 characters.' };
 
   return {
     ok: true,
@@ -30,7 +30,7 @@ export function validateMemberPasswordChange({ currentPassword, newPassword }) {
   const next = String(newPassword || '');
 
   if (!current) return { ok: false, message: 'Current password is required.' };
-  if (next.length < PASSWORD_MIN_LENGTH) return { ok: false, message: 'Password must be at least 12 characters.' };
+  if (next.length < PASSWORD_MIN_LENGTH) return { ok: false, message: 'Password must be at least 8 characters.' };
   if (current === next) return { ok: false, message: 'New password must be different from the current password.' };
 
   return { ok: true, data: { currentPassword: current, newPassword: next } };

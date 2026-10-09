@@ -1,70 +1,198 @@
-<!--{"title":"Member profile | AIPAF","description":"Manage your AIPAF member profile and membership services.","nav":"members","noindex":true}-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Member portal | AIPAF</title>
+<meta name="description" content="Manage your AIPAF member profile, payments, examinations, CPD and certificates.">
+<link rel="icon" href="/img/logo-mark.svg" type="image/svg+xml">
 <style>
-  .member-page { min-height: calc(100vh - 72px); background: #f3f7f4; color: #172d25; }
-  .member-page .wrap { width: min(980px, calc(100% - 2rem)); margin-inline: auto; }
-  .member-page .shell { padding: clamp(3rem, 7vw, 6rem) 0; }
-  .member-page h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.1rem, 7vw, 4rem); line-height: 1; }
-  .member-page .lead { margin: 1rem 0 2rem; color: #46574f; }
-  .card { padding: clamp(1.5rem, 5vw, 2.5rem); background: #fff; border: 1px solid rgba(15,92,63,.12); border-radius: 24px; box-shadow: 0 30px 60px -38px rgba(10,40,28,.45); }
-  .member-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr 1.2fr; }
-  .avatar { width: 110px; height: 110px; border-radius: 50%; display: grid; place-items: center; background: #0f5c3f; color: #fff; font-size: 2.3rem; font-weight: 700; }
-  .meta { color: #46574f; }
-  .status { display: inline-block; padding: .3rem .7rem; border-radius: 999px; background: #dfeee7; color: #0f5c3f; font-size: .85rem; font-weight: 700; }
-  .status.unverified { background: #f3e7c1; color: #5d4900; }
-  .member-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
-  .btn { display: inline-flex; min-height: 3rem; padding: .8rem 1.5rem; border: 0; border-radius: 999px; background: #0f5c3f; color: #fff; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
-  .btn.secondary { background: #e8f0eb; color: #172d25; }
-  .member-section { margin-top: 1.25rem; }
-  .service-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .mini-card { padding: 1.25rem; border: 1px solid rgba(15,92,63,.12); border-radius: 18px; background: #f8faf8; }
-  .mini-card h3 { margin: .2rem 0 .5rem; }
-  .mini-card p { margin: 0; color: #46574f; }
-  #profile-form { margin-top: 1.25rem; }
-  #security-form { margin-top: 1.25rem; }
-  .field-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .field { margin-bottom: .25rem; }
-  .field-full { grid-column: 1 / -1; }
-  label { display: block; margin-bottom: .45rem; font-weight: 600; }
-  input, select, textarea { width: 100%; padding: .8rem 1rem; border: 1.5px solid rgba(16,35,28,.15); border-radius: 12px; font: inherit; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: #0f5c3f; box-shadow: 0 0 0 4px rgba(15,92,63,.12); }
-  textarea { resize: vertical; }
-  .form-status { min-height: 1.5rem; margin: 1rem 0 0; color: #b3261e; }
-  .form-status.ok { color: #12704a; }
-  .status-tag { display: inline-block; margin-left: .5rem; padding: .15rem .55rem; border-radius: 999px; background: #dfeee7; color: #0f5c3f; font-size: .75rem; font-weight: 700; }
-  .record-list { display: grid; gap: .75rem; }
-  .record-item { padding: 1rem; border: 1px solid rgba(15,92,63,.12); border-radius: 12px; background: #fff; }
-  .record-item strong { display: block; }
-  .empty { color: #46574f; }
-  .login-required { padding: 2rem; border-radius: 20px; background: #fff; text-align: center; }
-  @media (max-width: 760px) { .member-grid, .field-grid, .service-grid { grid-template-columns: 1fr; } }
-</style>
-<div class="member-page">
-  <main class="shell">
-    <div class="wrap">
-      <h1>Member profile.</h1>
-      <p class="lead">Your account, membership status, and available services.</p>
-      <div id="profile-content" hidden>
-        <div class="card member-grid">
-          <div>
-            <div class="avatar" id="profile-avatar" aria-hidden="true">A</div>
-            <p class="meta" id="profile-email"></p>
-            <p><span class="status" id="profile-status"></span></p>
-          </div>
-          <div>
-            <h2 id="profile-name"></h2>
-            <p id="profile-grade" class="meta"></p>
-            <p id="profile-organisation" class="meta"></p>
-            <p id="profile-designation" class="meta"></p>
-            <div class="member-actions">
-              <button class="btn" type="button" id="profile-toggle-edit">Edit profile</button>
-              <button class="btn secondary" type="button" id="member-verify-email-button">Verify email</button>
-              <button class="btn" type="button" id="member-signout">Sign out</button>
-            </div>
-          </div>
-        </div>
+:root {
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --gold: #f2ac1f; --line: rgba(255, 255, 255, .2); --mute: rgba(255, 255, 255, .72);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100vh; min-height: 100dvh; font-family: var(--sans); line-height: 1.5; color: #fff;
+  background:
+    radial-gradient(ellipse at 75% 12%, rgba(210, 133, 3, .2), transparent 38rem),
+    radial-gradient(ellipse at 8% 100%, rgba(11, 107, 43, .32), transparent 32rem),
+    linear-gradient(145deg, #03140a, #0a2c16 58%, #061f10);
+  background-attachment: fixed;
+}
+h1, h2, p { margin: 0; }
+a { color: var(--gold); }
+button, input { font: inherit; }
+[hidden] { display: none !important; }
 
-        <form id="profile-form" class="card" hidden>
-          <h2>Edit profile</h2>
+.ai-page { display: grid; place-items: center; min-height: 100vh; min-height: 100dvh; padding: clamp(1rem, 4vw, 3rem); }
+.ai-card {
+  width: min(100%, 34rem); padding: clamp(1.5rem, 5vw, 2.5rem); border: 1px solid var(--line); border-radius: 1.6rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .05));
+  -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
+  box-shadow: 0 2rem 5rem -2rem rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .18);
+  animation: rise .6s cubic-bezier(.22, .8, .3, 1) both;
+}
+.ai-brand { display: flex; align-items: center; gap: .8rem; margin-bottom: 1.5rem; }
+.ai-brand img { width: 2.8rem; height: 2.8rem; }
+.ai-brand strong { display: block; font: 600 1.1rem var(--serif); letter-spacing: .08em; }
+.ai-brand small { color: var(--gold); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+h1 { font: 500 clamp(1.9rem, 6vw, 2.6rem)/1.1 var(--serif); }
+.lead { margin: .6rem 0 1.5rem; color: var(--mute); }
+
+.ai-details { display: grid; gap: .1rem; margin-bottom: 1.5rem; padding: .35rem 1.1rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 1rem; background: rgba(255, 255, 255, .06); }
+.ai-details div { display: flex; justify-content: space-between; gap: 1rem; padding: .65rem 0; }
+.ai-details div + div { border-top: 1px solid rgba(255, 255, 255, .1); }
+.ai-details span { color: var(--mute); font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.ai-details strong { text-align: right; }
+.ai-grade { padding: .15rem .7rem; border-radius: 999px; background: rgba(242, 172, 31, .18); color: #ffd277; }
+
+.field { display: grid; gap: .4rem; margin-bottom: 1rem; }
+.field label { color: var(--mute); font-size: .78rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.pw { position: relative; }
+.pw input { padding-right: 3.2rem; }
+.pw button { position: absolute; top: 50%; right: .4rem; transform: translateY(-50%); padding: .4rem .6rem; border: 0; border-radius: .6rem; background: transparent; color: var(--mute); font-size: .78rem; font-weight: 700; cursor: pointer; }
+.pw button:hover { color: #fff; }
+input:not([type]), input[type="password"], input[type="text"], input[type="email"] {
+  width: 100%; padding: .85rem 1rem; border: 1px solid var(--line); border-radius: .9rem;
+  background: rgba(0, 12, 6, .45); color: #fff; transition: border-color .2s, box-shadow .2s;
+}
+input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(242, 172, 31, .2); }
+
+.ai-meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: .3rem; margin-top: .5rem; }
+.ai-meter i { display: block; height: .3rem; border-radius: 99px; background: rgba(255, 255, 255, .15); transition: background .2s; }
+.ai-meter[data-s="1"] i:nth-child(-n+1) { background: #ff8a80; }
+.ai-meter[data-s="2"] i:nth-child(-n+2) { background: #f2ac1f; }
+.ai-meter[data-s="3"] i:nth-child(-n+3) { background: #9be37b; }
+.ai-meter[data-s="4"] i { background: #3fbf6b; }
+.ai-card:has(.ai-grid:not([hidden])) { width: min(100%, 60rem); }
+@media (min-width: 52rem) {
+  .ai-grid:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: start; }
+  .ai-grid .lead { margin-bottom: 1.2rem; }
+  .ai-grid .ai-details { margin-bottom: 0; }
+  .ai-grid form { padding: 1.4rem; border: 1px solid var(--line); border-radius: 1.2rem; background: rgba(0, 12, 6, .25); }
+  .ai-grid .ai-check { margin: .8rem 0 1rem; }
+  .ai-grid .form-status { margin-top: .6rem; min-height: 1.2rem; }
+}
+.ai-grid .meta { margin-bottom: 1.4rem; }
+@media (min-width: 52rem) { .ai-grid .meta { margin-bottom: 0; } }
+.ai-scroll { white-space: nowrap; position: fixed; left: 50%; bottom: 1rem; z-index: 5; transform: translateX(-50%); display: inline-flex; align-items: center; gap: .4rem; padding: .55rem 1rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(10, 44, 22, .9); color: #fff; font-size: .85rem; font-weight: 700; cursor: pointer; box-shadow: 0 .8rem 1.6rem -.8rem #000; animation: bob 1.4s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translate(-50%, 4px); } }
+.ai-hint { margin-top: .35rem; color: var(--mute); font-size: .8rem; }
+
+.ai-check { display: flex; align-items: flex-start; gap: .7rem; margin: 1.2rem 0; color: var(--mute); font-size: .92rem; }
+.ai-check input { flex: none; width: 1.15rem; height: 1.15rem; margin-top: .2rem; accent-color: var(--gold); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; padding: .9rem 1.2rem; border: 0; border-radius: 999px;
+  background: linear-gradient(135deg, #f2ac1f, #d28503); color: #2c1b00; font-weight: 700; cursor: pointer;
+  box-shadow: 0 .8rem 1.8rem -1rem rgba(242, 172, 31, .9), inset 0 1px 0 rgba(255, 255, 255, .4);
+  transition: transform .2s, filter .2s;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.btn[disabled] { opacity: .6; cursor: progress; transform: none; }
+.btn-ghost { background: rgba(255, 255, 255, .1); color: #fff; border: 1px solid var(--line); box-shadow: none; text-decoration: none; }
+
+.form-status { min-height: 1.4rem; margin-top: 1rem; color: #ffaaa2; font-size: .92rem; }
+.form-status.ok { color: #7be3a0; }
+.form-status.loading { color: var(--mute); }
+.meta { margin-top: 1.4rem; color: var(--mute); font-size: .85rem; }
+
+.ai-state { display: grid; justify-items: center; gap: 1rem; padding: 1.5rem 0 .5rem; text-align: center; }
+.ai-state .ico { display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; background: rgba(255, 138, 128, .15); color: #ffaaa2; }
+.ai-state.ok .ico { background: rgba(63, 191, 107, .18); color: #7be3a0; }
+.spinner { width: 2.2rem; height: 2.2rem; border: 3px solid rgba(255, 255, 255, .2); border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes rise { from { opacity: 0; transform: translateY(1.2rem); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.ai-links { display: grid; gap: .5rem; margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,.12); color: var(--mute); font-size: .9rem; }
+.ai-links a { font-weight: 600; text-decoration: none; }
+.ai-links a:hover { text-decoration: underline; }
+.btn .spinner { width: 1rem; height: 1rem; border-width: 2px; }
+
+html { background: #03140a; }
+body { background-attachment: scroll; }
+.mp-bar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 1rem; padding: .7rem clamp(1rem, 4vw, 2.5rem); border-bottom: 1px solid var(--line); background: rgba(3, 20, 10, .6); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.mp-bar .ai-brand { margin: 0; }
+.mp-nav { display: flex; gap: .3rem; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.mp-nav a { padding: .45rem .85rem; border-radius: 999px; color: var(--mute); font-size: .85rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.mp-nav a:hover { background: rgba(255,255,255,.1); color: #fff; }
+.mp-out { flex: none; width: auto; padding: .5rem 1rem; font-size: .85rem; }
+@media (max-width: 52rem) { .mp-bar { flex-wrap: wrap; } .mp-nav { order: 3; width: 100%; margin: 0; } .mp-out { margin-left: auto; } }
+.mp-main { width: min(100%, 68rem); margin: 0 auto; padding: clamp(1rem, 4vw, 2.5rem); display: grid; gap: 1.25rem; }
+.card { padding: clamp(1.2rem, 3.5vw, 2rem); border: 1px solid var(--line); border-radius: 1.4rem; background: linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.04)); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); box-shadow: 0 1.5rem 4rem -2rem rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.16); scroll-margin-top: 9rem; }
+.card > h2 { font: 500 1.5rem var(--serif); margin-bottom: .3rem; }
+.card > .sub { margin-bottom: 1.1rem; color: var(--mute); font-size: .92rem; }
+.mp-hero { display: grid; grid-template-columns: auto 1fr; gap: 1.25rem; align-items: center; }
+.avatar { display: grid; place-items: center; width: 4.6rem; height: 4.6rem; border-radius: 50%; background: linear-gradient(135deg, #f2ac1f, #d28503); color: #2c1b00; font: 700 1.9rem var(--serif); box-shadow: 0 .8rem 1.8rem -1rem rgba(242,172,31,.9); }
+.mp-hero h1 { font: 500 clamp(1.6rem, 4vw, 2.3rem)/1.1 var(--serif); }
+.mp-hero .meta { margin: .15rem 0 0; font-size: .9rem; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+.chip { padding: .2rem .7rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.08); color: var(--mute); font-size: .78rem; }
+.status { display: inline-block; padding: .2rem .7rem; border-radius: 999px; background: rgba(242,172,31,.18); color: #ffd277; font-size: .78rem; font-weight: 700; text-transform: capitalize; }
+.status.active { background: rgba(63,191,107,.18); color: #7be3a0; }
+.mp-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; grid-column: 1 / -1; }
+.mp-actions .btn { width: auto; padding: .65rem 1.2rem; font-size: .9rem; }
+.btn.secondary { background: rgba(255,255,255,.1); color: #fff; border: 1px solid var(--line); box-shadow: none; }
+.btn.small { width: auto; padding: .5rem 1rem; font-size: .85rem; }
+.field-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 1rem; }
+.field-full { grid-column: 1 / -1; }
+@media (max-width: 40rem) { .field-grid { grid-template-columns: 1fr; } .mp-hero { grid-template-columns: 1fr; } }
+input:not([type]), input[type="email"], input[type="tel"], input[type="url"], input[type="number"], input[type="date"], select, textarea {
+  width: 100%; padding: .85rem 1rem; border: 1px solid var(--line); border-radius: .9rem; background: rgba(0,12,6,.45); color: #fff; transition: border-color .2s, box-shadow .2s; }
+select option { color: #111; }
+textarea { resize: vertical; font: inherit; }
+input[type="date"] { color-scheme: dark; }
+.card .btn[type="submit"] { width: auto; padding: .8rem 1.6rem; }
+.service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .8rem; }
+.mini-card { padding: 1rem 1.1rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 1rem; background: rgba(255,255,255,.06); text-decoration: none; color: inherit; }
+.mini-card h3 { font: 600 1rem var(--sans); margin-bottom: .25rem; }
+.mini-card p { color: var(--mute); font-size: .88rem; }
+.record-list { display: grid; gap: .7rem; margin-top: 1rem; }
+.record-item { padding: .9rem 1.1rem; border: 1px solid var(--line); border-radius: 1rem; background: rgba(255,255,255,.06); }
+.record-item strong { display: block; }
+.record-item p { margin: .2rem 0 .1rem; color: var(--mute); font-size: .88rem; }
+.record-item .btn { margin-top: .6rem; }
+.empty { color: var(--mute); }
+.meta { color: var(--mute); font-size: .88rem; }
+.login-required { max-width: 28rem; margin: 20vh auto; text-align: center; }
+.login-required .btn { width: auto; margin-top: 1rem; text-decoration: none; }
+</style>
+</head>
+<body>
+<header class="mp-bar">
+  <a class="ai-brand" href="/" aria-label="AIPAF home"><img src="/img/logo-mark.svg" alt=""><span><strong>AIPAF</strong><small>Member portal</small></span></a>
+  <nav class="mp-nav" aria-label="Portal sections">
+    <a href="#overview">Profile</a><a href="#payments">Payments</a><a href="#examinations">Examinations</a><a href="#cpd">CPD</a><a href="#certificates">Certificates</a><a href="#security">Security</a>
+  </nav>
+  <button class="btn secondary mp-out" type="button" id="member-signout">Sign out</button>
+</header>
+<div id="profile-required" class="login-required card">
+  <h2>Loading your portal...</h2>
+  <p class="meta">If this takes long, you may need to sign in.</p>
+  <a class="btn" href="/member-login">Sign in</a>
+</div>
+<main class="mp-main" id="profile-content" hidden>
+  <section class="card mp-hero" id="overview">
+    <div class="avatar" id="profile-avatar" aria-hidden="true">A</div>
+    <div>
+      <h1 id="profile-name"></h1>
+      <p class="meta" id="profile-email"></p>
+      <div class="chips"><span class="status" id="profile-status"></span><span class="chip" id="profile-grade"></span><span class="chip" id="d-organisation"></span><span class="chip" id="d-designation"></span></div>
+    </div>
+    <div class="mp-actions">
+      <button class="btn" type="button" id="profile-toggle-edit">Edit profile</button>
+      <button class="btn secondary" type="button" id="member-verify-email-button">Verify email</button>
+    </div>
+  </section>
+
+  <form id="profile-form" class="card" hidden>
+          <h2>Edit profile</h2><p class="sub">Update how you appear to AIPAF and in the member directory.</p>
           <div class="field-grid">
             <div class="field"><label for="profile-first-name">First name</label><input id="profile-first-name" name="firstName" required></div>
             <div class="field"><label for="profile-last-name">Last name</label><input id="profile-last-name" name="lastName" required></div>
@@ -77,51 +205,28 @@
             <div class="field"><label for="profile-public-email">Public email</label><input id="profile-public-email" name="publicEmail" type="email"></div>
             <div class="field field-full"><label for="profile-bio">Bio</label><textarea id="profile-bio" name="bio" rows="5" maxlength="2000"></textarea></div>
           </div>
-          <div class="member-actions">
+          <div class="mp-actions">
             <button class="btn" type="submit">Save changes</button>
             <button class="btn secondary" type="button" id="profile-cancel">Cancel</button>
           </div>
           <p class="form-status" role="status" aria-live="polite"></p>
         </form>
 
-        <form id="security-form" class="card">
-          <h2>Account security</h2>
-          <div class="field-grid">
-            <div class="field"><label for="current-password">Current password</label><input id="current-password" name="currentPassword" type="password" autocomplete="current-password" required></div>
-            <div class="field"><label for="new-password">New password</label><input id="new-password" name="newPassword" type="password" autocomplete="new-password" minlength="12" required></div>
-          </div>
-          <p class="meta">Use at least 12 characters. Do not reuse the current password.</p>
-          <div class="member-actions">
-            <button class="btn" type="submit">Update password</button>
-          </div>
-          <p class="form-status" id="security-status" role="status" aria-live="polite"></p>
-        </form>
+  <section class="card">
+    <h2>Membership services</h2>
+    <p class="sub">Everything available to you as an AIPAF member.</p>
+    <div class="service-grid">
+      <a class="mini-card" href="#payments"><h3>Payments</h3><p>Pay for membership, examinations or subscriptions.</p></a>
+      <a class="mini-card" href="#examinations"><h3>Examinations</h3><p>View open examinations and register.</p></a>
+      <a class="mini-card" href="#cpd"><h3>CPD</h3><p>Submit learning activities and track approval.</p></a>
+      <a class="mini-card" href="#certificates"><h3>Certificates</h3><p>View credentials once they are issued.</p></a>
+    </div>
+  </section>
 
-        <section class="card member-section" aria-labelledby="membership-services-title">
-          <h2 id="membership-services-title">Membership services</h2>
-          <div class="service-grid">
-            <article class="mini-card">
-              <h3>Payments</h3>
-              <p>Create a payment record for membership, examinations, or subscriptions.</p>
-            </article>
-            <article class="mini-card">
-              <h3>Examinations</h3>
-              <p>View open examinations and register for an assessment.</p>
-            </article>
-            <article class="mini-card">
-              <h3>CPD</h3>
-              <p>Submit learning activities and track their approval status.</p>
-            </article>
-            <article class="mini-card">
-              <h3>Certificates</h3>
-              <p>View verified credentials once they are issued.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="card member-section" aria-labelledby="payment-title">
-          <h2 id="payment-title">Create a payment</h2>
-          <form id="payment-form">
+  <section class="card" id="payments">
+    <h2 id="payment-title">Create a payment</h2>
+    <p class="sub">Processed securely through Paystack.</p>
+    <form id="payment-form">
             <div class="field-grid">
               <div class="field"><label for="payment-email">Email for payment receipt</label><input id="payment-email" name="email" type="email" autocomplete="email" required></div>
               <div class="field"><label for="payment-amount">Amount</label><input id="payment-amount" name="amount" type="number" min="0.01" step="0.01" required></div>
@@ -131,17 +236,19 @@
             <button class="btn" type="submit">Pay with Paystack</button>
             <p class="form-status" id="payment-status" role="status" aria-live="polite"></p>
           </form>
-        </section>
+  </section>
 
-        <section class="card member-section" aria-labelledby="examination-title">
-          <h2 id="examination-title">Examinations</h2>
-          <div id="examination-list" class="record-list"></div>
-          <p class="form-status" id="examination-status" role="status" aria-live="polite"></p>
-        </section>
+  <section class="card" id="examinations">
+    <h2 id="examination-title">Examinations</h2>
+    <p class="sub">Open examinations you can register for.</p>
+    <div id="examination-list" class="record-list"></div>
+    <p class="form-status" id="examination-status" role="status" aria-live="polite"></p>
+  </section>
 
-        <section class="card member-section" aria-labelledby="cpd-title">
-          <h2 id="cpd-title">Continuing professional development</h2>
-          <form id="cpd-form">
+  <section class="card" id="cpd">
+    <h2 id="cpd-title">Continuing professional development</h2>
+    <p class="sub">Log learning activities for approval.</p>
+    <form id="cpd-form">
             <div class="field-grid">
               <div class="field"><label for="cpd-title-input">Activity title</label><input id="cpd-title-input" name="title" required></div>
               <div class="field"><label for="cpd-category">Category</label><select id="cpd-category" name="category"><option value="education">Education</option><option value="practice">Practice</option><option value="research">Research</option><option value="service">Service</option><option value="other">Other</option></select></div>
@@ -152,26 +259,32 @@
             <button class="btn" type="submit">Submit CPD record</button>
             <p class="form-status" id="cpd-status" role="status" aria-live="polite"></p>
           </form>
-          <div id="cpd-list" class="record-list"></div>
-        </section>
+    <div id="cpd-list" class="record-list"></div>
+  </section>
 
-        <section class="card member-section" aria-labelledby="certificate-title">
-          <h2 id="certificate-title">Certificates</h2>
-          <div id="certificate-list" class="record-list"></div>
-          <p class="form-status" id="certificate-status" role="status" aria-live="polite"></p>
-        </section>
-      </div>
-      <div id="profile-required" class="login-required card">
-        <h2>Sign in required</h2>
-        <p>You need an active member account to access this page.</p>
-        <a class="btn" href="/member-login">Sign in</a>
-      </div>
-    </div>
-  </main>
-</div>
+  <section class="card" id="certificates">
+    <h2 id="certificate-title">Certificates</h2>
+    <p class="sub">Your issued credentials.</p>
+    <div id="certificate-list" class="record-list"></div>
+    <p class="form-status" id="certificate-status" role="status" aria-live="polite"></p>
+  </section>
+
+  <div id="security"><form id="security-form" class="card">
+          <h2>Account security</h2><p class="sub">Change your password.</p>
+          <div class="field-grid">
+            <div class="field"><label for="current-password">Current password</label><input id="current-password" name="currentPassword" type="password" autocomplete="current-password" required></div>
+            <div class="field"><label for="new-password">New password</label><input id="new-password" name="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+          </div>
+          <p class="meta">Use at least 8 characters. Do not reuse the current password.</p>
+          <div class="mp-actions">
+            <button class="btn" type="submit">Update password</button>
+          </div>
+          <p class="form-status" id="security-status" role="status" aria-live="polite"></p>
+        </form></div>
+</main>
+<script src="/js/api.js"></script>
 <script>
 (function () {
-  var token = document.cookie.split('; ').find(function (cookie) { return cookie.startsWith('aipaf_session='); });
   var content = document.querySelector('#profile-content');
   var required = document.querySelector('#profile-required');
   var form = document.querySelector('#profile-form');
@@ -183,8 +296,8 @@
     document.querySelector('#profile-email').textContent = member.email;
     document.querySelector('#profile-name').textContent = member.first_name + ' ' + member.last_name;
     document.querySelector('#profile-grade').textContent = 'Grade: ' + (member.membership_grade || 'Not assigned');
-    document.querySelector('#profile-organisation').textContent = member.organisation ? 'Organisation: ' + member.organisation : 'Organisation: Not provided';
-    document.querySelector('#profile-designation').textContent = member.designation ? 'Designation: ' + member.designation : 'Designation: Not provided';
+    document.querySelector('#d-organisation').textContent = member.organisation ? 'Organisation: ' + member.organisation : 'Organisation: Not provided';
+    document.querySelector('#d-designation').textContent = member.designation ? 'Designation: ' + member.designation : 'Designation: Not provided';
     document.querySelector('#profile-status').textContent = member.membership_status;
     document.querySelector('#profile-status').className = 'status ' + (member.membership_status || 'unverified');
     document.querySelector('#profile-avatar').textContent = (member.first_name || 'A').charAt(0).toUpperCase();
@@ -210,7 +323,7 @@
         required.hidden = true;
         loadServices();
       })
-      .catch(function () { required.hidden = false; content.hidden = true; window.location.replace('/member-login?next=profile'); });
+      .catch(function () { required.hidden = false; content.hidden = true; window.location.replace('/member-login'); });
   }
 
   function renderRecords(list, container, emptyText) {
@@ -301,7 +414,6 @@
     }
   }
 
-  if (!token) { required.hidden = false; return; }
   loadProfile();
 
   document.querySelector('#profile-toggle-edit').addEventListener('click', function () {
@@ -333,8 +445,8 @@
       if (!response.ok) throw new Error(payload.message || 'Unable to update your profile.');
       status.classList.add('ok');
       status.textContent = 'Profile updated.';
-      content.querySelector('#profile-organisation').textContent = 'Organisation: ' + (payload.member.organisation || 'Not provided');
-      content.querySelector('#profile-designation').textContent = 'Designation: ' + (payload.member.designation || 'Not provided');
+      content.querySelector('#d-organisation').textContent = 'Organisation: ' + (payload.member.organisation || 'Not provided');
+      content.querySelector('#d-designation').textContent = 'Designation: ' + (payload.member.designation || 'Not provided');
       await loadProfile();
       form.hidden = true;
     } catch (error) {
@@ -440,3 +552,5 @@
   });
 })();
 </script>
+</body>
+</html>

@@ -1,71 +1,177 @@
-<!--{"title":"Member registration | AIPAF","description":"Create an AIPAF member account.","nav":"members"}-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Create account | AIPAF</title>
+<meta name="description" content="Register for secure AIPAF member access.">
+<link rel="icon" href="/img/logo-mark.svg" type="image/svg+xml">
 <style>
-  .member-page { min-height: calc(100vh - 72px); background: #f3f7f4; color: #172d25; }
-  .member-page .wrap { width: min(760px, calc(100% - 2rem)); margin-inline: auto; }
-  .member-page .shell { padding: clamp(3rem, 7vw, 6rem) 0; }
-  .member-form { padding: clamp(1.5rem, 5vw, 3rem); background: #fff; border: 1px solid rgba(15,92,63,.12); border-radius: 24px; box-shadow: 0 30px 60px -38px rgba(10,40,28,.45); }
-  .member-page h1 { margin: 0 0 .5rem; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.3rem, 7vw, 4.5rem); line-height: 1; }
-  .member-page .lead { margin: 0 0 2rem; color: #46574f; }
-  .field-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .field { margin-bottom: 1rem; }
-  .field-full { grid-column: 1 / -1; }
-  label { display: block; margin-bottom: .45rem; font-weight: 600; }
-  input, select { width: 100%; padding: .8rem 1rem; border: 1.5px solid rgba(16,35,28,.15); border-radius: 12px; font: inherit; }
-  input:focus, select:focus { outline: none; border-color: #0f5c3f; box-shadow: 0 0 0 4px rgba(15,92,63,.12); }
-  .field-note { margin: .4rem 0 0; font-size: .85rem; color: #46574f; }
-  .btn { display: inline-flex; min-height: 3rem; padding: .8rem 1.5rem; border: 0; border-radius: 999px; background: #0f5c3f; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
-  .btn[disabled] { cursor: progress; opacity: .7; }
-  .form-status { min-height: 1.5rem; margin: 1rem 0 0; color: #b3261e; }
-  .form-status.ok { color: #12704a; }
-  .meta { margin-top: 1.5rem; color: #46574f; font-size: .95rem; }
-  @media (max-width: 560px) { .field-grid { grid-template-columns: 1fr; } }
+:root {
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --gold: #f2ac1f; --line: rgba(255, 255, 255, .2); --mute: rgba(255, 255, 255, .72);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100vh; min-height: 100dvh; font-family: var(--sans); line-height: 1.5; color: #fff;
+  background:
+    radial-gradient(ellipse at 75% 12%, rgba(210, 133, 3, .2), transparent 38rem),
+    radial-gradient(ellipse at 8% 100%, rgba(11, 107, 43, .32), transparent 32rem),
+    linear-gradient(145deg, #03140a, #0a2c16 58%, #061f10);
+  background-attachment: fixed;
+}
+h1, h2, p { margin: 0; }
+a { color: var(--gold); }
+button, input { font: inherit; }
+[hidden] { display: none !important; }
+
+.ai-page { display: grid; place-items: center; min-height: 100vh; min-height: 100dvh; padding: clamp(1rem, 4vw, 3rem); }
+.ai-card {
+  width: min(100%, 34rem); padding: clamp(1.5rem, 5vw, 2.5rem); border: 1px solid var(--line); border-radius: 1.6rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .05));
+  -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
+  box-shadow: 0 2rem 5rem -2rem rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .18);
+  animation: rise .6s cubic-bezier(.22, .8, .3, 1) both;
+}
+.ai-brand { display: flex; align-items: center; gap: .8rem; margin-bottom: 1.5rem; }
+.ai-brand img { width: 2.8rem; height: 2.8rem; }
+.ai-brand strong { display: block; font: 600 1.1rem var(--serif); letter-spacing: .08em; }
+.ai-brand small { color: var(--gold); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+h1 { font: 500 clamp(1.9rem, 6vw, 2.6rem)/1.1 var(--serif); }
+.lead { margin: .6rem 0 1.5rem; color: var(--mute); }
+
+.ai-details { display: grid; gap: .1rem; margin-bottom: 1.5rem; padding: .35rem 1.1rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 1rem; background: rgba(255, 255, 255, .06); }
+.ai-details div { display: flex; justify-content: space-between; gap: 1rem; padding: .65rem 0; }
+.ai-details div + div { border-top: 1px solid rgba(255, 255, 255, .1); }
+.ai-details span { color: var(--mute); font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.ai-details strong { text-align: right; }
+.ai-grade { padding: .15rem .7rem; border-radius: 999px; background: rgba(242, 172, 31, .18); color: #ffd277; }
+
+.field { display: grid; gap: .4rem; margin-bottom: 1rem; }
+.field label { color: var(--mute); font-size: .78rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.pw { position: relative; }
+.pw input { padding-right: 3.2rem; }
+.pw button { position: absolute; top: 50%; right: .4rem; transform: translateY(-50%); padding: .4rem .6rem; border: 0; border-radius: .6rem; background: transparent; color: var(--mute); font-size: .78rem; font-weight: 700; cursor: pointer; }
+.pw button:hover { color: #fff; }
+input:not([type]), input[type="password"], input[type="text"], input[type="email"] {
+  width: 100%; padding: .85rem 1rem; border: 1px solid var(--line); border-radius: .9rem;
+  background: rgba(0, 12, 6, .45); color: #fff; transition: border-color .2s, box-shadow .2s;
+}
+input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(242, 172, 31, .2); }
+
+.ai-meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: .3rem; margin-top: .5rem; }
+.ai-meter i { display: block; height: .3rem; border-radius: 99px; background: rgba(255, 255, 255, .15); transition: background .2s; }
+.ai-meter[data-s="1"] i:nth-child(-n+1) { background: #ff8a80; }
+.ai-meter[data-s="2"] i:nth-child(-n+2) { background: #f2ac1f; }
+.ai-meter[data-s="3"] i:nth-child(-n+3) { background: #9be37b; }
+.ai-meter[data-s="4"] i { background: #3fbf6b; }
+.ai-card:has(.ai-grid:not([hidden])) { width: min(100%, 60rem); }
+@media (min-width: 52rem) {
+  .ai-grid:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: start; }
+  .ai-grid .lead { margin-bottom: 1.2rem; }
+  .ai-grid .ai-details { margin-bottom: 0; }
+  .ai-grid form { padding: 1.4rem; border: 1px solid var(--line); border-radius: 1.2rem; background: rgba(0, 12, 6, .25); }
+  .ai-grid .ai-check { margin: .8rem 0 1rem; }
+  .ai-grid .form-status { margin-top: .6rem; min-height: 1.2rem; }
+}
+.ai-grid .meta { margin-bottom: 1.4rem; }
+@media (min-width: 52rem) { .ai-grid .meta { margin-bottom: 0; } }
+.ai-scroll { white-space: nowrap; position: fixed; left: 50%; bottom: 1rem; z-index: 5; transform: translateX(-50%); display: inline-flex; align-items: center; gap: .4rem; padding: .55rem 1rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(10, 44, 22, .9); color: #fff; font-size: .85rem; font-weight: 700; cursor: pointer; box-shadow: 0 .8rem 1.6rem -.8rem #000; animation: bob 1.4s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translate(-50%, 4px); } }
+.ai-hint { margin-top: .35rem; color: var(--mute); font-size: .8rem; }
+
+.ai-check { display: flex; align-items: flex-start; gap: .7rem; margin: 1.2rem 0; color: var(--mute); font-size: .92rem; }
+.ai-check input { flex: none; width: 1.15rem; height: 1.15rem; margin-top: .2rem; accent-color: var(--gold); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; padding: .9rem 1.2rem; border: 0; border-radius: 999px;
+  background: linear-gradient(135deg, #f2ac1f, #d28503); color: #2c1b00; font-weight: 700; cursor: pointer;
+  box-shadow: 0 .8rem 1.8rem -1rem rgba(242, 172, 31, .9), inset 0 1px 0 rgba(255, 255, 255, .4);
+  transition: transform .2s, filter .2s;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.btn[disabled] { opacity: .6; cursor: progress; transform: none; }
+.btn-ghost { background: rgba(255, 255, 255, .1); color: #fff; border: 1px solid var(--line); box-shadow: none; text-decoration: none; }
+
+.form-status { min-height: 1.4rem; margin-top: 1rem; color: #ffaaa2; font-size: .92rem; }
+.form-status.ok { color: #7be3a0; }
+.form-status.loading { color: var(--mute); }
+.meta { margin-top: 1.4rem; color: var(--mute); font-size: .85rem; }
+
+.ai-state { display: grid; justify-items: center; gap: 1rem; padding: 1.5rem 0 .5rem; text-align: center; }
+.ai-state .ico { display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; background: rgba(255, 138, 128, .15); color: #ffaaa2; }
+.ai-state.ok .ico { background: rgba(63, 191, 107, .18); color: #7be3a0; }
+.spinner { width: 2.2rem; height: 2.2rem; border: 3px solid rgba(255, 255, 255, .2); border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes rise { from { opacity: 0; transform: translateY(1.2rem); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.ai-links { display: grid; gap: .5rem; margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,.12); color: var(--mute); font-size: .9rem; }
+.ai-links a { font-weight: 600; text-decoration: none; }
+.ai-links a:hover { text-decoration: underline; }
+.btn .spinner { width: 1rem; height: 1rem; border-width: 2px; }
+
+.ai-card.wide { width: min(100%, 40rem); }
+.fgrid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 1rem; }
+.fgrid .full { grid-column: 1 / -1; }
+@media (max-width: 34rem) { .fgrid { grid-template-columns: 1fr; } }
+.ai-state { display: grid; justify-items: center; gap: .8rem; text-align: center; padding: .5rem 0; }
+.ai-hint { margin-top: .35rem; color: var(--mute); font-size: .8rem; }
 </style>
-<div class="member-page">
-  <main class="shell">
-    <div class="wrap">
-      <h1>Create your account.</h1>
-      <p class="lead">Register for secure member access to AIPAF services.</p>
-      <form class="member-form" id="member-register-form" novalidate>
-        <div class="field-grid">
-          <div class="field"><label for="first-name">First name</label><input id="first-name" name="firstName" required maxlength="100"></div>
-          <div class="field"><label for="last-name">Last name</label><input id="last-name" name="lastName" required maxlength="100"></div>
-          <div class="field field-full"><label for="member-email">Email</label><input id="member-email" name="email" type="email" autocomplete="email" required maxlength="254"></div>
-          <div class="field field-full"><label for="member-password">Password</label><input id="member-password" name="password" type="password" autocomplete="new-password" required minlength="12"></div>
-          <div class="field"><label for="member-country">Country</label><input id="member-country" name="country" maxlength="80"></div>
-          <div class="field"><label for="member-organisation">Organisation</label><input id="member-organisation" name="organisation" maxlength="150"></div>
-          <div class="field field-full"><label for="member-designation">Designation</label><input id="member-designation" name="designation" maxlength="150"></div>
-        </div>
-        <button class="btn" type="submit">Create account</button>
-        <p class="form-status" role="status" aria-live="polite"></p>
-        <p class="meta">Already have an account? <a href="/member-login">Sign in</a>.</p>
-        <p class="meta">Need to recover access? <a href="/member-forgot-password">Reset password</a>.</p>
-      </form>
+</head>
+<body>
+<main class="ai-page">
+  <section class="ai-card wide">
+    <div class="ai-brand">
+      <img src="/img/logo-mark.svg" alt="" width="45" height="45">
+      <span><strong>AIPAF</strong><small>Member portal</small></span>
     </div>
-  </main>
-</div>
-<script>
-(function () {
-  var form = document.querySelector('#member-register-form');
-  var status = form.querySelector('.form-status');
-  form.addEventListener('submit', async function (event) {
-    event.preventDefault();
-    status.className = 'form-status';
-    status.textContent = '';
-    var data = Object.fromEntries(new FormData(form).entries());
-    form.querySelector('button').disabled = true;
-    try {
-      var response = await window.apiFetch('/api/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ action: 'register' }, data)) });
-      var payload = await window.readApiJson(response);
-      if (!response.ok) throw new Error(payload.message || 'Unable to create the account.');
-      status.classList.add('ok');
-      status.textContent = 'Account created. Please sign in.';
-      form.reset();
-      setTimeout(function () { window.location.href = '/member-login'; }, 1200);
-    } catch (error) {
-      status.textContent = error.message;
-    } finally {
-      form.querySelector('button').disabled = false;
-    }
-  });
-})();
+    <h1>Create your account.</h1>
+    <p class="lead">Register for secure member access to AIPAF services.</p>
+    <form id="f" novalidate>
+      <div class="fgrid">
+        <div class="field"><label for="fn">First name</label><input id="fn" name="firstName" type="text" required maxlength="100" autocomplete="given-name"></div>
+        <div class="field"><label for="ln">Last name</label><input id="ln" name="lastName" type="text" required maxlength="100" autocomplete="family-name"></div>
+        <div class="field full"><label for="em">Email</label><input id="em" name="email" type="email" required maxlength="254" autocomplete="email"></div>
+        <div class="field full"><label for="pw">Password</label><div class="pw"><input id="pw" name="password" type="password" autocomplete="new-password" required minlength="8"><button type="button" aria-label="Show or hide password">Show</button></div></div>
+        <div class="field"><label for="co">Country</label><input id="co" name="country" type="text" maxlength="80"></div>
+        <div class="field"><label for="og">Organisation</label><input id="og" name="organisation" type="text" maxlength="150"></div>
+        <div class="field full"><label for="ds">Designation</label><input id="ds" name="designation" type="text" maxlength="150"></div>
+      </div>
+      <p class="ai-hint" style="margin:-.4rem 0 1rem">Use at least 8 characters.</p>
+      <button class="btn" type="submit" id="b">Create account</button>
+      <p class="form-status" role="status" aria-live="polite"></p>
+    </form>
+    <div class="ai-links"><span>Already have an account? <a href="/member-login">Sign in</a></span><a href="/member-forgot-password">Reset password</a></div>
+  </section>
+</main>
+<script type="module">
+import { apiUrl } from '/js/config.js';
+const api = (p, body) => fetch(apiUrl(p), { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+const setBusy = (btn, busy, label) => { btn.disabled = busy; btn.innerHTML = busy ? '<span class="spinner" style="width:1rem;height:1rem;border-width:2px"></span> Please wait...' : label; };
+function togglePw(root) { root.querySelectorAll('.pw button').forEach((b) => b.addEventListener('click', () => { const i = b.parentElement.querySelector('input'); const s = i.type === 'password'; i.type = s ? 'text' : 'password'; b.textContent = s ? 'Hide' : 'Show'; })); }
+
+const f = document.getElementById('f'), st = f.querySelector('.form-status'), b = document.getElementById('b');
+togglePw(f);
+f.addEventListener('submit', async (e) => {
+  e.preventDefault(); st.className = 'form-status'; st.textContent = '';
+  const data = Object.fromEntries(new FormData(f).entries());
+  if (!data.firstName.trim() || !data.lastName.trim() || !data.email.trim()) { st.textContent = 'Name and email are required.'; return; }
+  if (data.password.length < 8) { st.textContent = 'Password must be at least 8 characters.'; return; }
+  setBusy(b, true);
+  try {
+    const r = await api('/api/members', { action: 'register', ...data });
+    const p = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(p.message || 'Unable to create the account.');
+    st.className = 'form-status ok'; st.textContent = p.message || 'Account created. Please check your email.';
+    f.reset(); setTimeout(() => { location.href = '/member-login'; }, 2500);
+  } catch (err) { st.textContent = err.message; }
+  setBusy(b, false, 'Create account');
+});
 </script>
+</body>
+</html>
