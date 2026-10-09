@@ -116,6 +116,10 @@
   .cx .cred { display: flex; flex-direction: column; align-items: flex-start; gap: .55rem; padding: 2rem 1.8rem; overflow: hidden; background: linear-gradient(160deg, #12502b, #0a3a1d); border-color: rgba(255, 255, 255, .2); transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
   .cx .cred::after { content: ""; position: absolute; left: 0; top: 0; height: 4px; width: 3.5rem; background: var(--cx-gold-soft); border-radius: 0 0 4px 0; transition: width .5s var(--cx-ease); }
   .cx .cred:hover::after { width: 100%; }
+  .cx a.cred { color: inherit; text-decoration: none; cursor: pointer; }
+  .cx .cred-link { margin-top: auto; padding-top: .6rem; color: var(--cx-gold-soft); font-weight: 700; font-size: .9rem; }
+  .cx a.cred:hover .cred-link { text-decoration: underline; }
+  .cx a.cred:focus-visible { outline: 3px solid var(--cx-gold-soft); outline-offset: 4px; }
   .cx .cred-code { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.6rem, 4.6vw, 3.4rem); font-weight: 700; line-height: 1; letter-spacing: .02em; color: var(--cx-gold-soft); }
   .cx .cred h3 { margin: .3rem 0 0; font-size: 1.2rem; line-height: 1.3; color: #fff; }
   .cx .cred-fn { display: inline-block; padding: .2rem .85rem; border-radius: 999px; font-size: .9rem; font-weight: 600; color: var(--cx-gold-soft); border: 1px solid rgba(240, 184, 74, .5); background: rgba(240, 184, 74, .1); }
@@ -295,24 +299,27 @@
           <p class="lead">Each designation is earned through a shared professional foundation, examined track papers, and verified practical experience.</p>
         </div>
         <div class="cred-grid" data-stagger>
-          <article class="cred" data-reveal>
+          <a class="cred" data-reveal href="/media/CPMP-Requirements.pdf" target="_blank" rel="noopener" aria-label="CPMP requirements (opens PDF in a new tab)">
             <p class="cred-code">CPMP</p>
             <h3>Certified Project Management Practitioner</h3>
             <span class="cred-fn">Delivery</span>
             <p>The African project management standard: deliver projects to a governance-ready, auditable standard, built to compete with the global credentials on relevance.</p>
-          </article>
-          <article class="cred" data-reveal>
+            <span class="cred-link">View requirements (PDF) <span aria-hidden="true">→</span></span>
+          </a>
+          <a class="cred" data-reveal href="/media/CPAP-Requirements.pdf" target="_blank" rel="noopener" aria-label="CPAP requirements (opens PDF in a new tab)">
             <p class="cred-code">CPAP</p>
             <h3>Certified Project Assurance Practitioner</h3>
             <span class="cred-fn">Assurance</span>
             <p>Provide independent, forward-looking oversight of a project's likely performance for those who sanction, finance, or insure it.</p>
-          </article>
-          <article class="cred" data-reveal>
+            <span class="cred-link">View requirements (PDF) <span aria-hidden="true">→</span></span>
+          </a>
+          <a class="cred" data-reveal href="/media/CPFE-Requirements.pdf" target="_blank" rel="noopener" aria-label="CPFE requirements (opens PDF in a new tab)">
             <p class="cred-code">CPFE</p>
             <h3>Certified Project Forensic Examiner</h3>
             <span class="cred-fn">Forensics</span>
             <p>Investigate project failure and dispute to an evidentiary standard capable of surviving independent scrutiny.</p>
-          </article>
+            <span class="cred-link">View requirements (PDF) <span aria-hidden="true">→</span></span>
+          </a>
         </div>
         <div class="callout" role="note" data-reveal>
           <svg class="callout-icon" viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="8" width="12" height="24" rx="2" fill="#fff"/><rect x="26" y="8" width="12" height="24" rx="2" fill="#fff"/><rect x="18" y="4" width="4" height="32" fill="#f2ac1f"/></svg>
