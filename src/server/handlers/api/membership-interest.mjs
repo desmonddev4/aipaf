@@ -25,9 +25,16 @@ export default async function handler(request) {
   const data = body;
   try {
     const record = await saveMembershipSubmission(data);
-    const emailResult = await sendSubmissionEmails({ kind: 'membership', data, recordId: record.id });
-    await sendAcknowledgementEmail({ kind: 'membership', data });
-    await markSubmissionStatus('membership_interests', record.id, emailResult.status === 'sent' ? 'sent' : 'failed');
+    // The submission is saved; a mail problem must not make the visitor resubmit.
+    let emailStatus = 'failed';
+    try {
+      const emailResult = await sendSubmissionEmails({ kind: 'membership', data, recordId: record.id });
+      emailStatus = emailResult.status === 'sent' ? 'sent' : 'failed';
+    } catch (emailError) {
+      console.error('Failed to email membership submission:', emailError);
+    }
+    await sendAcknowledgementEmail({ kind: 'membership', data }).catch((emailError) => console.error('Failed to send acknowledgement:', emailError));
+    await markSubmissionStatus('membership_interests', record.id, emailStatus).catch(() => {});
     return jsonResponse({ ok: true, message: 'Your interest has been received.' });
   } catch (error) {
     const message = error.message.includes('DATABASE_URL')

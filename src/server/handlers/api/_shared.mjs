@@ -25,8 +25,8 @@ const FIELD_RULES = {
     ['email', 'email'],
     ['country', 'string', 2, 80],
     ['registering_as', 'string', 2, 120],
-    ['area_of_practice', 'string', 2, 120],
-    ['message', 'string', 10, 2000],
+    ['area_of_practice', 'string', 0, 120],
+    ['message', 'string', 0, 2000],
   ],
 };
 

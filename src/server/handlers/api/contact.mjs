@@ -25,9 +25,16 @@ export default async function handler(request) {
   const data = body;
   try {
     const record = await saveContactSubmission(data);
-    const emailResult = await sendSubmissionEmails({ kind: 'contact', data, recordId: record.id });
-    await sendAcknowledgementEmail({ kind: 'contact', data });
-    await markSubmissionStatus('contact_messages', record.id, emailResult.status === 'sent' ? 'sent' : 'failed');
+    // The submission is saved; a mail problem must not make the visitor resubmit.
+    let emailStatus = 'failed';
+    try {
+      const emailResult = await sendSubmissionEmails({ kind: 'contact', data, recordId: record.id });
+      emailStatus = emailResult.status === 'sent' ? 'sent' : 'failed';
+    } catch (emailError) {
+      console.error('Failed to email contact submission:', emailError);
+    }
+    await sendAcknowledgementEmail({ kind: 'contact', data }).catch((emailError) => console.error('Failed to send acknowledgement:', emailError));
+    await markSubmissionStatus('contact_messages', record.id, emailStatus).catch(() => {});
     return jsonResponse({ ok: true, message: 'Your message has been received.' });
   } catch (error) {
     const message = error.message.includes('DATABASE_URL')

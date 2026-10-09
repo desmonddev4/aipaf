@@ -143,6 +143,8 @@ to { opacity: 1; transform: none; }
     if (String(data.message || '').trim().length < 20) throw new Error('Please write at least 20 characters.');
     if (String(data.name || '').trim().length < 2) throw new Error('Please enter your name.');
     data._elapsedMs = Math.max(Date.now() - opened, 2500);
+    data._page = location.pathname;
+    data.consent = true;
     await window.Member.json(await window.Member.post('/api/contact', data), 'Unable to send your message.');
     form.message.value = '';
     return 'Message sent. We will reply by email.';
