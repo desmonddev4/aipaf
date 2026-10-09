@@ -1,7 +1,7 @@
 // Create initial admin user
 // Usage: node scripts/create-admin.mjs <email> <password> <role>
 // Role must be either 'secretariat' or 'council'
-import { db } from '../src/server/handlers/api/db.mjs';
+import { Pool } from 'pg';
 import { hashPassword } from '../src/server/handlers/api/admin-auth.mjs';
 
 const email = process.argv[2];
@@ -24,11 +24,22 @@ if (password.length < 8) {
   process.exit(1);
 }
 
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  console.error('DATABASE_URL is required. Set it as an environment variable.');
+  process.exit(1);
+}
+
+const pool = new Pool({
+  connectionString: databaseUrl,
+  ssl: { rejectUnauthorized: false }
+});
+
 async function createAdmin() {
   try {
     const passwordHash = await hashPassword(password);
 
-    const result = await db.query(
+    const result = await pool.query(
       'INSERT INTO admin_users (email, password_hash, role) VALUES ($1, $2, $3) RETURNING id, email, role, email_verified, created_at',
       [email.toLowerCase(), passwordHash, role]
     );
@@ -47,7 +58,7 @@ async function createAdmin() {
     }
     process.exit(1);
   } finally {
-    await db.end();
+    await pool.end();
   }
 }
 

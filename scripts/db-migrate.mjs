@@ -11,7 +11,10 @@ if (!databaseUrl) {
   process.exit(1);
 }
 
-const pool = new Pool({ connectionString: databaseUrl });
+const pool = new Pool({ 
+  connectionString: databaseUrl,
+  ssl: { rejectUnauthorized: false }
+});
 const sql = readFileSync(join(root, 'scripts', 'db-schema.sql'), 'utf8');
 
 try {

@@ -1,6 +1,9 @@
 import { Pool } from 'pg';
 
-const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL }) : null;
+const pool = process.env.DATABASE_URL ? new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+}) : null;
 
 export async function withDb(operation) {
   if (!pool) throw new Error('DATABASE_URL is not configured.');
