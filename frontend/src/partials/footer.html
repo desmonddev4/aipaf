@@ -59,6 +59,16 @@
   .site-footer nav summary::after { content: "▾"; float: right; color: var(--ft-gold-soft); transition: transform .25s var(--ft-ease); }
   .site-footer nav details[open] summary::after { transform: rotate(180deg); }
   .site-footer nav details > ul { margin-top: .9rem; }
+  @media (max-width: 639px) {
+    .site-footer nav details { border-top: 1px solid rgba(255, 255, 255, .16); }
+    .site-footer nav summary { display: flex; align-items: center; justify-content: space-between; min-height: 3.25rem; -webkit-tap-highlight-color: transparent; }
+    .site-footer nav summary:focus-visible { outline: 3px solid var(--ft-gold-soft); outline-offset: 2px; border-radius: 6px; }
+    .site-footer nav summary::after { content: ""; float: none; flex: none; width: .6rem; height: .6rem; margin: 0 .4rem .25rem 1rem; border: solid var(--ft-gold-soft); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+    .site-footer nav details[open] summary::after { transform: rotate(-135deg); margin-bottom: 0; margin-top: .35rem; }
+    .site-footer .footer-h { margin: 0; padding-bottom: 0; }
+    .site-footer .footer-h::after { display: none; }
+    .site-footer nav details > ul { margin: 0 0 1rem; }
+  }
   @media (min-width: 640px) {
     .site-footer nav details { border: 0; }
     .site-footer nav summary { cursor: default; }
@@ -145,6 +155,14 @@
 (function () {
   var f = document.querySelector('.site-footer');
   if (!f) return;
+  var mq = window.matchMedia('(max-width: 639px)');
+  var ds = f.querySelectorAll('nav details');
+  function sync() { ds.forEach(function (d) { if (mq.matches) d.removeAttribute('open'); else d.setAttribute('open', ''); }); }
+  sync();
+  if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
+  f.querySelectorAll('nav summary').forEach(function (s) {
+    s.addEventListener('click', function (e) { if (!mq.matches) e.preventDefault(); });
+  });
   var items = f.querySelectorAll('[data-fx]');
   if (!('IntersectionObserver' in window)) return;
   f.classList.add('fx-ready');

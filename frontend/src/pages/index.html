@@ -35,10 +35,26 @@
   .cx .hero-seal-inner { position: relative; width: clamp(240px, 32vw, 440px); aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .22), rgba(255, 255, 255, .04) 60%); border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 0 10px rgba(255, 255, 255, .07), 0 0 0 11px rgba(255, 255, 255, .2), 0 40px 80px -20px rgba(0, 0, 0, .65), inset 0 0 60px rgba(255, 255, 255, .14); animation: cx-float 7s ease-in-out infinite; }
   .cx .hero-seal-inner video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cx .hero-seal-inner::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: radial-gradient(ellipse 55% 35% at 32% 20%, rgba(255, 255, 255, .38), transparent 70%); }
+  @media (max-width: 959px) {
+    .cx .hero { min-height: 0; padding: calc(5rem + env(safe-area-inset-top, 0px)) 0 3.25rem; }
+    .cx .hero-inner { width: min(40rem, 100% - 2rem); gap: 1.5rem; text-align: center; }
+    .cx .hero-seal { display: none; }
+    .cx .hero-copy { max-width: none; transform: none; }
+    .cx .hero-sub { margin-inline: auto; }
+    .cx .hero-actions { justify-content: center; }
+    .cx .hero::before { background: linear-gradient(180deg, rgba(3, 32, 14, .72) 0%, rgba(3, 32, 14, .6) 45%, rgba(3, 32, 14, .88) 100%); }
+  }
   @media (max-width: 720px) {
-    .cx .hero { padding: 4.75rem 0 2.75rem; }
-    .cx .hero-inner { gap: 1.25rem; }
-    .cx .hero-seal-inner { width: clamp(140px, 38vw, 175px); }
+    .cx .hero-seal-inner { width: clamp(150px, 44vw, 200px); box-shadow: 0 0 0 6px rgba(255, 255, 255, .07), 0 0 0 7px rgba(255, 255, 255, .2), 0 24px 48px -16px rgba(0, 0, 0, .65), inset 0 0 40px rgba(255, 255, 255, .14); }
+    .cx .hero-eyebrow { margin-bottom: .9rem; padding: .35rem .85rem; font-size: .78rem; }
+    .cx .hero h1 { font-size: clamp(1.65rem, 7vw, 2rem); line-height: 1.15; margin-bottom: .9rem; }
+    .cx .hero-sub { font-size: .98rem; line-height: 1.55; margin-bottom: 1.4rem; }
+    .cx .hero-actions { flex-direction: column; align-items: stretch; gap: .75rem; max-width: 22rem; margin-inline: auto; }
+    .cx .hero .btn { width: 100%; justify-content: center; min-height: 3rem; }
+  }
+  @media (max-width: 959px) and (orientation: landscape) and (max-height: 520px) {
+    .cx .hero-seal { display: none; }
+    .cx .hero { padding-top: calc(4.5rem + env(safe-area-inset-top, 0px)); }
   }
   .cx .scroll-cue { position: absolute; left: 50%; bottom: 2rem; width: 26px; height: 42px; margin-left: -13px; border: 2px solid rgba(255, 255, 255, .65); border-radius: 14px; }
   .cx .scroll-cue span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--cx-gold-soft); animation: cx-scroll 1.8s ease-in-out infinite; }
