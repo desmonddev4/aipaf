@@ -28,6 +28,9 @@ if (heroVideo || sealActive) {
     retryListenersAdded = true;
     document.addEventListener('pointerdown', retryPlayback, { passive: true });
     document.addEventListener('touchstart', retryPlayback, { passive: true });
+    document.addEventListener('touchend', retryPlayback, { passive: true });
+    document.addEventListener('click', retryPlayback);
+    window.addEventListener('scroll', retryPlayback, { passive: true, once: true });
     document.addEventListener('keydown', retryPlayback);
   };
   const playVideo = (video) => {
