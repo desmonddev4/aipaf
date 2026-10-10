@@ -35,7 +35,11 @@
   .cx .hero-seal-inner { position: relative; width: clamp(240px, 32vw, 440px); aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .22), rgba(255, 255, 255, .04) 60%); border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 0 10px rgba(255, 255, 255, .07), 0 0 0 11px rgba(255, 255, 255, .2), 0 40px 80px -20px rgba(0, 0, 0, .65), inset 0 0 60px rgba(255, 255, 255, .14); animation: cx-float 7s ease-in-out infinite; }
   .cx .hero-seal-inner video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cx .hero-seal-inner::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: radial-gradient(ellipse 55% 35% at 32% 20%, rgba(255, 255, 255, .38), transparent 70%); }
-  @media (max-width: 720px) { .cx .hero { padding: 5.75rem 0 5.25rem; } }
+  @media (max-width: 720px) {
+    .cx .hero { padding: 4.75rem 0 2.75rem; }
+    .cx .hero-inner { gap: 1.25rem; }
+    .cx .hero-seal-inner { width: clamp(140px, 38vw, 175px); }
+  }
   .cx .scroll-cue { position: absolute; left: 50%; bottom: 2rem; width: 26px; height: 42px; margin-left: -13px; border: 2px solid rgba(255, 255, 255, .65); border-radius: 14px; }
   .cx .scroll-cue span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--cx-gold-soft); animation: cx-scroll 1.8s ease-in-out infinite; }
   @media (max-height: 640px), (max-width: 640px) { .cx .scroll-cue { display: none; } }
@@ -223,7 +227,7 @@
 
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-media" aria-hidden="true">
-        <video data-hero-video autoplay muted loop playsinline preload="metadata" poster="/media/hero-poster.jpg">
+        <video data-hero-video autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="/media/hero-poster.jpg">
           <source src="/media/hero.webm" type="video/webm">
           <source src="/media/hero.mp4" type="video/mp4">
         </video>
@@ -240,7 +244,7 @@
         </div>
         <figure class="hero-seal" aria-label="The AIPAF seal revealed inside a glass sphere">
           <div class="hero-seal-inner">
-            <video data-seal-video muted playsinline preload="auto" poster="/media/seal-poster.jpg" aria-hidden="true">
+            <video data-seal-video autoplay muted loop playsinline webkit-playsinline preload="auto" poster="/media/seal-poster.jpg" aria-hidden="true">
               <source src="/media/seal.webm" type="video/webm">
               <source src="/media/seal.mp4" type="video/mp4">
             </video>

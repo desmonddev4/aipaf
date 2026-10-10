@@ -8,9 +8,32 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 if (heroVideo || sealVideo) {
   const videos = [heroVideo, sealVideo].filter(Boolean);
+  let heroIsVisible = false;
+  let retryListenersAdded = false;
+
+  const retryPlayback = () => {
+    if (heroIsVisible && !reduceMotion.matches) playVideos();
+  };
+  const addPlaybackRetryListeners = () => {
+    if (retryListenersAdded) return;
+    retryListenersAdded = true;
+    document.addEventListener('pointerdown', retryPlayback, { passive: true });
+    document.addEventListener('touchstart', retryPlayback, { passive: true });
+    document.addEventListener('keydown', retryPlayback);
+  };
   const playVideos = () => {
     if (reduceMotion.matches) return;
-    videos.forEach((video) => video.play?.().catch(() => {}));
+    videos.forEach((video) => {
+      const playback = video.play();
+      playback?.catch((error) => {
+        if (error.name === 'NotAllowedError') {
+          addPlaybackRetryListeners();
+          return;
+        }
+        if (error.name === 'AbortError') return;
+        console.warn('Unable to play an AIPAF hero video.', error);
+      });
+    });
   };
   const pauseVideos = () => videos.forEach((video) => video.pause());
 
@@ -18,9 +41,14 @@ if (heroVideo || sealVideo) {
     pauseVideos();
   } else {
     const heroObserver = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) playVideos(); else pauseVideos();
+      heroIsVisible = Boolean(entries[0]?.isIntersecting);
+      if (heroIsVisible) playVideos(); else pauseVideos();
     }, { threshold: 0.2 });
     heroObserver.observe(hero);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) pauseVideos();
+      else if (heroIsVisible) playVideos();
+    });
   }
 }
 
