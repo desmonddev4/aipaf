@@ -1,0 +1,124 @@
+<!--{"title":"Project and Asset Certification | AIPAF","description":"AIPAF's project and asset certification framework: four proposed schemes, what a certificate means, public registers, and the independent Expert Panel.","nav":"project-certification"}-->
+<style>
+  .pc { --ink:#10231c; --text:#1f2f28; --muted:#46574f; --green:#02521d; --green-dark:#013a14; --gold:#d28503; --line:rgba(16,35,28,.12); color:var(--text); font-size:1.0625rem; line-height:1.65; }
+  .pc *, .pc *::before, .pc *::after { box-sizing:border-box; }
+  .pc .wrap { width:min(1160px,100% - 2.5rem); margin-inline:auto; }
+  .pc h1, .pc h2, .pc h3 { font-family:Georgia,"Times New Roman",serif; color:var(--ink); }
+  .pc .page-hero { position:relative; isolation:isolate; overflow:hidden; padding:clamp(4.5rem,12vw,8rem) 0; color:#fff; }
+  .pc .page-hero::before { content:""; position:absolute; z-index:-1; inset:0; background:linear-gradient(115deg,rgba(3,32,14,.94),rgba(3,32,14,.68)),url("/img/bridge.jpg") center/cover; }
+  .pc .hero-panel { max-width:52rem; padding:clamp(1.5rem,4vw,2.6rem); border:1px solid rgba(255,255,255,.22); border-radius:24px; background:rgba(255,255,255,.09); backdrop-filter:blur(12px); }
+  .pc .crumbs { margin:0 0 1rem; color:rgba(255,255,255,.78); font-size:.9rem; }
+  .pc .crumbs a { color:inherit; }
+  .pc .eyebrow { margin:0 0 .7rem; color:var(--green); font-size:.9rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+  .pc .page-hero .eyebrow { color:#f0b84a; }
+  .pc h1 { margin:0 0 1rem; color:#fff; font-size:clamp(2.15rem,5vw,3.6rem); line-height:1.1; }
+  .pc .lead { max-width:48rem; margin:0; font-size:clamp(1.05rem,1.5vw,1.2rem); }
+  .pc .page-hero .lead { color:rgba(255,255,255,.88); }
+  .pc .section { padding:clamp(3.5rem,8vw,6rem) 0; background:#f7faf8; }
+  .pc .section-tint { background:linear-gradient(180deg,#eaf3ed,#f6f1e3); }
+  .pc .section-dark { background:linear-gradient(145deg,#03280f,#0a3a1d 55%,#06210f); color:rgba(255,255,255,.9); }
+  .pc .section-dark h2, .pc .section-dark h3 { color:#fff; }
+  .pc .section-head { max-width:50rem; margin:0 0 2rem; }
+  .pc h2 { margin:0 0 .8rem; font-size:clamp(1.8rem,3.4vw,2.5rem); line-height:1.18; }
+  .pc .section-head p:last-child { margin-bottom:0; }
+  .pc .card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr)); gap:1rem; }
+  .pc .card { padding:1.6rem; border:1px solid rgba(2,82,29,.2); border-radius:18px; background:#fff; box-shadow:0 18px 42px -28px rgba(2,50,20,.42); }
+  .pc .section-dark .card { color:var(--text); }
+  .pc .card h3 { margin:0 0 .55rem; font-size:1.3rem; line-height:1.25; }
+  .pc .card p { margin:.5rem 0 0; }
+  .pc .card .label { color:var(--green); font-size:.78rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  .pc .columns { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr)); gap:2rem; align-items:start; }
+  .pc .check-list { margin:0; padding-left:1.25rem; }
+  .pc .check-list li { padding:.35rem 0; }
+  .pc .check-list li::marker { color:var(--gold); }
+  .pc .callout { margin-top:1.5rem; padding:1.25rem 1.5rem; border-left:5px solid var(--gold); border-radius:12px; background:#fff; }
+  .pc .callout p { margin:0; }
+  .pc .section-dark .callout { background:#0e3d22; }
+  .pc .section-dark .callout strong { color:#f0b84a; }
+  .pc .actions { display:flex; flex-wrap:wrap; gap:.8rem; margin-top:1.5rem; }
+  .pc .btn { display:inline-flex; align-items:center; justify-content:center; min-height:2.8rem; padding:.7rem 1.35rem; border-radius:999px; background:var(--green); color:#fff; font-weight:700; text-decoration:none; }
+  .pc .btn:hover { background:var(--green-dark); }
+  .pc a:focus-visible { outline:3px solid var(--gold); outline-offset:3px; }
+  @media (max-width:600px) { .pc .wrap { width:min(100% - 1.5rem,1160px); } .pc .hero-panel { padding:1.3rem; } }
+</style>
+
+<div class="pc">
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="hero-panel">
+        <p class="crumbs"><a href="/">Home</a> / Projects and assets</p>
+        <p class="eyebrow">The second certification stream</p>
+        <h1>Independent scrutiny of the project itself.</h1>
+        <p class="lead">AIPAF's project and asset certification framework is designed to give sponsors, lenders, owners, and receivers an evidence-based assessment against a published scheme—not only a credential for the practitioner advising them.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="schemes-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Four proposed schemes</p>
+        <h2 id="schemes-title">Different project stages need different standards.</h2>
+        <p class="lead">Each scheme defines its own scope and assessment. A certificate is tied to the named scheme, defined scope, and date shown on it.</p>
+      </div>
+      <div class="card-grid">
+        <article class="card"><p class="label">In delivery</p><h3>Project Assurance Certification</h3><p>Assesses matters such as baseline integrity, records, change control, forecasting, and risk.</p><p><strong>For:</strong> sponsors, boards, and lenders.</p><p><strong>Review:</strong> to the next surveillance point.</p></article>
+        <article class="card"><p class="label">Completed asset</p><h3>Asset Certification</h3><p>Assesses the as-built position and the basis of the final account.</p><p><strong>For:</strong> purchasers, lenders, and public owners.</p><p><strong>Review:</strong> for a fixed period from issue.</p></article>
+        <article class="card"><p class="label">Stalled or abandoned</p><h3>Revival Assurance Certification</h3><p>Assesses recoverability, residual scope, and conditions for a possible restart.</p><p><strong>For:</strong> ministries, lenders, receivers, and incoming contractors.</p><p><strong>Review:</strong> for a fixed period or until material change.</p></article>
+        <article class="card"><p class="label">Across a portfolio</p><h3>Portfolio and Programme Assurance</h3><p>Assesses an owner's or sponsor's assurance regime across multiple projects.</p><p><strong>For:</strong> funds, agencies, and sponsors.</p><p><strong>Review:</strong> to the next surveillance point.</p></article>
+      </div>
+      <aside class="callout"><p><strong>Revival Assurance has a defined boundary.</strong> It assesses whether a stalled project may be recoverable and what conditions a restart would require. It does not decide whether restarting is a sound investment, or apportion blame for why the project stalled.</p></aside>
+      <p>The founding profile also proposes an Abandoned Projects Observatory to study stalled infrastructure and publish its methodology. It is presented as a planned research initiative, not as a live register or service.</p>
+    </div>
+  </section>
+
+  <section class="section section-tint" aria-labelledby="certificate-title">
+    <div class="wrap columns">
+      <div>
+        <p class="eyebrow">What a certificate means</p>
+        <h2 id="certificate-title">A bounded statement, not a guarantee.</h2>
+        <p>A certificate records conformity with a named scheme, within a defined scope, as at a stated date. It is granted or refused against a published standard; projects are not ranked or scored.</p>
+      </div>
+      <ul class="check-list">
+        <li><strong>Scope matters.</strong> A certificate covering only part of a project says so; the register should carry the same scope.</li>
+        <li><strong>It is not a warranty.</strong> A certificate does not guarantee outcomes or warrant design adequacy, structural safety, or regulatory compliance.</li>
+        <li><strong>It is kept current.</strong> Scheme-specific surveillance and notification of material changes inform whether certification continues.</li>
+        <li><strong>Status is transparent.</strong> Reduction, suspension, and withdrawal are recorded under the scheme's published rules and may be appealed.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="registers-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The public record</p>
+        <h2 id="registers-title">Two registers. Clear standing.</h2>
+        <p class="lead">The framework calls for public registers that make current and ended certifications checkable, without exposing information that is not needed to verify standing.</p>
+      </div>
+      <div class="card-grid">
+        <article class="card"><h3>Register of Professionals</h3><p>Membership grade, designation, listed competences, current status, and published disciplinary findings.</p><p><strong>Proposed reference:</strong> AIPAF-P</p></article>
+        <article class="card"><h3>Register of Projects and Assets</h3><p>Certified project or asset, scheme, scope, dates, and current or former certificate status.</p><p><strong>Proposed reference:</strong> AIPAF-A</p></article>
+      </div>
+      <aside class="callout"><p>Personal contact details, examination records, and assessors' reports are not public-register information. How long ended entries remain visible is to be governed by the published scheme.</p></aside>
+      <p>Certificate verification is currently provided for professional credentials. Project and asset register availability should be confirmed with the Secretariat.</p>
+      <div class="actions"><a class="btn" href="/certificate-verification">Verify a professional certificate</a><a class="btn" href="/contact">Ask about project certification</a></div>
+    </div>
+  </section>
+
+  <section class="section section-dark" aria-labelledby="panel-title">
+    <div class="wrap columns">
+      <div>
+        <p class="eyebrow">Expert Panel</p>
+        <h2 id="panel-title">The Institute assesses competence; clients instruct the expert.</h2>
+        <p>Under the framework, forensic work is to be undertaken by assessed members instructed directly by their clients. The Institute's role is to assess and list competence, not to direct an expert's opinion.</p>
+      </div>
+      <ul class="check-list">
+        <li>The Institute does not nominate, recommend, or rank panel members, and does not endorse the opinion an expert reaches.</li>
+        <li>Clients instruct panel members directly; the Institute takes no fee or commission from an engagement.</li>
+        <li>The Institute does not accept forensic or consultancy instructions on matters within the scope of its certification.</li>
+        <li>Delivery and independent scrutiny are kept separate: a member must not independently assess a project in which they have a delivery interest.</li>
+      </ul>
+    </div>
+    <div class="wrap actions"><a class="btn" href="/governance">Read about governance and impartiality</a><a class="btn" href="/media/AIPAF_Brochure_2026.pdf" target="_blank" rel="noopener">Read the 2026 brochure</a></div>
+  </section>
+</div>

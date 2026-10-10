@@ -35,6 +35,7 @@
   .cx .hero-seal-inner { position: relative; width: clamp(240px, 32vw, 440px); aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .22), rgba(255, 255, 255, .04) 60%); border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 0 10px rgba(255, 255, 255, .07), 0 0 0 11px rgba(255, 255, 255, .2), 0 40px 80px -20px rgba(0, 0, 0, .65), inset 0 0 60px rgba(255, 255, 255, .14); animation: cx-float 7s ease-in-out infinite; }
   .cx .hero-seal-inner video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cx .hero-seal-inner::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: radial-gradient(ellipse 55% 35% at 32% 20%, rgba(255, 255, 255, .38), transparent 70%); }
+  @media (max-width: 720px) { .cx .hero { padding: 5.75rem 0 5.25rem; } }
   .cx .scroll-cue { position: absolute; left: 50%; bottom: 2rem; width: 26px; height: 42px; margin-left: -13px; border: 2px solid rgba(255, 255, 255, .65); border-radius: 14px; }
   .cx .scroll-cue span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--cx-gold-soft); animation: cx-scroll 1.8s ease-in-out infinite; }
   @media (max-height: 640px), (max-width: 640px) { .cx .scroll-cue { display: none; } }
@@ -140,7 +141,16 @@
   .cx .path-card.is-chartered h3, .cx .path-card.is-chartered p { color: #fff; }
   .cx .path-card.is-chartered .path-tag { color: #fff; background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .3); }
   .cx .path-arrow { flex: 0 0 3rem; align-self: center; width: 3rem; height: 3rem; color: var(--cx-gold); animation: cx-nudge 2.4s ease-in-out infinite; }
-  @media (max-width: 720px) { .cx .path { flex-direction: column; } .cx .path-arrow { transform: rotate(90deg); animation: none; } .cx .path-card { min-height: 0; } }
+  @media (max-width: 720px) {
+    .cx .path { flex-direction: column; align-items: stretch; gap: .5rem; counter-reset: step; }
+    .cx .path-card { flex: 0 0 auto; min-height: 0; padding: 1.5rem 1.35rem 1.6rem; counter-increment: step; }
+    .cx .path-card::after { content: "Step " counter(step); position: absolute; top: 1.35rem; right: 1.35rem; z-index: 1; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cx-gold); }
+    .cx .path-card h3 { font-size: 1.6rem; margin-bottom: .6rem; }
+    .cx .path-card p { margin: 0; line-height: 1.55; }
+    .cx .path-card .path-tag { margin-bottom: .8rem; }
+    .cx .path-card.is-chartered::after { color: var(--cx-gold-soft); }
+    .cx .path-arrow { flex: 0 0 2.25rem; width: 2.25rem; height: 2.25rem; align-self: center; transform: rotate(90deg); animation: none; }
+  }
 
   /* Membership staircase */
   .cx .ladder { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: 1fr; }
@@ -329,6 +339,22 @@
       </div>
     </section>
 
+    <section class="section section-tint" id="project-certification" aria-labelledby="project-cert-title">
+      <div class="wrap mandate-grid">
+        <div data-reveal>
+          <p class="eyebrow">Projects and assets</p>
+          <h2 class="h2" id="project-cert-title">A second certification stream for the project itself.</h2>
+          <p class="lead">AIPAF's framework sets out independent assessment schemes for projects in delivery, completed assets, stalled projects, and portfolio assurance—complementing the credentials held by practitioners.</p>
+          <a class="btn btn-green" href="/project-certification">Explore project certification</a>
+        </div>
+        <ul class="triad" data-stagger>
+          <li data-reveal><strong>Assess</strong><span>Review against the named scheme and its published standard.</span></li>
+          <li data-reveal><strong>Define</strong><span>State the certificate's scope and assessment date clearly.</span></li>
+          <li data-reveal><strong>Account</strong><span>Make status and any suspension or withdrawal transparent under the scheme rules.</span></li>
+        </ul>
+      </div>
+    </section>
+
     <section class="section" id="pathway" aria-labelledby="path-title">
       <div class="wrap">
         <div class="section-head" data-reveal>
@@ -359,16 +385,16 @@
           <p class="lead">Membership grows with your competence, from first enrolment to the highest grade of the Institute.</p>
         </div>
         <ol class="ladder" data-stagger>
-          <li data-reveal><strong>Student</strong><span>Enrolled on a route towards certification.</span></li>
+          <li data-reveal><strong>Graduate</strong><span>Enrolled on a route towards certification.</span></li>
           <li data-reveal><strong>Affiliate</strong><span>Cognate professionals who support the Institute's aims.</span></li>
-          <li data-reveal><strong>Associate (AIPAF)</strong><span>Foundation passed, certification in progress.</span></li>
-          <li data-reveal><strong>Member (MIPAF)</strong><span>Fully certified and practising under a designation.</span></li>
-          <li data-reveal><strong>Fellow (FIPAF)</strong><span>Distinguished standing and sustained contribution.</span></li>
+          <li data-reveal><strong>Associate (AAIPAF)</strong><span>Foundation passed, certification in progress.</span></li>
+          <li data-reveal><strong>Member (MAIPAF)</strong><span>Fully certified and practising under a designation.</span></li>
+          <li data-reveal><strong>Fellow (FAIPAF)</strong><span>Distinguished standing and sustained contribution.</span></li>
         </ol>
 
         <div class="requirements" data-reveal>
           <div class="requirements-tabs" role="tablist" aria-label="Membership grade requirements">
-            <button class="requirements-tab" role="tab" aria-selected="true" aria-controls="req-student" id="tab-student">Student</button>
+            <button class="requirements-tab" role="tab" aria-selected="true" aria-controls="req-student" id="tab-student">Graduate</button>
             <button class="requirements-tab" role="tab" aria-selected="false" aria-controls="req-affiliate" id="tab-affiliate">Affiliate</button>
             <button class="requirements-tab" role="tab" aria-selected="false" aria-controls="req-associate" id="tab-associate">Associate</button>
             <button class="requirements-tab" role="tab" aria-selected="false" aria-controls="req-member" id="tab-member">Member</button>
@@ -376,16 +402,15 @@
           </div>
 
           <div class="requirements-content" id="req-student" role="tabpanel" aria-labelledby="tab-student" aria-hidden="false">
-            <h4>Student Member</h4>
-            <p>For undergraduate students enrolled in relevant programmes in project management, construction, engineering, or related fields.</p>
+            <h4>Graduate Member</h4>
+            <p>For those enrolled on a route towards certification, including doctoral candidates and early-career researchers in the field.</p>
             <h5>Requirements</h5>
             <ul>
-              <li>Enrolled in an undergraduate programme at a recognised institution</li>
-              <li>Programme must be relevant to project assurance, delivery, or forensics</li>
+              <li>Enrolled in or pursuing relevant study in project assurance, delivery, or forensics</li>
               <li>No experience requirement (in training)</li>
               <li>No examination requirement initially</li>
             </ul>
-            <p>Student membership provides access to learning resources, networking events, and student discounts on examinations.</p>
+            <p>Graduate membership provides access to learning and mentoring while members work towards certification.</p>
           </div>
 
           <div class="requirements-content" id="req-affiliate" role="tabpanel" aria-labelledby="tab-affiliate" aria-hidden="true">
@@ -429,7 +454,7 @@
           </div>
 
           <div class="requirements-content" id="req-fellow" role="tabpanel" aria-labelledby="tab-fellow" aria-hidden="true">
-            <h4>Fellow (FIPAF)</h4>
+            <h4>Fellow (FAIPAF)</h4>
             <p>For distinguished practitioners with professorial rank or equivalent senior standing.</p>
             <h5>Requirements</h5>
             <ul>
