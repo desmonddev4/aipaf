@@ -21,19 +21,26 @@ if (heroVideo || sealVideo) {
     document.addEventListener('touchstart', retryPlayback, { passive: true });
     document.addEventListener('keydown', retryPlayback);
   };
+  const playVideo = (video) => {
+    if (!video) return Promise.resolve();
+    return video.play().catch((error) => {
+      if (error.name === 'NotAllowedError') {
+        addPlaybackRetryListeners();
+        return;
+      }
+      if (error.name !== 'AbortError') {
+        console.warn('Unable to play an AIPAF hero video.', error);
+      }
+    });
+  };
   const playVideos = () => {
     if (reduceMotion.matches) return;
-    videos.forEach((video) => {
-      const playback = video.play();
-      playback?.catch((error) => {
-        if (error.name === 'NotAllowedError') {
-          addPlaybackRetryListeners();
-          return;
-        }
-        if (error.name === 'AbortError') return;
-        console.warn('Unable to play an AIPAF hero video.', error);
+    const backgroundPlayback = playVideo(heroVideo || sealVideo);
+    if (heroVideo && sealVideo) {
+      backgroundPlayback.then(() => {
+        if (heroIsVisible && !document.hidden) return playVideo(sealVideo);
       });
-    });
+    }
   };
   const pauseVideos = () => videos.forEach((video) => video.pause());
 

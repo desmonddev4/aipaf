@@ -426,6 +426,27 @@ td li + li { margin-top: .3rem; }
 
   .scroll-cue { display: none; }
 }
+@media (max-width: 960px) {
+  #aipaf-header { padding-top: max(.9rem, env(safe-area-inset-top)); }
+  #aipaf-header .ah-shell {
+    background: rgba(4, 24, 12, .94);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .page-inner main .page-hero {
+    padding-top: max(7rem, calc(4.5rem + env(safe-area-inset-top)));
+  }
+}
+@media (hover: none) and (pointer: coarse) {
+  .page-inner main [data-reveal],
+  .page-inner main .mp [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    translate: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
