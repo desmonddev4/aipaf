@@ -10,7 +10,7 @@ import {
   getValidationError,
 } from '../src/server/handlers/api/_shared.mjs';
 import { requireAdmin } from '../src/server/handlers/api/_auth.mjs';
-import { createAdminSession } from '../src/server/handlers/api/admin/session.mjs';
+import { createAdminSession, shouldRequireAdminVerification } from '../src/server/handlers/api/admin/session.mjs';
 
 const validContact = {
   name: 'Ada Lovelace',
@@ -146,6 +146,14 @@ test('admin cookie sessions are authenticated without exposing the key to JavaSc
   }));
 
   assert.deepEqual(auth.role, 'secretariat');
+});
+
+test('admin verification is only required after a recent re-auth window', () => {
+  const now = new Date('2026-01-01T12:00:00.000Z').getTime();
+
+  assert.equal(shouldRequireAdminVerification(null, now), true);
+  assert.equal(shouldRequireAdminVerification(new Date(now - 6 * 60 * 60 * 1000).toISOString(), now), false);
+  assert.equal(shouldRequireAdminVerification(new Date(now - 10 * 60 * 60 * 1000).toISOString(), now), true);
 });
 
 test('admin page gate redirects unauthenticated requests to the separate login page', async () => {

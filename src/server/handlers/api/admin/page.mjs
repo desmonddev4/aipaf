@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireAdmin } from '../_auth.mjs';
 
-const siteRoot = fileURLToPath(new URL('../../../../..', import.meta.url));
+const siteRoot = fileURLToPath(new URL('../../../../../frontend', import.meta.url));
 const pageRoot = join(siteRoot, 'src', 'admin', 'pages');
 
 function renderAdminPage(request, pageName) {
@@ -25,17 +25,23 @@ function renderAdminPage(request, pageName) {
   const page = pageMap[pageName] || 'admin';
   const raw = readFileSync(join(pageRoot, `${page}.html`), 'utf8');
   const metadataMatch = raw.match(/^<!--(\{[\s\S]*?\})-->/);
-  if (!metadataMatch) throw new Error(`${page}.html is missing its metadata comment.`);
+  const metadata = metadataMatch ? JSON.parse(metadataMatch[1]) : {
+    title: (raw.match(/<title>([^<]+)<\/title>/i) || [null, 'Admin'])[1].trim(),
+    description: (raw.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["'][^>]*>/i) || [null, 'Administrative access for AIPAF.'])[1].trim(),
+    nav: 'admin',
+    bodyClass: 'page-inner',
+    noindex: true,
+  };
 
-  const metadata = JSON.parse(metadataMatch[1]);
-  const content = raw.slice(metadataMatch[0].length);
-  const header = readFileSync(join(siteRoot, 'src/partials/Navbar.html'), 'utf8')
+  const bodyMatch = raw.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  const content = bodyMatch ? bodyMatch[1].trim() : raw.trim();
+  const header = readFileSync(join(siteRoot, 'src', 'partials', 'Navbar.html'), 'utf8')
     .replace(/\{\{cur:([a-z-]+)\}\}/g, (_, slug) => (slug === metadata.nav ? 'aria-current="page"' : ''));
-  const footer = readFileSync(join(siteRoot, 'src/partials/footer.html'), 'utf8');
+  const footer = readFileSync(join(siteRoot, 'src', 'partials', 'footer.html'), 'utf8');
   const url = new URL(request.url);
   const canonical = `${url.origin}/${pageName}`;
 
-  return readFileSync(join(siteRoot, 'src/partials/layout.html'), 'utf8')
+  let html = readFileSync(join(siteRoot, 'src', 'partials', 'layout.html'), 'utf8')
     .replace('{{header}}', header)
     .replace('{{footer}}', footer)
     .replace('{{content}}', content)
@@ -46,6 +52,12 @@ function renderAdminPage(request, pageName) {
     .replaceAll('{{bodyClass}}', metadata.bodyClass || 'page-inner')
     .replaceAll('{{robots}}', metadata.noindex ? 'noindex, follow' : 'index, follow')
     .replaceAll('{{year}}', String(new Date().getFullYear()));
+
+  if (pageName === 'admin' || pageName.startsWith('admin-') || pageName === 'cms-admin') {
+    html = html.replace('</head>', '  <link rel="stylesheet" href="/css/admin.css">\n</head>');
+  }
+
+  return html;
 }
 
 export default function handler(request) {

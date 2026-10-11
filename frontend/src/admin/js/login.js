@@ -257,6 +257,12 @@ loginForm.addEventListener('submit', async (event) => {
       throw new Error(payload.message || 'Unable to sign in. Check your credentials and try again.');
     }
 
+    if (payload.requiresVerification === false) {
+      showStatus(loginStatus, 'Signed in. Redirecting…', 'success');
+      window.location.assign('/admin');
+      return;
+    }
+
     savedEmail = email;
     loginForm.hidden = true;
     verifyForm.hidden = false;

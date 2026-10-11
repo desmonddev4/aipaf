@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
   email_verified BOOLEAN NOT NULL DEFAULT FALSE,
   verification_code TEXT,
   verification_expires_at TIMESTAMPTZ,
+  last_verified_at TIMESTAMPTZ,
   last_login_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -46,6 +47,7 @@ CREATE TABLE IF NOT EXISTS membership_interests (
 
 ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS consent BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE membership_interests ADD COLUMN IF NOT EXISTS consent BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS last_verified_at TIMESTAMPTZ;
 
 CREATE TABLE IF NOT EXISTS members (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -7,6 +7,16 @@ import { sendVerificationEmail } from '../email.mjs';
 const SESSION_COOKIE = 'aipaf_admin_session';
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const VERIFICATION_CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const ADMIN_REAUTH_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours before re-verification is required
+
+export function shouldRequireAdminVerification(lastVerifiedAt, now = Date.now()) {
+  if (!lastVerifiedAt) return true;
+
+  const lastVerifiedTimestamp = new Date(lastVerifiedAt).getTime();
+  if (Number.isNaN(lastVerifiedTimestamp)) return true;
+
+  return now - lastVerifiedTimestamp > ADMIN_REAUTH_TTL_MS;
+}
 
 function getSessionSecret() {
   return process.env.SESSION_SECRET || 'development-only-session-secret';
@@ -23,7 +33,13 @@ function parseSessionCookie(header) {
 }
 
 export function createAdminSession(adminId, role) {
-  const payload = JSON.stringify({ adminId, role, issuedAt: Date.now() });
+  const resolvedRole = role || (
+    adminId === process.env.ADMIN_SECRETARIAT_KEY ? 'secretariat' :
+    adminId === process.env.ADMIN_COUNCIL_KEY ? 'council' :
+    'secretariat'
+  );
+
+  const payload = JSON.stringify({ adminId, role: resolvedRole, issuedAt: Date.now() });
   const signed = `${Buffer.from(payload).toString('base64url')}.${sign(payload)}`;
   return `${SESSION_COOKIE}=${encodeURIComponent(signed)}; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}`;
 }
@@ -101,7 +117,7 @@ export default async function handler(request) {
     }
 
     const result = await db.query(
-      'SELECT id, email, password_hash, role, email_verified FROM admin_users WHERE email = $1',
+      'SELECT id, email, password_hash, role, email_verified, last_verified_at FROM admin_users WHERE email = $1',
       [email]
     );
 
@@ -114,6 +130,24 @@ export default async function handler(request) {
 
     if (!passwordValid) {
       return jsonResponse({ ok: false, message: 'Invalid email or password.' }, 401);
+    }
+
+    const requiresVerification = shouldRequireAdminVerification(admin.last_verified_at);
+
+    if (!requiresVerification) {
+      await db.query(
+        'UPDATE admin_users SET last_login_at = NOW(), email_verified = TRUE WHERE id = $1',
+        [admin.id]
+      );
+
+      return new Response(JSON.stringify({ ok: true, message: 'Authenticated.', requiresVerification: false }), {
+        status: 200,
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+          'set-cookie': createAdminSession(admin.id, admin.role),
+          'cache-control': 'no-store',
+        },
+      });
     }
 
     // Generate and send verification code
@@ -173,7 +207,7 @@ export default async function handler(request) {
 
     // Clear verification code and mark email as verified
     await db.query(
-      'UPDATE admin_users SET verification_code = NULL, verification_expires_at = NULL, email_verified = TRUE, last_login_at = NOW() WHERE id = $1',
+      'UPDATE admin_users SET verification_code = NULL, verification_expires_at = NULL, email_verified = TRUE, last_verified_at = NOW(), last_login_at = NOW() WHERE id = $1',
       [admin.id]
     );
 
