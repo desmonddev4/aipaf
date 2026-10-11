@@ -47,7 +47,7 @@ body{overflow-x:hidden;}
 /* ---------- brand ---------- */
 #aipaf-header .ah-brand { display: inline-flex; align-items: center; gap: .75rem; color: #fff; flex: none; border-radius: 14px; }
 #aipaf-header .ah-badge { width: 46px; height: 46px; border-radius: 50%; background: #fff; display: grid; place-items: center; flex: none; transition: transform .45s var(--ah-ease); }
-#aipaf-header .ah-badge img { width: 40px; height: 40px; display: block; }
+#aipaf-header .ah-badge img { width: 40px; height: 40px; display: block; object-fit: contain; padding: .12rem; }
 #aipaf-header .ah-brand:hover .ah-badge { transform: rotate(-8deg) scale(1.05); }
 #aipaf-header .ah-brand-text { display: grid; gap: .22rem; white-space: nowrap; }
 #aipaf-header .ah-word { font: 600 1.35rem/1 "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif; letter-spacing: .06em; }
@@ -194,7 +194,7 @@ body{overflow-x:hidden;}
 <header id="aipaf-header" data-ah-header>
   <div class="ah-shell">
     <a class="ah-brand" href="/member-profile" aria-label="Member portal home">
-      <span class="ah-badge"><img src="/img/logo-mark.svg" alt="" width="40" height="40"></span>
+      <span class="ah-badge"><img src="/media/AIPAF-LOGO.png" alt="AIPAF logo" width="40" height="40"></span>
       <span class="ah-brand-text"><span class="ah-word">AIPAF</span><span class="ah-line">Member Portal</span></span>
     </a>
 

@@ -16,7 +16,7 @@ html.adm-collapsed { --adm-w: 5.2rem; }
   display: flex; align-items: center; gap: .8rem; padding: .35rem .4rem .9rem; color: #fff; text-decoration: none;
   border-bottom: 1px solid rgba(255, 255, 255, .1);
 }
-.adm-sidebar__brand img { flex: none; width: 2.8rem; height: 2.8rem; padding: .2rem; border-radius: 50%; background: #fff; transition: transform .45s cubic-bezier(.22, .8, .3, 1); }
+.adm-sidebar__brand img { flex: none; width: 2.8rem; height: 2.8rem; padding: .2rem; border-radius: 50%; background: #fff; object-fit: contain; transition: transform .45s cubic-bezier(.22, .8, .3, 1); }
 .adm-sidebar__brand:hover img { transform: rotate(-8deg) scale(1.05); }
 .adm-sidebar__brand strong { display: block; font: 600 1.15rem/1.1 Georgia, "Times New Roman", serif; letter-spacing: .08em; }
 .adm-sidebar__brand small { display: block; margin-top: .25rem; color: #f7d68a; font: 500 .75rem/1 "Segoe UI", system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
@@ -163,7 +163,7 @@ html.adm-collapsed { --adm-w: 5.2rem; }
 <aside class="adm-sidebar" id="admin-sidebar">
   <div class="adm-sidebar__top">
     <a class="adm-sidebar__brand" href="/admin" aria-label="AIPAF admin overview">
-      <img src="/img/logo-mark.svg" alt="" width="45" height="45">
+      <img src="/media/AIPAF-LOGO.png" alt="AIPAF logo" width="45" height="45">
       <span><strong>AIPAF</strong><small>Admin console</small></span>
     </a>
     <button class="adm-sidebar__collapse" type="button" id="admin-collapse" aria-label="Collapse sidebar" aria-pressed="false">
