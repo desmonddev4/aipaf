@@ -242,7 +242,7 @@ loginForm.addEventListener('submit', async (event) => {
 
   emailInput.removeAttribute('aria-invalid');
   passwordInput.removeAttribute('aria-invalid');
-  showStatus(loginStatus, 'Sending verification code…', 'info');
+  showStatus(loginStatus, 'Checking account…', 'info');
   setBusy(submitBtn, true);
 
   try {
