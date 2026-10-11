@@ -83,6 +83,15 @@ export async function markSubmissionStatus(table, id, status) {
   });
 }
 
+export async function ensureAdminVerificationColumns() {
+  if (!pool) return;
+  try {
+    await pool.query('ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS last_verified_at TIMESTAMPTZ;');
+  } catch (error) {
+    if (error?.code !== '42P01') throw error;
+  }
+}
+
 export async function pingDatabase() {
   if (!pool) return false;
   try {

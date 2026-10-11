@@ -3,6 +3,7 @@
 import { createServer } from 'node:http';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ensureAdminVerificationColumns } from './src/server/handlers/api/db.mjs';
 
 const port = process.env.PORT || 3000;
 // Allow multiple frontend origins
@@ -11,6 +12,8 @@ const ALLOWED_ORIGINS = process.env.FRONTEND_URL
   : ['https://www.aipafgh.org', 'https://aipafgh.org', 'http://localhost:3000', '*'];
 
 console.log('AIPAF API server starting...');
+
+await ensureAdminVerificationColumns();
 
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);

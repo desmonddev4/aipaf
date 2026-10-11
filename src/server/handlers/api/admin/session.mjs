@@ -9,6 +9,10 @@ const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const VERIFICATION_CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const ADMIN_REAUTH_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours before re-verification is required
 
+function isMissingColumnError(error) {
+  return error?.code === '42703';
+}
+
 export function shouldRequireAdminVerification(lastVerifiedAt, now = Date.now()) {
   if (!lastVerifiedAt) return true;
 
@@ -116,10 +120,19 @@ export default async function handler(request) {
       return jsonResponse({ ok: false, message: 'Email and password are required.' }, 400);
     }
 
-    const result = await db.query(
-      'SELECT id, email, password_hash, role, email_verified, last_verified_at FROM admin_users WHERE email = $1',
-      [email]
-    );
+    let result;
+    try {
+      result = await db.query(
+        'SELECT id, email, password_hash, role, email_verified, last_verified_at FROM admin_users WHERE email = $1',
+        [email]
+      );
+    } catch (error) {
+      if (!isMissingColumnError(error)) throw error;
+      result = await db.query(
+        'SELECT id, email, password_hash, role, email_verified FROM admin_users WHERE email = $1',
+        [email]
+      );
+    }
 
     if (!result.rows[0]) {
       return jsonResponse({ ok: false, message: 'Invalid email or password.' }, 401);
@@ -132,7 +145,7 @@ export default async function handler(request) {
       return jsonResponse({ ok: false, message: 'Invalid email or password.' }, 401);
     }
 
-    const requiresVerification = shouldRequireAdminVerification(admin.last_verified_at);
+    const requiresVerification = shouldRequireAdminVerification(admin.last_verified_at ?? null);
 
     if (!requiresVerification) {
       await db.query(
@@ -206,10 +219,18 @@ export default async function handler(request) {
     }
 
     // Clear verification code and mark email as verified
-    await db.query(
-      'UPDATE admin_users SET verification_code = NULL, verification_expires_at = NULL, email_verified = TRUE, last_verified_at = NOW(), last_login_at = NOW() WHERE id = $1',
-      [admin.id]
-    );
+    try {
+      await db.query(
+        'UPDATE admin_users SET verification_code = NULL, verification_expires_at = NULL, email_verified = TRUE, last_verified_at = NOW(), last_login_at = NOW() WHERE id = $1',
+        [admin.id]
+      );
+    } catch (error) {
+      if (!isMissingColumnError(error)) throw error;
+      await db.query(
+        'UPDATE admin_users SET verification_code = NULL, verification_expires_at = NULL, email_verified = TRUE, last_login_at = NOW() WHERE id = $1',
+        [admin.id]
+      );
+    }
 
     // Create session
     return new Response(JSON.stringify({ ok: true, message: 'Authenticated.' }), {
