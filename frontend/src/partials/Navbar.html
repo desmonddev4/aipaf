@@ -202,8 +202,16 @@
 
     <nav class="ah-nav" id="ah-nav" aria-label="Primary" data-ah-nav>
       <ul class="ah-list">
-        <li><a class="ah-link" href="/about" {{cur:about}}>Mandate</a></li>
-        <li><a class="ah-link" href="/lifecycle" {{cur:lifecycle}}>Lifecycle</a></li>
+        <li class="ah-has-menu">
+          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-about">
+            About
+            <svg class="ah-chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <ul class="ah-menu" id="ah-menu-about">
+            <li><a href="/about" {{cur:about}}>About</a></li>
+            <li><a href="/lifecycle" {{cur:lifecycle}}>Lifecycle</a></li>
+          </ul>
+        </li>
 
         <li class="ah-has-menu">
           <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-membership">
@@ -213,6 +221,7 @@
           <ul class="ah-menu" id="ah-menu-membership">
             <li><a href="/membership" {{cur:membership}}>Membership</a></li>
             <li><a href="/member-directory" {{cur:member-directory}}>Members</a></li>
+            <li><a href="/credentials" {{cur:credentials}}>Credentials</a></li>
           </ul>
         </li>
 
@@ -223,7 +232,6 @@
           </button>
           <ul class="ah-menu" id="ah-menu-governance">
             <li><a href="/governance" {{cur:governance}}>Governance</a></li>
-            <li><a href="/credentials" {{cur:credentials}}>Credentials</a></li>
             <li><a href="/project-certification" {{cur:project-certification}}>Projects and assets</a></li>
           </ul>
         </li>
