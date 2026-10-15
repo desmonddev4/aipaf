@@ -28,18 +28,29 @@
 #aipaf-header svg { display: block; max-width: none; }
 #aipaf-header :focus-visible { outline: 3px solid var(--ah-gold-hi); outline-offset: 2px; border-radius: 10px; }
 
-/* ---------- glass shell ---------- */
+/* ---------- utility bar (message left, links right) ---------- */
 #aipaf-header .ah-utility {
   position: absolute; top: 0; left: 0; right: 0; height: 2.25rem; display: flex; align-items: center;
-  justify-content: flex-end; padding-inline: max(1rem, calc((100vw - 1280px) / 2 + .75rem));
+  justify-content: space-between; gap: 1rem;
+  padding-inline: max(1rem, calc((100vw - 1280px) / 2 + .75rem));
   background: var(--ah-g950); color: rgba(255,255,255,.76); pointer-events: auto;
 }
-#aipaf-header .ah-utility a {
-  display: inline-flex; align-items: center; min-height: 1.7rem; padding: .25rem .75rem;
-  border: 1px solid rgba(247,214,138,.48); border-radius: 999px; color: var(--ah-gold-soft);
-  font-size: .78rem; font-weight: 600; line-height: 1; transition: color .2s, background .2s, border-color .2s;
+#aipaf-header .ah-utility-msg {
+  margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: .78rem; line-height: 1.2; color: rgba(255,255,255,.76);
 }
-#aipaf-header .ah-utility a:hover { color: var(--ah-g950); background: var(--ah-gold-hi); border-color: var(--ah-gold-hi); }
+#aipaf-header .ah-utility-links { display: flex; align-items: center; gap: .15rem; flex: none; }
+#aipaf-header .ah-utility-links a {
+  display: inline-flex; align-items: center; gap: .35rem; min-height: 1.7rem; padding: .25rem .7rem;
+  border: 1px solid transparent; border-radius: 999px; color: rgba(255,255,255,.82);
+  font-size: .78rem; font-weight: 600; line-height: 1; white-space: nowrap;
+  transition: color .2s, background .2s, border-color .2s;
+}
+#aipaf-header .ah-utility-links a:hover { color: #fff; background: rgba(255,255,255,.1); }
+#aipaf-header .ah-utility-links a.ah-u-primary { color: var(--ah-gold-soft); border-color: rgba(247,214,138,.48); margin-right: .2rem; }
+#aipaf-header .ah-utility-links a.ah-u-primary:hover { color: var(--ah-g950); background: var(--ah-gold-hi); border-color: var(--ah-gold-hi); }
+
+/* ---------- glass shell ---------- */
 #aipaf-header .ah-shell {
   pointer-events: auto; position: relative;
   max-width: 1280px; margin-inline: auto;
@@ -197,12 +208,19 @@
   #aipaf-header .ah-cta { width: 100%; padding: 1rem; font-size: 1rem; }
 }
 
+/* ---------- utility bar: not enough room for the message, keep only the links ---------- */
+@media (max-width: 900px) {
+  #aipaf-header .ah-utility-msg { display: none; }
+  #aipaf-header .ah-utility { justify-content: flex-end; }
+}
+
 /* ---------- small phones ---------- */
 @media (max-width: 420px) {
   #aipaf-header .ah-line { display: none; }
   #aipaf-header .ah-word { font-size: 1.2rem; }
   #aipaf-header .ah-badge { width: 42px; height: 42px; }
   #aipaf-header .ah-badge img { width: 36px; height: 36px; }
+  #aipaf-header .ah-utility-links a { padding: .25rem .5rem; font-size: .74rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -211,11 +229,21 @@
 </style>
 
 <header id="aipaf-header" data-ah-header>
-  <div class="ah-utility"><a href="/member-login">Member login</a></div>
+  <div class="ah-utility">
+    <p class="ah-utility-msg">Every certificate we issue, for a person or for a project, is checkable on the public register.</p>
+    <div class="ah-utility-links">
+      <a class="ah-u-primary" href="/certificate-verification">Verify a certificate</a>
+      <a href="/member-login">Member login</a>
+      <a href="/search">
+        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m10.5 10.5 3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Search
+      </a>
+    </div>
+  </div>
   <div class="ah-shell">
     <a class="ah-brand" href="/" aria-label="AIPAF home">
       <span class="ah-badge"><img src="/media/AIPAF-LOGO.png" alt="AIPAF logo" width="40" height="40"></span>
-      <span class="ah-brand-text"><span class="ah-word">AIPAF</span><span class="ah-line">Assurance and Forensics</span></span>
+      <span class="ah-brand-text"><span class="ah-word">AIPAF</span><span class="ah-line">African Institute of Project Assurance and Forensics</span></span>
     </a>
 
     <button class="ah-toggle" type="button" aria-expanded="false" aria-controls="ah-nav" data-ah-toggle>
