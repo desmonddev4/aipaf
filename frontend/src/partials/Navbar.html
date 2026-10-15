@@ -78,26 +78,30 @@
 #aipaf-header .ah-has-menu.is-open > .ah-trigger .ah-chev { transform: rotate(180deg); opacity: 1; }
 
 /* ---------- dropdown panel ---------- */
-#aipaf-header .ah-has-menu { position: relative; }
+/* mega panel spans the glass shell */
 #aipaf-header .ah-menu {
-  position: absolute; top: calc(100% + .6rem); left: 50%; min-width: 13.5rem; padding: .35rem;
-  border: 1px solid rgba(255,255,255,.14); border-radius: 16px;
-  background: rgba(4,24,12,.97); box-shadow: 0 22px 40px -22px rgba(0,0,0,.85);
+  position: absolute; top: calc(100% + .6rem); left: 0; right: 0; padding: 0; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.14); border-radius: 22px;
+  background: rgba(4,24,12,.97); box-shadow: 0 30px 60px -26px rgba(0,0,0,.85);
   opacity: 0; visibility: hidden; pointer-events: none;
-  transform: translate(-50%, -8px) scale(.98); transform-origin: top center;
-  transition: opacity .2s, transform .28s var(--ah-ease), visibility .2s;
+  transform: translateY(-8px); transition: opacity .2s, transform .28s var(--ah-ease), visibility .2s;
 }
 /* invisible bridge so the pointer can travel from trigger to panel */
 #aipaf-header .ah-menu::before { content: ""; position: absolute; left: 0; right: 0; top: -.7rem; height: .7rem; }
-#aipaf-header .ah-has-menu.is-open > .ah-menu { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
-#aipaf-header .ah-menu li + li { margin-top: .1rem; }
-#aipaf-header .ah-menu a {
-  display: block; padding: .7rem .95rem; border-radius: 11px; white-space: nowrap;
-  font-weight: 500; font-size: .96rem; color: rgba(255,255,255,.86);
-  transition: background .2s, color .2s, padding-left .25s var(--ah-ease);
-}
-#aipaf-header .ah-menu a:hover, #aipaf-header .ah-menu a:focus-visible { background: rgba(255,255,255,.09); color: #fff; padding-left: 1.2rem; }
-#aipaf-header .ah-menu a[aria-current="page"] { color: var(--ah-gold-hi); }
+#aipaf-header .ah-has-menu.is-open > .ah-menu { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
+#aipaf-header .ah-strap { margin: 0; padding: .85rem 1.5rem; background: rgba(255,255,255,.05); border-bottom: 1px solid rgba(255,255,255,.1); font: italic 500 1rem/1.4 "Newsreader", Georgia, serif; color: var(--ah-gold-soft); }
+#aipaf-header .ah-mega-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.15fr); gap: 1.75rem; padding: 1.5rem; }
+#aipaf-header .ah-col h3 { margin: 0 0 .6rem; padding-bottom: .65rem; border-bottom: 1px solid rgba(255,255,255,.12); font: 700 .72rem/1 "Public Sans", system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--ah-gold-hi); }
+#aipaf-header .ah-col a { display: block; padding: .5rem .6rem; margin-inline: -.6rem; border-radius: 10px; font-weight: 500; font-size: .96rem; line-height: 1.3; color: rgba(255,255,255,.86); transition: background .2s, color .2s, padding-left .25s var(--ah-ease); }
+#aipaf-header .ah-col a:hover, #aipaf-header .ah-col a:focus-visible { background: rgba(255,255,255,.09); color: #fff; padding-left: .9rem; }
+#aipaf-header .ah-col a[aria-current="page"] { color: var(--ah-gold-hi); }
+#aipaf-header .ah-note { display: block; font-size: .8rem; line-height: 1.3; color: rgba(255,255,255,.55); margin: -.2rem 0 .3rem; }
+#aipaf-header .ah-panel { display: flex; flex-direction: column; gap: .5rem; padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(242,172,31,.3); background: linear-gradient(160deg, rgba(210,133,3,.16), rgba(255,255,255,.04)); }
+#aipaf-header .ah-panel h3 { margin: 0; font: 600 1.15rem/1.2 "Newsreader", Georgia, serif; color: #fff; }
+#aipaf-header .ah-panel p { margin: 0; font-size: .9rem; line-height: 1.5; color: rgba(255,255,255,.75); }
+#aipaf-header .ah-panel .ah-cta { margin-top: auto; }
+#aipaf-header .ah-panel-link { font-weight: 600; font-size: .9rem; color: var(--ah-gold-soft); }
+#aipaf-header .ah-panel-link:hover { color: #fff; }
 
 /* ---------- call to action ---------- */
 #aipaf-header .ah-cta {
@@ -137,6 +141,7 @@
 
 /* ---------- laptop: tighten, drop the tagline ---------- */
 @media (max-width: 1239px) {
+  #aipaf-header .ah-mega-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #aipaf-header .ah-line { display: none; }
   #aipaf-header .ah-link, #aipaf-header .ah-trigger { padding: .6rem .7rem; font-size: .93rem; }
   #aipaf-header .ah-nav { gap: .8rem; }
@@ -170,9 +175,11 @@
     transition: max-height .35s var(--ah-ease), padding .35s var(--ah-ease), margin .35s var(--ah-ease);
   }
   #aipaf-header .ah-menu::before { display: none; }
-  #aipaf-header .ah-has-menu.is-open > .ah-menu { max-height: 14rem; padding: .35rem; margin: .25rem; transform: none; }
-  #aipaf-header .ah-menu a { padding: .8rem .9rem; font-size: 1rem; }
-  #aipaf-header .ah-menu a:hover, #aipaf-header .ah-menu a:focus-visible { padding-left: .9rem; }
+  #aipaf-header .ah-has-menu.is-open > .ah-menu { max-height: 80rem; padding: .35rem; margin: .25rem; transform: none; }
+  #aipaf-header .ah-strap { display: none; }
+  #aipaf-header .ah-mega-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; padding: .5rem; }
+  #aipaf-header .ah-col a { padding: .7rem .6rem; font-size: 1rem; }
+  #aipaf-header .ah-col a:hover, #aipaf-header .ah-col a:focus-visible { padding-left: .6rem; }
   #aipaf-header .ah-cta { width: 100%; padding: 1rem; font-size: 1rem; }
 }
 
@@ -203,40 +210,170 @@
     <nav class="ah-nav" id="ah-nav" aria-label="Primary" data-ah-nav>
       <ul class="ah-list">
         <li class="ah-has-menu">
-          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-about">
-            About
+          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-institute">
+            The Institute
             <svg class="ah-chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <ul class="ah-menu" id="ah-menu-about">
-            <li><a href="/about" {{cur:about}}>About</a></li>
-            <li><a href="/lifecycle" {{cur:lifecycle}}>Lifecycle</a></li>
-          </ul>
+          <div class="ah-menu" id="ah-menu-institute">
+            <p class="ah-strap">A certification body is only as good as its independence from the people it certifies.</p>
+            <div class="ah-mega-grid">
+              <div class="ah-col">
+                <h3>About</h3>
+                <ul>
+                  <li><a href="/about" {{cur:about}}>The mandate</a></li>
+                  <li><a href="/about#why" {{cur:why}}>Why AIPAF</a></li>
+                  <li><a href="/about#founders">Founders</a></li>
+                  <li><a href="/lifecycle" {{cur:lifecycle}}>The lifecycle</a></li>
+                </ul>
+              </div>
+              <div class="ah-col">
+                <h3>Governance</h3>
+                <ul>
+                  <li><a href="/governance" {{cur:governance}}>Governance structure</a></li>
+                  <li><a href="/governance#impartiality">Impartiality safeguards</a></li>
+                  <li><a href="/governance#conduct">Code of conduct</a></li>
+                  <li><a href="/governance#discipline">Discipline and withdrawal</a></li>
+                  <li><a href="/governance#accreditation">Accreditation status</a></li>
+                </ul>
+              </div>
+              <div class="ah-col">
+                <h3>Get in touch</h3>
+                <ul>
+                  <li><a href="/contact" {{cur:contact}}>Contact the Secretariat</a></li>
+                  <li><a href="/privacy">Privacy notice</a></li>
+                  <li><a href="/governance#roadmap">Roadmap</a></li>
+                </ul>
+              </div>
+              <div class="ah-panel">
+                <h3>Help found the profession</h3>
+                <p>A Pan-African professional body for project assurance and forensics, based in Ghana.</p>
+                <a class="ah-cta" href="/membership#join">Join AIPAF</a>
+                <a class="ah-panel-link" href="/governance">Read how we are governed</a>
+              </div>
+            </div>
+          </div>
         </li>
 
         <li class="ah-has-menu">
-          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-membership">
-            Membership
+          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-people">
+            People
             <svg class="ah-chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <ul class="ah-menu" id="ah-menu-membership">
-            <li><a href="/membership" {{cur:membership}}>Membership</a></li>
-            <li><a href="/member-directory" {{cur:member-directory}}>Members</a></li>
-            <li><a href="/credentials" {{cur:credentials}}>Credentials</a></li>
-          </ul>
+          <div class="ah-menu" id="ah-menu-people">
+            <p class="ah-strap">A credential that is examined, enforced and withdrawable.</p>
+            <div class="ah-mega-grid">
+              <div class="ah-col">
+                <h3>Membership</h3>
+                <ul>
+                  <li><a href="/membership" {{cur:membership}}>Why join AIPAF</a></li>
+                  <li><a href="/membership#grades">Grades and designations</a></li>
+                  <li><a href="/membership#join">How to apply</a></li>
+                </ul>
+              </div>
+              <div class="ah-col">
+                <h3>Credentials</h3>
+                <ul>
+                  <li><a href="/credentials" {{cur:credentials}}>Credential overview</a></li>
+                  <li><a href="/credentials#tracks">Investigate, Assure, Deliver</a></li>
+                  <li><a href="/credentials#chartered">Certified to Chartered</a></li>
+                </ul>
+              </div>
+              <div class="ah-col">
+                <h3>Members</h3>
+                <ul>
+                  <li><a href="/member-directory" {{cur:member-directory}}>Member directory</a><span class="ah-note">Public, searchable</span></li>
+                  <li><a href="/member-login">Member login</a></li>
+                  <li><a href="/member-register">Create an account</a></li>
+                </ul>
+              </div>
+              <div class="ah-panel">
+                <h3>Become a member</h3>
+                <p>Membership is assessed on evidence of practice, teaching or examining in project assurance and forensics.</p>
+                <a class="ah-cta" href="/membership#join">Start an application</a>
+                <a class="ah-panel-link" href="/membership#grades">See the grades</a>
+              </div>
+            </div>
+          </div>
         </li>
 
         <li class="ah-has-menu">
-          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-governance">
-            Governance
+          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-projects">
+            Projects &amp; Assets
             <svg class="ah-chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <ul class="ah-menu" id="ah-menu-governance">
-            <li><a href="/governance" {{cur:governance}}>Governance</a></li>
-            <li><a href="/project-certification" {{cur:project-certification}}>Projects and assets</a></li>
-          </ul>
+          <div class="ah-menu" id="ah-menu-projects">
+            <p class="ah-strap">AIPAF certifies the project, not only the people who deliver it.</p>
+            <div class="ah-mega-grid">
+              <div class="ah-col">
+                <h3>Certification</h3>
+                <ul>
+                  <li><a href="/project-certification" {{cur:project-certification}}>Project certification</a></li>
+                  <li><a href="/project-certification#schemes">Schemes by project stage</a></li>
+                  <li><a href="/project-certification#certificate">What a certificate states</a></li>
+                </ul>
+              </div>
+              <div class="ah-col">
+                <h3>Registers</h3>
+                <ul>
+                  <li><a href="/project-certification#registers">Projects and professionals</a></li>
+                  <li><a href="/member-directory">Member directory</a></li>
+                </ul>
+              </div>
+              <div class="ah-col">
+                <h3>Expert Panel</h3>
+                <ul>
+                  <li><a href="/project-certification#panel">About the Expert Panel</a><span class="ah-note">Forensic work is done by members, not by AIPAF</span></li>
+                  <li><a href="/lifecycle#investigate">Investigate</a></li>
+                </ul>
+              </div>
+              <div class="ah-panel">
+                <h3>The certification lifecycle</h3>
+                <p>Deliver, assure and investigate: one shared standard across the life of a project.</p>
+                <a class="ah-cta" href="/lifecycle">Explore the lifecycle</a>
+                <a class="ah-panel-link" href="/project-certification">Project certification</a>
+              </div>
+            </div>
+          </div>
         </li>
 
-        <li><a class="ah-link" href="/about#why" {{cur:why}}>Why us</a></li>
+        <li class="ah-has-menu">
+          <button class="ah-trigger" type="button" aria-expanded="false" aria-controls="ah-menu-verify">
+            Verify
+            <svg class="ah-chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="ah-menu" id="ah-menu-verify">
+            <p class="ah-strap">Every certificate we issue is checkable.</p>
+            <div class="ah-mega-grid">
+              <div class="ah-col">
+                <h3>Check</h3>
+                <ul>
+                  <li><a href="/certificate-verification" {{cur:certificate-verification}}>Verify a certificate</a></li>
+                  <li><a href="/member-directory">Search the member directory</a></li>
+                </ul>
+              </div>
+              <div class="ah-col">
+                <h3>For clients</h3>
+                <ul>
+                  <li><a href="/project-certification#registers">How the registers work</a></li>
+                  <li><a href="/contact">Report a false claim</a></li>
+                </ul>
+              </div>
+              <div class="ah-col">
+                <h3>Member area</h3>
+                <ul>
+                  <li><a href="/member-login">Member login</a></li>
+                  <li><a href="/member-certificates">My certificates</a></li>
+                </ul>
+              </div>
+              <div class="ah-panel">
+                <h3>Check a certificate now</h3>
+                <p>Paste the certificate token to confirm who holds it and its current standing.</p>
+                <a class="ah-cta" href="/certificate-verification">Verify a certificate</a>
+              </div>
+            </div>
+          </div>
+        </li>
+
         <li><a class="ah-link" href="/contact" {{cur:contact}}>Contact</a></li>
       </ul>
       <a class="ah-cta" href="/membership#join">Join AIPAF</a>
