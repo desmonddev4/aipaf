@@ -27,7 +27,7 @@
   }
   .site-footer .footer-about { display: grid; align-content: start; }
   @media (min-width: 640px) { .site-footer .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .site-footer .footer-about { grid-column: 1 / -1; } }
-  @media (min-width: 980px) { .site-footer .footer-grid { grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)); } .site-footer .footer-about { grid-column: auto; } }
+  @media (min-width: 980px) { .site-footer .footer-grid { grid-template-columns: minmax(0, 1.35fr) repeat(3, minmax(0, 1fr)); } .site-footer .footer-about { grid-column: auto; } }
 
   /* Brand */
   .site-footer .brand { display: inline-flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; color: #fff; text-decoration: none; cursor: default; }
@@ -96,12 +96,6 @@
         </div>
         <p>AIPAF is a Pan-African professional body advancing independent project assurance, project forensics, and sound delivery practice through standards, certification, education, and research.</p>
         <p class="footer-motto">Assure the promise. Establish the truth.</p>
-        <div class="footer-contact">
-          <h2 class="footer-h">Contact</h2>
-          <a href="mailto:info@aipafgh.org">info@aipafgh.org</a>
-          <a href="/contact">Contact the Secretariat</a>
-          <p class="footer-location"><strong>Based in</strong>Ghana</p>
-        </div>
       </div>
 
       <nav class="footer-links" aria-label="Explore AIPAF" data-fx style="--d:100ms">
@@ -117,6 +111,13 @@
           </ul>
         </details>
       </nav>
+
+      <section class="footer-contact" aria-labelledby="footer-contact-title" data-fx style="--d:200ms">
+        <h2 class="footer-h" id="footer-contact-title">Contact</h2>
+        <a href="mailto:info@aipafgh.org">info@aipafgh.org</a>
+        <a href="/contact">Contact the Secretariat</a>
+        <p class="footer-location"><strong>Based in</strong>Ghana</p>
+      </section>
 
       <nav class="footer-links" aria-label="Institute and resources" data-fx style="--d:300ms">
         <details open>
