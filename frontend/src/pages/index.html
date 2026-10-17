@@ -31,10 +31,74 @@
   .cx .hero-sub { margin: 0 0 1.8rem; max-width: 34rem; font-size: clamp(.98rem, 1.2vw, 1.1rem); line-height: 1.6; color: rgba(255, 255, 255, .9); }
   .cx .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; }
   .cx .hero .btn { min-height: 2.9rem; padding: .7rem 1.5rem; font-size: .98rem; }
-  .cx .hero-seal { margin: 0; justify-self: center; animation: cx-rise 1.2s var(--cx-ease) .3s both; }
-  .cx .hero-seal-inner { position: relative; width: clamp(240px, 32vw, 440px); aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .22), rgba(255, 255, 255, .04) 60%); border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 0 10px rgba(255, 255, 255, .07), 0 0 0 11px rgba(255, 255, 255, .2), 0 40px 80px -20px rgba(0, 0, 0, .65), inset 0 0 60px rgba(255, 255, 255, .14); animation: cx-float 7s ease-in-out infinite; }
-  .cx .hero-seal-inner video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .cx .hero-seal-inner::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: radial-gradient(ellipse 55% 35% at 32% 20%, rgba(255, 255, 255, .38), transparent 70%); }
+  .cx .hero-seal { margin: 0; justify-self: center; }
+
+  /* ---------- Hero motion piece (original animated frame) ---------- */
+  @property --mv-a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+  .cx .mv { --e: cubic-bezier(.22, .8, .3, 1); position: relative; width: clamp(290px, 33vw, 450px); padding: 2px; border-radius: 30px; background: conic-gradient(from var(--mv-a), rgba(240,184,74,0) 0 55%, #f0b84a 75%, rgba(240,184,74,0) 95%), rgba(255,255,255,.18); animation: mv-enter 1.1s var(--e) .3s both, mv-border 6s linear infinite, mv-float 8s ease-in-out infinite; box-shadow: 0 50px 90px -30px rgba(0,0,0,.7), 0 0 80px -20px rgba(240,184,74,.28); }
+  .cx .mv-in { position: relative; overflow: hidden; border-radius: 28px; padding: 1rem 1.1rem 1.1rem; background: radial-gradient(120% 80% at 30% 0%, #14613a 0%, #0a3a1d 45%, #03280f 100%); }
+  .cx .mv-in::before { content: ""; position: absolute; inset: 0; opacity: .5; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 34px 34px; mask-image: radial-gradient(70% 60% at 50% 40%, #000, transparent); -webkit-mask-image: radial-gradient(70% 60% at 50% 40%, #000, transparent); animation: mv-grid 12s linear infinite; }
+  .cx .mv-in::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.09) 50%, transparent 60%); transform: translateX(-120%); animation: mv-glare 8s ease-in-out 1.5s infinite; }
+  .cx .mv-top { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.8); }
+  .cx .mv-live { display: inline-flex; align-items: center; gap: .5rem; }
+  .cx .mv-live i { width: 7px; height: 7px; border-radius: 50%; background: #f0b84a; box-shadow: 0 0 0 0 rgba(240,184,74,.7); animation: mv-pulse 2s infinite; }
+  .cx .mv-count { color: #f0b84a; font-variant-numeric: tabular-nums; }
+  .cx .mv-corner { position: absolute; z-index: 2; width: 18px; height: 18px; border: 0 solid #f0b84a; opacity: .85; }
+  .cx .mv-corner.a { top: 10px; left: 10px; border-width: 2px 0 0 2px; border-top-left-radius: 8px; }
+  .cx .mv-corner.b { top: 10px; right: 10px; border-width: 2px 2px 0 0; border-top-right-radius: 8px; }
+  .cx .mv-corner.c { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; border-bottom-left-radius: 8px; }
+  .cx .mv-corner.d { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; border-bottom-right-radius: 8px; }
+  .cx .mv-stage { position: relative; aspect-ratio: 400 / 340; margin: .3rem 0 .2rem; }
+  .cx .mv-dot { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #f0b84a; left: var(--x); top: 100%; opacity: 0; animation: mv-drift var(--t) linear var(--w) infinite; }
+  .cx .sc { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .7s ease, transform .7s var(--e); transform: scale(.94) translateY(10px); }
+  .cx .sc.on { opacity: 1; transform: none; }
+  .cx .sc.leave { opacity: 0; transform: scale(1.06) translateY(-10px); }
+  .cx .sc * { transform-box: fill-box; }
+  .cx .mv-cap { position: relative; z-index: 2; min-height: 4.4rem; padding-top: .2rem; text-align: center; }
+  .cx .mv-cap b { display: block; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.5rem, 2.4vw, 1.95rem); font-weight: 600; color: #fff; letter-spacing: -.01em; }
+  .cx .mv-cap span { display: block; margin-top: .15rem; font-size: .92rem; color: rgba(255,255,255,.82); }
+  .cx .mv-cap.swap b { animation: mv-capin .8s var(--e) both; } .cx .mv-cap.swap span { animation: mv-capin .8s var(--e) .12s both; }
+  .cx .mv-bar { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: .7rem; }
+  .cx .mv-bar i { position: relative; height: 4px; border-radius: 4px; overflow: hidden; background: rgba(255,255,255,.2); }
+  .cx .mv-bar i::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #f0b84a, #d28503); transform: scaleX(0); transform-origin: left; }
+  .cx .mv-bar i.done::after { transform: scaleX(1); }
+  .cx .mv-bar i.run::after { animation: mv-fill var(--dur, 4.4s) linear forwards; }
+
+  .cx .sc:is(.on,.leave) .bar { transform-origin: 50% 100%; animation: mv-up .95s var(--e) var(--d) both; }
+  .cx .sc:is(.on,.leave) .draw { stroke-dasharray: 1; animation: mv-draw 1.3s ease var(--d, 0s) both; }
+  .cx .sc:is(.on,.leave) .pop { transform-origin: 50% 50%; animation: mv-pop .6s cubic-bezier(.34,1.56,.64,1) var(--d) both; }
+  .cx .sc:is(.on,.leave) .fade { animation: mv-fade .8s ease var(--d) both; }
+  .cx .sc:is(.on,.leave) .ring { transform-origin: 50% 50%; animation: mv-ring 2.4s ease-out var(--d) infinite; }
+  .cx .sc:is(.on,.leave) .scan { animation: mv-scan 1.7s ease-in-out 1.6s 2 alternate both; }
+  .cx .sc:is(.on,.leave) .ln { transform-origin: 0 50%; animation: mv-x .7s var(--e) var(--d) both; }
+  .cx .sc:is(.on,.leave) .hl { animation: mv-hl .5s ease 2.1s both; }
+  .cx .sc:is(.on,.leave) .lens { animation: mv-lens 3.2s cubic-bezier(.65,0,.35,1) .4s both; }
+  .cx .sc:is(.on,.leave) .zoom { transform-origin: 50% 50%; animation: mv-zoom 1.4s var(--e) var(--d) both; }
+  .cx .spin { transform-origin: 50% 50%; animation: mv-spin 40s linear infinite; } .cx .spin.r { animation-duration: 55s; animation-direction: reverse; }
+  .cx .sc:is(.on,.leave) .rise { animation: mv-capin 1s var(--e) var(--d) both; }
+
+  @keyframes mv-enter { from { opacity: 0; transform: translateY(40px) scale(.94); } to { opacity: 1; transform: none; } }
+  @keyframes mv-float { 50% { translate: 0 -12px; } }
+  @keyframes mv-border { to { --mv-a: 360deg; } }
+  @keyframes mv-grid { to { background-position: 34px 34px; } }
+  @keyframes mv-glare { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+  @keyframes mv-pulse { 70% { box-shadow: 0 0 0 9px rgba(240,184,74,0); } 100% { box-shadow: 0 0 0 0 rgba(240,184,74,0); } }
+  @keyframes mv-drift { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: .8; } 100% { opacity: 0; transform: translateY(-330px); } }
+  @keyframes mv-capin { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes mv-fill { to { transform: scaleX(1); } }
+  @keyframes mv-up { from { transform: scaleY(0); } }
+  @keyframes mv-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes mv-pop { from { opacity: 0; transform: scale(0); } }
+  @keyframes mv-fade { from { opacity: 0; } }
+  @keyframes mv-ring { from { opacity: .8; transform: scale(.35); } to { opacity: 0; transform: scale(1.25); } }
+  @keyframes mv-scan { from { transform: translateY(-130px); } to { transform: translateY(130px); } }
+  @keyframes mv-x { from { transform: scaleX(0); } }
+  @keyframes mv-hl { from { fill: rgba(255,255,255,.3); } }
+  @keyframes mv-lens { 0% { transform: translate(300px, 60px); } 45% { transform: translate(190px, 105px); } 75%, 100% { transform: translate(215px, 175px); } }
+  @keyframes mv-zoom { from { opacity: 0; transform: scale(.55) rotate(-50deg); } }
+  @keyframes mv-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .cx .mv-dot, .cx .mv-in::after { display: none; } }
+
   @media (max-width: 959px) {
     .cx .hero { min-height: 0; padding: calc(5rem + env(safe-area-inset-top, 0px)) 0 3.25rem; }
     .cx .hero-inner { width: min(40rem, 100% - 2rem); gap: 1.5rem; text-align: center; }
@@ -45,7 +109,6 @@
     .cx .hero::before { background: linear-gradient(180deg, rgba(3, 32, 14, .72) 0%, rgba(3, 32, 14, .6) 45%, rgba(3, 32, 14, .88) 100%); }
   }
   @media (max-width: 720px) {
-    .cx .hero-seal-inner { width: clamp(150px, 44vw, 200px); box-shadow: 0 0 0 6px rgba(255, 255, 255, .07), 0 0 0 7px rgba(255, 255, 255, .2), 0 24px 48px -16px rgba(0, 0, 0, .65), inset 0 0 40px rgba(255, 255, 255, .14); }
     .cx .hero-eyebrow { margin-bottom: .9rem; padding: .35rem .85rem; font-size: .78rem; }
     .cx .hero h1 { font-size: clamp(1.65rem, 7vw, 2rem); line-height: 1.15; margin-bottom: .9rem; }
     .cx .hero-sub { font-size: .98rem; line-height: 1.55; margin-bottom: 1.4rem; }
@@ -226,7 +289,6 @@
   .cx [data-reveal] { opacity: 0; translate: 0 28px; transition: opacity .85s var(--cx-ease), translate .85s var(--cx-ease), transform .35s var(--cx-ease), box-shadow .35s var(--cx-ease), border-color .35s; transition-delay: var(--d, 0ms), var(--d, 0ms), 0s, 0s, 0s; }
   .cx [data-reveal].in { opacity: 1; translate: 0 0; }
   @keyframes cx-rise { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
-  @keyframes cx-float { 50% { transform: translateY(-14px); } }
   @keyframes cx-scroll { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(16px); } }
   @keyframes cx-sheen { 0%, 55% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
   @keyframes cx-nudge { 50% { transform: translateX(6px); } }
@@ -258,12 +320,65 @@
             <a class="btn btn-glass" href="/membership#join">Become a founding member</a>
           </div>
         </div>
-        <figure class="hero-seal" aria-label="The AIPAF seal revealed inside a glass sphere">
-          <div class="hero-seal-inner">
-            <video data-seal-video muted loop playsinline webkit-playsinline preload="none" poster="/media/seal-poster.jpg" aria-hidden="true">
-              <source src="/media/seal.mp4" type="video/mp4">
-              <source src="/media/seal.webm" type="video/webm">
-            </video>
+        <figure class="hero-seal" aria-label="Animated overview of the AIPAF project lifecycle: deliver, assure, investigate">
+          <div class="mv" data-mv>
+            <div class="mv-in">
+              <span class="mv-corner a"></span><span class="mv-corner b"></span><span class="mv-corner c"></span><span class="mv-corner d"></span>
+              <div class="mv-top"><span class="mv-live"><i></i>The Lifecycle</span><span class="mv-count">01 / 04</span></div>
+              <div class="mv-stage" aria-hidden="true">
+                <span class="mv-dot" style="--x:12%;--t:7s;--w:0s"></span><span class="mv-dot" style="--x:30%;--t:9s;--w:2s"></span><span class="mv-dot" style="--x:52%;--t:6s;--w:1s"></span><span class="mv-dot" style="--x:70%;--t:8s;--w:3.5s"></span><span class="mv-dot" style="--x:88%;--t:7.5s;--w:.8s"></span>
+
+                <!-- 1 Deliver -->
+                <svg class="sc" viewBox="0 0 400 340" fill="none">
+                  <path d="M30 290H370" stroke="rgba(255,255,255,.35)" stroke-width="2" pathLength="1" class="draw" style="--d:0s"/>
+                  <g stroke="#f0b84a" stroke-width="2" fill="rgba(255,255,255,.1)">
+                    <rect class="bar" x="58" y="240" width="40" height="50" rx="5" style="--d:.3s"/>
+                    <rect class="bar" x="116" y="200" width="40" height="90" rx="5" style="--d:.5s"/>
+                    <rect class="bar" x="174" y="160" width="40" height="130" rx="5" style="--d:.7s"/>
+                    <rect class="bar" x="232" y="120" width="40" height="170" rx="5" style="--d:.9s"/>
+                    <rect class="bar" x="290" y="80" width="40" height="210" rx="5" style="--d:1.1s" fill="#f0b84a"/>
+                  </g>
+                  <path d="M78 225L136 185L194 145L252 105L310 65" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" pathLength="1" class="draw" style="--d:1.4s"/>
+                  <g fill="#fff"><circle class="pop" cx="78" cy="225" r="6" style="--d:1.5s"/><circle class="pop" cx="136" cy="185" r="6" style="--d:1.7s"/><circle class="pop" cx="194" cy="145" r="6" style="--d:1.9s"/><circle class="pop" cx="252" cy="105" r="6" style="--d:2.1s"/></g>
+                  <g class="pop" style="--d:2.4s"><path d="M310 65V28" stroke="#fff" stroke-width="3"/><path d="M310 28L346 40L310 52Z" fill="#f0b84a"/></g>
+                </svg>
+
+                <!-- 2 Assure -->
+                <svg class="sc" viewBox="0 0 400 340" fill="none">
+                  <defs><clipPath id="mvShield"><path d="M200 40L300 74V150C300 212 258 250 200 276C142 250 100 212 100 150V74Z"/></clipPath></defs>
+                  <g stroke="#f0b84a" stroke-width="2"><circle class="ring" cx="200" cy="158" r="140" style="--d:.2s"/><circle class="ring" cx="200" cy="158" r="140" style="--d:1.4s"/></g>
+                  <path d="M200 40L300 74V150C300 212 258 250 200 276C142 250 100 212 100 150V74Z" fill="rgba(240,184,74,.14)" class="fade" style="--d:.9s"/>
+                  <path d="M200 40L300 74V150C300 212 258 250 200 276C142 250 100 212 100 150V74Z" stroke="#f0b84a" stroke-width="5" stroke-linejoin="round" pathLength="1" class="draw" style="--d:.1s"/>
+                  <path d="M150 150L188 188L254 112" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" pathLength="1" class="draw" style="--d:1s"/>
+                  <g clip-path="url(#mvShield)"><rect class="scan" x="90" y="150" width="220" height="6" fill="#f0b84a" opacity=".85"/></g>
+                </svg>
+
+                <!-- 3 Investigate -->
+                <svg class="sc" viewBox="0 0 400 340" fill="none">
+                  <rect x="100" y="30" width="200" height="270" rx="16" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.6)" stroke-width="2.5" class="fade" style="--d:0s"/>
+                  <g fill="rgba(255,255,255,.3)">
+                    <rect class="ln" x="125" y="62" width="150" height="9" rx="4.5" style="--d:.2s"/><rect class="ln" x="125" y="94" width="110" height="9" rx="4.5" style="--d:.35s"/>
+                    <rect class="ln" x="125" y="126" width="150" height="9" rx="4.5" style="--d:.5s"/><rect class="ln hl" x="125" y="158" width="130" height="9" rx="4.5" style="--d:.65s" fill="#f0b84a"/>
+                    <rect class="ln" x="125" y="190" width="150" height="9" rx="4.5" style="--d:.8s"/><rect class="ln" x="125" y="222" width="90" height="9" rx="4.5" style="--d:.95s"/>
+                    <rect class="ln" x="125" y="254" width="130" height="9" rx="4.5" style="--d:1.1s"/>
+                  </g>
+                  <g class="lens"><circle r="42" fill="rgba(240,184,74,.12)" stroke="#f0b84a" stroke-width="7"/><path d="M30 30L66 66" stroke="#f0b84a" stroke-width="10" stroke-linecap="round"/></g>
+                  <g class="pop" style="--d:2.7s"><rect x="236" y="20" width="110" height="30" rx="15" fill="#f0b84a"/><text x="291" y="40" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="800" letter-spacing="1.5" fill="#2a1900">EVIDENCE</text></g>
+                </svg>
+
+                <!-- 4 Seal -->
+                <svg class="sc" viewBox="0 0 400 340" fill="none">
+                  <g class="zoom" style="--d:0s"><g class="spin"><circle cx="200" cy="165" r="140" stroke="#f0b84a" stroke-width="6" stroke-dasharray="2 12" stroke-linecap="round"/></g></g>
+                  <g class="zoom" style="--d:.2s"><g class="spin r"><circle cx="200" cy="165" r="118" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-dasharray="40 18 6 18"/></g></g>
+                  <circle class="zoom" style="--d:.4s" cx="200" cy="165" r="96" stroke="#f0b84a" stroke-width="3" fill="rgba(240,184,74,.1)"/>
+                  <text class="rise" style="--d:.8s" x="200" y="178" text-anchor="middle" font-family="Georgia,serif" font-size="46" font-weight="700" letter-spacing="2" fill="#f0b84a">AIPAF</text>
+                  <text class="rise" style="--d:1.1s" x="200" y="206" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="700" letter-spacing="4" fill="#fff">EST. 2026</text>
+                  <g class="rise" style="--d:1.3s" stroke="#f0b84a" stroke-width="2"><path d="M168 130H232" /></g>
+                </svg>
+              </div>
+              <div class="mv-cap"><b>Deliver</b><span>Build the project properly.</span></div>
+              <div class="mv-bar"><i></i><i></i><i></i><i></i></div>
+            </div>
           </div>
         </figure>
       </div>
@@ -537,6 +652,34 @@
   var root = document.querySelector('.cx');
   if (!root) return;
   var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Hero motion piece: four scenes on a timer, paused while off-screen */
+  var mv = root.querySelector('[data-mv]');
+  if (mv) {
+    var scenes = mv.querySelectorAll('.sc'), segs = mv.querySelectorAll('.mv-bar i'), cap = mv.querySelector('.mv-cap'), cnt = mv.querySelector('.mv-count');
+    var data = [['Deliver', 'Build the project properly.'], ['Assure', 'Protect the value before it is lost.'], ['Investigate', 'Establish the truth when a project fails.'], ['AIPAF', 'Assure the promise. Establish the truth.']];
+    var DUR = 4400, cur = -1, timer = null;
+    mv.style.setProperty('--dur', (DUR / 1000) + 's');
+    function go(i) {
+      if (cur > -1 && cur !== i) { (function (o) { o.classList.remove('on'); o.classList.add('leave'); setTimeout(function () { o.classList.remove('leave'); }, 800); })(scenes[cur]); }
+      if (i === 0) segs.forEach(function (s) { s.className = ''; });
+      void mv.offsetWidth;
+      scenes[i].classList.add('on');
+      segs.forEach(function (s, k) { s.className = k < i ? 'done' : (k === i ? 'run' : ''); });
+      cap.firstChild.textContent = data[i][0]; cap.lastChild.textContent = data[i][1];
+      cap.classList.remove('swap'); void cap.offsetWidth; cap.classList.add('swap');
+      cnt.textContent = '0' + (i + 1) + ' / 04';
+      cur = i;
+      if (!calm) timer = setTimeout(function () { go((i + 1) % scenes.length); }, DUR);
+    }
+    if (calm) { go(3); segs.forEach(function (s) { s.className = 'done'; }); }
+    else if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (en) {
+        if (en[0].isIntersecting) { if (!timer) go(cur < 0 ? 0 : cur); }
+        else { clearTimeout(timer); timer = null; }
+      }, { threshold: .2 }).observe(mv);
+    } else { go(0); }
+  }
 
   /* Requirements tabs */
   var tabs = root.querySelectorAll('.requirements-tab');
