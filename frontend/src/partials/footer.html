@@ -18,7 +18,7 @@
 
   /* Glass panel holding the columns */
   .site-footer .footer-grid {
-    display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 1fr);
+    display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); grid-template-columns: 1fr;
     padding: clamp(1.75rem, 4vw, 3rem);
     border-radius: 28px;
     background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .16);
@@ -26,7 +26,8 @@
     box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .15);
   }
   .site-footer .footer-about { display: grid; align-content: start; }
-  @media (max-width: 639px) { .site-footer .footer-grid { grid-template-columns: 1fr; } }
+  @media (min-width: 640px) { .site-footer .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .site-footer .footer-about { grid-column: 1 / -1; } }
+  @media (min-width: 980px) { .site-footer .footer-grid { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); } .site-footer .footer-about { grid-column: auto; } }
 
   /* Brand */
   .site-footer .brand { display: inline-flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; color: #fff; text-decoration: none; cursor: default; }
@@ -45,6 +46,35 @@
   .site-footer .footer-contact a:hover { color: #fff; text-decoration: underline; text-underline-offset: .2em; }
   .site-footer .footer-location { margin: 0; color: var(--ft-text); }
   .site-footer .footer-location strong { display: block; color: var(--ft-muted); font-size: .8rem; font-weight: 600; }
+  .site-footer .footer-links ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .15rem; }
+  .site-footer .footer-links a { position: relative; display: inline-flex; align-items: center; min-height: 2.5rem; padding: .25rem 0; color: var(--ft-text); text-decoration: none; transition: color .25s, transform .3s var(--ft-ease); }
+  .site-footer .footer-links a:hover, .site-footer .footer-links a:focus-visible { color: #fff; text-decoration: underline; text-underline-offset: .2em; }
+  .site-footer .footer-links details { margin: 0; }
+  .site-footer .footer-links summary { list-style: none; cursor: pointer; }
+  .site-footer .footer-links summary::-webkit-details-marker { display: none; }
+  .site-footer .footer-links summary::after { content: "▾"; float: right; color: var(--ft-gold-soft); transition: transform .25s var(--ft-ease); }
+  .site-footer .footer-links details[open] summary::after { transform: rotate(180deg); }
+  .site-footer .footer-links details > ul { margin-top: .9rem; }
+  @media (max-width: 639px) {
+    .site-footer .footer-links details { border-top: 1px solid rgba(255, 255, 255, .16); }
+    .site-footer .footer-links summary { display: flex; align-items: center; justify-content: space-between; min-height: 3.25rem; -webkit-tap-highlight-color: transparent; }
+    .site-footer .footer-links summary::after { content: ""; float: none; flex: none; width: .6rem; height: .6rem; margin: 0 .4rem .25rem 1rem; border: solid var(--ft-gold-soft); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+    .site-footer .footer-links details[open] summary::after { transform: rotate(-135deg); margin-bottom: 0; margin-top: .35rem; }
+    .site-footer .footer-h { margin: 0; padding-bottom: 0; }
+    .site-footer .footer-h::after { display: none; }
+    .site-footer .footer-links details > ul { margin: 0 0 1rem; }
+  }
+  @media (min-width: 640px) {
+    .site-footer .footer-links details { border: 0; }
+    .site-footer .footer-links summary { cursor: default; }
+    .site-footer .footer-links summary::after { display: none; }
+  }
+  .site-footer .footer-base { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 2rem; padding: 1.75rem 0 2rem; margin-top: clamp(1.5rem, 4vw, 2.5rem); font-size: .95rem; color: var(--ft-muted); }
+  .site-footer .footer-base p { margin: 0; }
+  .site-footer .footer-base a { color: var(--ft-muted); text-decoration: none; }
+  .site-footer .footer-base a:hover { color: #fff; text-decoration: underline; }
+  .site-footer .strap { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.05rem; color: #fff; }
+  .site-footer .strap span { color: var(--ft-gold); font-size: 1.1rem; }
 
   /* Motion: only hidden once JS has confirmed it can reveal them */
   .site-footer.fx-ready [data-fx] { opacity: 0; transform: translateY(22px); transition: opacity .8s var(--ft-ease), transform .8s var(--ft-ease); transition-delay: var(--d, 0ms); }
@@ -66,14 +96,61 @@
         </div>
         <p>AIPAF is a Pan-African professional body advancing independent project assurance, project forensics, and sound delivery practice through standards, certification, education, and research.</p>
         <p class="footer-motto">Assure the promise. Establish the truth.</p>
+        <div class="footer-contact">
+          <h2 class="footer-h">Contact</h2>
+          <a href="mailto:info@aipafgh.org">info@aipafgh.org</a>
+          <a href="/contact">Contact the Secretariat</a>
+          <p class="footer-location"><strong>Based in</strong>Ghana</p>
+        </div>
       </div>
 
-      <section class="footer-contact" aria-labelledby="footer-contact-title" data-fx style="--d:100ms">
-        <h2 class="footer-h" id="footer-contact-title">Contact</h2>
-        <a href="mailto:info@aipafgh.org">info@aipafgh.org</a>
-        <a href="/contact">Contact the Secretariat</a>
-        <p class="footer-location"><strong>Based in</strong>Ghana</p>
-      </section>
+      <nav class="footer-links" aria-label="Explore AIPAF" data-fx style="--d:100ms">
+        <details open>
+          <summary><h2 class="footer-h">Explore</h2></summary>
+          <ul>
+            <li><a href="/about">The mandate</a></li>
+            <li><a href="/lifecycle">The lifecycle</a></li>
+            <li><a href="/credentials">Credentials</a></li>
+            <li><a href="/membership">Membership</a></li>
+            <li><a href="/member-directory">Member directory</a></li>
+            <li><a href="/project-certification">Project certification</a></li>
+          </ul>
+        </details>
+      </nav>
+
+      <nav class="footer-links" aria-label="Member access" data-fx style="--d:200ms">
+        <details open>
+          <summary><h2 class="footer-h">Member access</h2></summary>
+          <ul>
+            <li><a href="/member-register">Create account</a></li>
+            <li><a href="/member-profile">Profile</a></li>
+            <li><a href="/member-cpd">CPD records</a></li>
+            <li><a href="/member-payments">Payments</a></li>
+            <li><a href="/member-certificates">Certificates</a></li>
+          </ul>
+        </details>
+      </nav>
+
+      <nav class="footer-links" aria-label="Institute and resources" data-fx style="--d:300ms">
+        <details open>
+          <summary><h2 class="footer-h">Institute &amp; resources</h2></summary>
+          <ul>
+            <li><a href="/about#why">Why AIPAF</a></li>
+            <li><a href="/governance">Governance</a></li>
+            <li><a href="/contact">Contact us</a></li>
+            <li><a href="/privacy">Privacy notice</a></li>
+            <li><a href="/project-certification">Project certification</a></li>
+            <li><a href="/admin-login">Admin portal</a></li>
+          </ul>
+        </details>
+      </nav>
+    </div>
+
+    <div class="wrap footer-base" data-fx style="--d:300ms">
+      <p>&copy; {{year}} African Institute of Project Assurance and Forensics</p>
+      <p><a href="/media/AIPAF_Brochure_2026.pdf" download>AIPAF brochure</a></p>
+      <p><a href="/media/AIPAF_Constitution.docx" download>Constitution</a></p>
+      <p class="strap">Investigate <span aria-hidden="true">&bull;</span> Assure <span aria-hidden="true">&bull;</span> Deliver</p>
     </div>
   </footer>
 
@@ -81,6 +158,14 @@
 (function () {
   var f = document.querySelector('.site-footer');
   if (!f) return;
+  var mq = window.matchMedia('(max-width: 639px)');
+  var details = f.querySelectorAll('.footer-links details');
+  function syncDetails() { details.forEach(function (item) { if (mq.matches) item.removeAttribute('open'); else item.setAttribute('open', ''); }); }
+  syncDetails();
+  if (mq.addEventListener) mq.addEventListener('change', syncDetails); else if (mq.addListener) mq.addListener(syncDetails);
+  f.querySelectorAll('.footer-links summary').forEach(function (summary) {
+    summary.addEventListener('click', function (event) { if (!mq.matches) event.preventDefault(); });
+  });
   var items = f.querySelectorAll('[data-fx]');
   if (!('IntersectionObserver' in window)) return;
   f.classList.add('fx-ready');
