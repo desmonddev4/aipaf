@@ -18,7 +18,7 @@
 
   /* Glass panel holding the columns */
   .site-footer .footer-grid {
-    display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); grid-template-columns: 1fr;
+    display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 1fr);
     padding: clamp(1.75rem, 4vw, 3rem);
     border-radius: 28px;
     background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .16);
@@ -26,72 +26,25 @@
     box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .15);
   }
   .site-footer .footer-about { display: grid; align-content: start; }
-  @media (min-width: 640px) { .site-footer .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; } .site-footer .footer-about { grid-column: 1 / -1; } }
-  @media (min-width: 980px) { .site-footer .footer-grid { grid-template-columns: 1.55fr 1fr 1fr 1.2fr; } .site-footer .footer-about { grid-column: auto; } }
-
-  .site-footer .feature-list {
-    display: grid; gap: .5rem; margin: 1rem 0 0;
-  }
-  .site-footer .feature-list a {
-    display: inline-flex; align-items: center; gap: .55rem;
-    color: var(--ft-text); text-decoration: none; font-size: .98rem;
-  }
-  .site-footer .feature-list a::before {
-    content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--ft-gold-soft); box-shadow: 0 0 0 3px rgba(240, 184, 74, .15);
-  }
+  @media (max-width: 639px) { .site-footer .footer-grid { grid-template-columns: 1fr; } }
 
   /* Brand */
   .site-footer .brand { display: inline-flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; color: #fff; text-decoration: none; cursor: default; }
-  .site-footer .brand-badge { width: 46px; height: 46px; border-radius: 50%; background: #fff; display: grid; place-items: center; flex: none; }
-  .site-footer .brand-badge img { width: 40px; height: 40px; flex: none; object-fit: contain; padding: .12rem; }
+  .site-footer .brand-badge { width: 56px; height: 56px; border-radius: 50%; background: #fff; display: grid; place-items: center; flex: none; }
+  .site-footer .brand-badge img { width: 48px; height: 48px; flex: none; object-fit: contain; padding: .12rem; }
   .site-footer .brand-text { display: grid; line-height: 1.15; }
   .site-footer .brand-word { font-family: Georgia, "Times New Roman", serif; font-size: 1.8rem; font-weight: 700; letter-spacing: .01em; }
   .site-footer .brand-line { font-size: .95rem; color: var(--ft-gold-soft); }
-  .site-footer .footer-about p { margin: 0 0 1rem; max-width: 30rem; }
-  .site-footer .motto-small { display: inline-block; margin: .25rem 0 0 !important; padding: .4rem 1rem; border-radius: 999px; font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 1rem; color: var(--ft-gold-soft); background: rgba(240, 184, 74, .1); border: 1px solid rgba(240, 184, 74, .35); }
-
-  /* Link columns */
+  .site-footer .footer-about p { margin: 0; max-width: 40rem; }
+  .site-footer .footer-motto { margin: 1rem 0 0 !important; color: var(--ft-gold-soft); font: italic 500 1.15rem/1.4 Georgia, "Times New Roman", serif; }
   .site-footer .footer-h { margin: 0 0 1.1rem; padding-bottom: .7rem; position: relative; font-family: Georgia, "Times New Roman", serif; font-size: 1.2rem; font-weight: 600; color: #fff; }
   .site-footer .footer-h::after { content: ""; position: absolute; left: 0; bottom: 0; width: 2.5rem; height: 3px; border-radius: 3px; background: var(--ft-gold); transition: width .5s var(--ft-ease); }
-  .site-footer nav:hover .footer-h::after { width: 4.5rem; }
-  .site-footer nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .15rem; }
-  .site-footer nav a {
-    position: relative; display: inline-flex; align-items: center; min-height: 2.5rem; padding: .25rem 0;
-    color: var(--ft-text); text-decoration: none;
-    transition: color .25s, transform .3s var(--ft-ease);
-  }
-  .site-footer nav a::before { content: ""; width: 0; height: 2px; margin-right: 0; border-radius: 2px; background: var(--ft-gold-soft); transition: width .3s var(--ft-ease), margin .3s var(--ft-ease); }
-  .site-footer nav a:hover, .site-footer nav a:focus-visible { color: #fff; }
-  .site-footer nav a:hover::before, .site-footer nav a:focus-visible::before { width: 1rem; margin-right: .55rem; }
-  .site-footer nav a[aria-current="page"] { color: var(--ft-gold-soft); }
-
-  .site-footer nav details { margin: 0; }
-  .site-footer nav summary { list-style: none; cursor: pointer; }
-  .site-footer nav summary::-webkit-details-marker { display: none; }
-  .site-footer nav summary::after { content: "▾"; float: right; color: var(--ft-gold-soft); transition: transform .25s var(--ft-ease); }
-  .site-footer nav details[open] summary::after { transform: rotate(180deg); }
-  .site-footer nav details > ul { margin-top: .9rem; }
-  @media (max-width: 639px) {
-    .site-footer nav details { border-top: 1px solid rgba(255, 255, 255, .16); }
-    .site-footer nav summary { display: flex; align-items: center; justify-content: space-between; min-height: 3.25rem; -webkit-tap-highlight-color: transparent; }
-    .site-footer nav summary:focus-visible { outline: 3px solid var(--ft-gold-soft); outline-offset: 2px; border-radius: 6px; }
-    .site-footer nav summary::after { content: ""; float: none; flex: none; width: .6rem; height: .6rem; margin: 0 .4rem .25rem 1rem; border: solid var(--ft-gold-soft); border-width: 0 2px 2px 0; transform: rotate(45deg); }
-    .site-footer nav details[open] summary::after { transform: rotate(-135deg); margin-bottom: 0; margin-top: .35rem; }
-    .site-footer .footer-h { margin: 0; padding-bottom: 0; }
-    .site-footer .footer-h::after { display: none; }
-    .site-footer nav details > ul { margin: 0 0 1rem; }
-  }
-  @media (min-width: 640px) {
-    .site-footer nav details { border: 0; }
-    .site-footer nav summary { cursor: default; }
-    .site-footer nav summary::after { display: none; }
-  }
-
-  /* Base row */
-  .site-footer .footer-base { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 2rem; padding: 1.75rem 0 2rem; margin-top: clamp(1.5rem, 4vw, 2.5rem); font-size: .95rem; color: var(--ft-muted); }
-  .site-footer .footer-base p { margin: 0; }
-  .site-footer .strap { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.05rem; color: #fff; }
-  .site-footer .strap span { color: var(--ft-gold); font-size: 1.1rem; }
+  .site-footer .footer-contact { display: grid; align-content: start; gap: .45rem; }
+  .site-footer .footer-contact .footer-h { margin-bottom: .35rem; }
+  .site-footer .footer-contact a { width: fit-content; min-height: 2.5rem; display: inline-flex; align-items: center; color: var(--ft-text); text-decoration: none; }
+  .site-footer .footer-contact a:hover { color: #fff; text-decoration: underline; text-underline-offset: .2em; }
+  .site-footer .footer-location { margin: 0; color: var(--ft-text); }
+  .site-footer .footer-location strong { display: block; color: var(--ft-muted); font-size: .8rem; font-weight: 600; }
 
   /* Motion: only hidden once JS has confirmed it can reveal them */
   .site-footer.fx-ready [data-fx] { opacity: 0; transform: translateY(22px); transition: opacity .8s var(--ft-ease), transform .8s var(--ft-ease); transition-delay: var(--d, 0ms); }
@@ -111,63 +64,16 @@
           <span class="brand-badge"><img src="/media/AIPAF-LOGO.png" alt="AIPAF logo" width="40" height="40"></span>
           <span class="brand-text"><span class="brand-word">AIPAF</span><span class="brand-line">Assurance and Forensics</span></span>
         </div>
-        <p>African Institute of Project Assurance and Forensics. A Pan-African professional body, based in Ghana.</p>
-        <p class="motto-small">Assure the promise. Establish the truth.</p>
-
-        <div class="feature-list" aria-label="Key AIPAF features">
-          <a href="/membership">Membership</a>
-          <a href="/member-directory">Member directory</a>
-          <a href="/project-certification">Project certification</a>
-        </div>
+        <p>AIPAF is a Pan-African professional body advancing independent project assurance, project forensics, and sound delivery practice through standards, certification, education, and research.</p>
+        <p class="footer-motto">Assure the promise. Establish the truth.</p>
       </div>
 
-      <nav aria-label="AIPAF features" data-fx style="--d:100ms">
-        <details open>
-          <summary><h2 class="footer-h">Explore</h2></summary>
-          <ul>
-            <li><a href="/about">The mandate</a></li>
-            <li><a href="/lifecycle">The lifecycle</a></li>
-            <li><a href="/credentials">Credentials</a></li>
-            <li><a href="/membership">Membership</a></li>
-            <li><a href="/member-directory">Member directory</a></li>
-            <li><a href="/project-certification">Project certification</a></li>
-          </ul>
-        </details>
-      </nav>
-
-      <nav aria-label="Member access" data-fx style="--d:200ms">
-        <details open>
-          <summary><h2 class="footer-h">Member access</h2></summary>
-          <ul>
-            <li><a href="/member-register">Create account</a></li>
-            <li><a href="/member-profile">Profile</a></li>
-            <li><a href="/member-cpd">CPD records</a></li>
-            <li><a href="/member-payments">Payments</a></li>
-            <li><a href="/member-certificates">Certificates</a></li>
-          </ul>
-        </details>
-      </nav>
-
-      <nav aria-label="Institute and resources" data-fx style="--d:300ms">
-        <details open>
-          <summary><h2 class="footer-h">Institute &amp; resources</h2></summary>
-          <ul>
-            <li><a href="/about#why">Why AIPAF</a></li>
-            <li><a href="/governance">Governance</a></li>
-            <li><a href="/contact">Contact us</a></li>
-            <li><a href="/privacy">Privacy notice</a></li>
-            <li><a href="/project-certification">Project certification</a></li>
-            <li><a href="/admin-login">Admin portal</a></li>
-          </ul>
-        </details>
-      </nav>
-    </div>
-
-    <div class="wrap footer-base" data-fx style="--d:300ms">
-      <p>&copy; {{year}} African Institute of Project Assurance and Forensics</p>
-      <p><a href="/media/AIPAF_Brochure_2026.pdf" download>AIPAF brochure</a></p>
-      <p><a href="/media/AIPAF_Constitution.docx" download>Constitution</a></p>
-      <p class="strap">Investigate <span aria-hidden="true">&bull;</span> Assure <span aria-hidden="true">&bull;</span> Deliver</p>
+      <section class="footer-contact" aria-labelledby="footer-contact-title" data-fx style="--d:100ms">
+        <h2 class="footer-h" id="footer-contact-title">Contact</h2>
+        <a href="mailto:info@aipafgh.org">info@aipafgh.org</a>
+        <a href="/contact">Contact the Secretariat</a>
+        <p class="footer-location"><strong>Based in</strong>Ghana</p>
+      </section>
     </div>
   </footer>
 
@@ -175,14 +81,6 @@
 (function () {
   var f = document.querySelector('.site-footer');
   if (!f) return;
-  var mq = window.matchMedia('(max-width: 639px)');
-  var ds = f.querySelectorAll('nav details');
-  function sync() { ds.forEach(function (d) { if (mq.matches) d.removeAttribute('open'); else d.setAttribute('open', ''); }); }
-  sync();
-  if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
-  f.querySelectorAll('nav summary').forEach(function (s) {
-    s.addEventListener('click', function (e) { if (!mq.matches) e.preventDefault(); });
-  });
   var items = f.querySelectorAll('[data-fx]');
   if (!('IntersectionObserver' in window)) return;
   f.classList.add('fx-ready');
