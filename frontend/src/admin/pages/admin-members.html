@@ -139,7 +139,7 @@ td code { color: #f7d68a; }
 
 .status { display: inline-flex; align-items: center; gap: .4rem; padding: .22rem .7rem; border-radius: 999px; background: rgba(255, 255, 255, .1); color: #fff; font-size: .78rem; font-weight: 650; text-transform: capitalize; white-space: nowrap; }
 .status::before { content: ""; width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; }
-.status.pending, .status.unverified, .status.withheld, .status.submitted, .status.under_review, .status.processing, .status.authorized { background: rgba(242, 172, 31, .16); color: #ffd277; }
+.status.pending, .status.probationary, .status.unverified, .status.withheld, .status.submitted, .status.under_review, .status.processing, .status.authorized { background: rgba(242, 172, 31, .16); color: #ffd277; }
 .status.sent, .status.active, .status.approved, .status.pass, .status.paid, .status.completed, .status.open, .status.accepted { background: rgba(63, 191, 107, .17); color: #7be3a0; }
 .status.failed, .status.fail, .status.rejected, .status.suspended, .status.declined, .status.cancelled { background: rgba(255, 138, 128, .17); color: #ffaaa2; }
 .status.expired, .status.withdrawn, .status.draft, .status.closed, .status.archived, .status.refunded { background: rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .7); }
@@ -255,6 +255,7 @@ td.cell-link { font-weight: 600; }
                 <option value="">All statuses</option>
                 <option value="unverified">Unverified</option>
                 <option value="pending">Pending</option>
+                <option value="probationary">Probationary</option>
                 <option value="active">Active</option>
                 <option value="suspended">Suspended</option>
                 <option value="expired">Expired</option>

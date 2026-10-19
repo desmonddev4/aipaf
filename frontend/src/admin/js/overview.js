@@ -49,7 +49,7 @@ export function initOverview() {
 
   function attention(report) {
     const pending = [
-      ['Members', num(report.members.pending) + num(report.members.unverified), '/admin-members'],
+      ['Members', num(report.members.pending) + num(report.members.probationary) + num(report.members.unverified), '/admin-members'],
       ['Payments', num(report.payments.pending), '/admin-payments'],
       ['Examinations', num(report.examinations.pending), '/admin-examinations'],
       ['CPD records', num(report.cpd.pending), '/admin-records'],
@@ -89,7 +89,7 @@ export function initOverview() {
     ].map((c, i) => card({ ...c, i })).join('');
 
     const rows = [
-      ['Members', report.members.total, report.members.active, num(report.members.pending) + num(report.members.unverified), 'Member onboarding and review queue', '/admin-members'],
+      ['Members', report.members.total, report.members.active, num(report.members.pending) + num(report.members.probationary) + num(report.members.unverified), 'Member onboarding and review queue', '/admin-members'],
       ['Payments', report.payments.total, report.payments.paid, report.payments.pending, `${report.payments.failed} failed / reconciled`, '/admin-payments'],
       ['Examinations', report.examinations.total, report.examinations.completed, report.examinations.pending, `${rate}% completion rate`, '/admin-examinations'],
       ['CPD', report.cpd.total, report.cpd.approved, report.cpd.pending, `${report.cpd.rejected} rejected submissions`, '/admin-records'],

@@ -29,7 +29,7 @@ export default async function handler(request) {
     try {
       const result = await withDb(async (client) => {
         const invitation = await client.query(
-          `SELECT id, email, full_name, proposed_grade, qualification, affiliation, status, expires_at
+          `SELECT id, email, full_name, proposed_grade, qualification, affiliation, is_honorary, status, expires_at
            FROM member_invitations
            WHERE invitation_token = $1`,
           [token]
@@ -55,7 +55,7 @@ export default async function handler(request) {
           return { ok: false, message: 'This invitation has expired.' };
         }
 
-        return { ok: true, invitation: { fullName: inv.full_name, grade: inv.proposed_grade, qualification: inv.qualification } };
+        return { ok: true, invitation: { fullName: inv.full_name, grade: inv.proposed_grade, qualification: inv.qualification, isHonorary: inv.is_honorary } };
       });
 
       if (!result.ok) return jsonResponse({ ok: false, message: result.message }, 400);
@@ -88,7 +88,7 @@ export default async function handler(request) {
     try {
       const result = await withDb(async (client) => {
         const invitation = await client.query(
-          `SELECT id, email, full_name, proposed_grade, qualification, affiliation, status, expires_at
+          `SELECT id, email, full_name, proposed_grade, qualification, affiliation, is_honorary, status, expires_at
            FROM member_invitations
            WHERE invitation_token = $1`,
           [token]
@@ -123,10 +123,10 @@ export default async function handler(request) {
         // Create member account
         const passwordHash = createPasswordHash(password);
         const member = await client.query(
-          `INSERT INTO members (email, password_hash, first_name, last_name, membership_grade, membership_status, email_verified)
-           VALUES ($1, $2, $3, $4, $5, 'active', TRUE)
+          `INSERT INTO members (email, password_hash, first_name, last_name, membership_grade, membership_status, email_verified, is_honorary)
+           VALUES ($1, $2, $3, $4, $5, 'probationary', TRUE, $6)
            RETURNING id, email, first_name, last_name, membership_grade`,
-          [inv.email, passwordHash, firstName, lastName, inv.proposed_grade]
+          [inv.email, passwordHash, firstName, lastName, inv.proposed_grade, inv.is_honorary]
         );
 
         // Update invitation status
@@ -182,7 +182,7 @@ export default async function handler(request) {
 
       const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
       const sql = `
-        SELECT id, email, full_name, proposed_grade, qualification, affiliation, source, status, sent_at, accepted_at, expires_at, created_at
+        SELECT id, email, full_name, proposed_grade, qualification, affiliation, is_honorary, source, status, sent_at, accepted_at, expires_at, created_at
         FROM member_invitations
         ${where}
         ORDER BY created_at DESC
@@ -269,9 +269,13 @@ export default async function handler(request) {
 
     const body = await request.json().catch(() => ({}));
     const { email, fullName, grade, qualification, affiliation } = body;
+    const isHonorary = body.isHonorary === true;
 
     if (!email || !fullName || !grade) {
       return jsonResponse({ ok: false, message: 'Email, full name, and grade are required.' }, 400);
+    }
+    if (isHonorary && grade !== 'fellow') {
+      return jsonResponse({ ok: false, message: 'Honorary Fellow invitations must use the Fellow grade.' }, 400);
     }
 
     if (!VALID_GRADES.includes(grade)) {
@@ -290,9 +294,9 @@ export default async function handler(request) {
 
         await client.query(
           `INSERT INTO member_invitations 
-           (email, full_name, proposed_grade, qualification, affiliation, invitation_token, expires_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [email, fullName, grade, qualification || null, affiliation || null, token, expiresAt]
+           (email, full_name, proposed_grade, qualification, affiliation, invitation_token, expires_at, is_honorary)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [email, fullName, grade, qualification || null, affiliation || null, token, expiresAt, isHonorary]
         );
 
         return { ok: true, token };

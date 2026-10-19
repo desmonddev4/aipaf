@@ -26,7 +26,7 @@ function mapGradeToDb(documentClass) {
     'Member': 'member',
     'Associate': 'associate',
     'Affiliate': 'affiliate',
-    'Honorary Fellow': 'fellow', // Honorary fellows get fellow grade
+    'Honorary Fellow': 'fellow',
     'Student': 'student',
   };
   return mapping[documentClass] || 'affiliate';
@@ -95,9 +95,9 @@ async function importFromCSV(csvPath) {
         
         await client.query(
           `INSERT INTO member_invitations 
-           (email, full_name, proposed_grade, qualification, affiliation, source, invitation_token, expires_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-          [email, fullName, grade, qualification, affiliation, source, token, expiresAt]
+           (email, full_name, proposed_grade, qualification, affiliation, source, invitation_token, expires_at, is_honorary)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          [email, fullName, grade, qualification, affiliation, source, token, expiresAt, docClass === 'Honorary Fellow']
         );
         
         console.log(`✓ Imported ${no}: ${fullName} (${grade})`);

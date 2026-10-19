@@ -200,7 +200,7 @@ export default async function handler(request) {
         if (status === 'approved') {
           await client.query(
             `UPDATE members
-             SET membership_grade = $1, membership_status = 'active', updated_at = NOW()
+             SET membership_grade = $1, membership_status = 'probationary', updated_at = NOW()
              WHERE id = $2`,
             [updated.rows[0].grade, updated.rows[0].member_id]
           );

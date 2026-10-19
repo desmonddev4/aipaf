@@ -1,6 +1,7 @@
 import { withDb } from '../db.mjs';
 import { jsonResponse } from '../_shared.mjs';
 import { requireAdmin } from '../_auth.mjs';
+import { logAuditEntry } from '../../../middleware/audit-logger.mjs';
 
 const VALID_STATUSES = ['pending', 'authorized', 'paid', 'failed', 'refunded', 'cancelled'];
 const VALID_PURPOSES = ['membership', 'examination', 'subscription', 'other'];
@@ -131,6 +132,12 @@ export default async function handler(request) {
 
   // List payments
   if (request.method === 'GET') {
+    if (url.searchParams.get('action') === 'dues-settings') {
+      const settings = await withDb((client) => client.query(
+        `SELECT grade, annual_amount, currency, updated_at FROM membership_fee_settings WHERE grade = 'fellow'`,
+      ));
+      return jsonResponse({ ok: true, setting: settings.rows[0] || null, role: auth.role });
+    }
     const memberId = url.searchParams.get('member_id');
 
     if (memberId) {
@@ -145,9 +152,31 @@ export default async function handler(request) {
   }
 
   if (request.method !== 'POST') return jsonResponse({ ok: false, message: 'Method not allowed.' }, 405);
-  if (auth.role !== 'secretariat') return jsonResponse({ ok: false, message: 'Secretariat access is required to update payments.' }, 403);
 
   const body = await request.json().catch(() => ({}));
+
+  if (body.action === 'set-fellow-dues') {
+    if (auth.role !== 'council') return jsonResponse({ ok: false, message: 'Council access is required to set annual dues.' }, 403);
+    const amount = Number(body.amount);
+    const currency = String(body.currency || '').trim().toUpperCase();
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 100000000 || !/^[A-Z]{3}$/.test(currency)) {
+      return jsonResponse({ ok: false, message: 'Enter a positive annual fee and a three-letter currency code.' }, 400);
+    }
+    const setting = await withDb(async (client) => client.query(
+      `INSERT INTO membership_fee_settings (grade, annual_amount, currency)
+       VALUES ('fellow', $1, $2)
+       ON CONFLICT (grade) DO UPDATE SET annual_amount = EXCLUDED.annual_amount, currency = EXCLUDED.currency, updated_at = NOW()
+       RETURNING grade, annual_amount, currency, updated_at`,
+      [Math.round(amount * 100) / 100, currency],
+    ));
+    await logAuditEntry(auth.role, 'set_fellow_annual_dues', 'membership_fee_settings', 'fellow', {
+      amount: setting.rows[0].annual_amount,
+      currency: setting.rows[0].currency,
+    }, request);
+    return jsonResponse({ ok: true, setting: setting.rows[0], role: auth.role });
+  }
+
+  if (auth.role !== 'secretariat') return jsonResponse({ ok: false, message: 'Secretariat access is required to update payments.' }, 403);
 
   // Update payment status
   if (body.action === 'update-status') {

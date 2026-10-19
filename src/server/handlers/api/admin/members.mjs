@@ -4,14 +4,14 @@ import { requireAdmin } from '../_auth.mjs';
 import { createPasswordHash } from '../member-core.mjs';
 import { logAuditEntry } from '../../../middleware/audit-logger.mjs';
 
-const ALLOWED_STATUSES = ['unverified', 'pending', 'active', 'suspended', 'expired'];
+const ALLOWED_STATUSES = ['unverified', 'pending', 'probationary', 'active', 'suspended', 'expired'];
 const ALLOWED_GRADES = ['student', 'affiliate', 'associate', 'member', 'fellow'];
 const ALLOWED_ROLES = ['member', 'secretariat', 'council'];
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const isMemberId = (value) => typeof value === 'string' && UUID_PATTERN.test(value);
 const validIds = (ids) => ids.filter(isMemberId);
 
-const SELECT_COLUMNS = 'id, email, first_name, last_name, country, organisation, designation, membership_grade, membership_status, role, email_verified, profile_public, admin_notes, last_login_at, created_at';
+const SELECT_COLUMNS = 'id, email, first_name, last_name, country, organisation, designation, membership_grade, membership_status, is_honorary, role, email_verified, profile_public, admin_notes, last_login_at, created_at';
 
 function parseLimit(value) {
   return Math.min(Math.max(Number(value) || 25, 1), 250);
@@ -376,6 +376,18 @@ async function updateAdminNotes(id, notes, authRole, request) {
   return result;
 }
 
+async function updateHonoraryStatus(id, isHonorary, authRole, request) {
+  if (!isMemberId(id) || typeof isHonorary !== 'boolean') return { ok: false, message: 'A member and honorary status are required.', status: 400 };
+  const result = await withDb((client) => client.query(
+    `UPDATE members SET is_honorary = $1, updated_at = NOW()
+     WHERE id = $2 AND membership_grade = 'fellow' RETURNING id`,
+    [isHonorary, id],
+  ));
+  if (!result.rowCount) return { ok: false, message: 'Fellow member not found.', status: 404 };
+  await logAuditEntry(authRole, 'update_member_honorary_status', 'member', id, { isHonorary }, request);
+  return { ok: true };
+}
+
 export default async function handler(request) {
   const auth = requireAdmin(request, ['secretariat', 'council']);
   if (auth.status) return jsonResponse({ ok: false, message: auth.message }, auth.status);
@@ -404,6 +416,12 @@ export default async function handler(request) {
   if (auth.role !== 'secretariat') return jsonResponse({ ok: false, message: 'Secretariat access is required to update members.' }, 403);
 
   const body = await request.json().catch(() => ({}));
+
+  if (body.action === 'update-honorary-status') {
+    const result = await updateHonoraryStatus(body.id, body.isHonorary, auth.role, request);
+    if (!result.ok) return jsonResponse({ ok: false, message: result.message }, result.status);
+    return jsonResponse({ ok: true, message: 'Honorary status updated.', role: auth.role });
+  }
 
   // Update member status
   if (body.action === 'update-status') {

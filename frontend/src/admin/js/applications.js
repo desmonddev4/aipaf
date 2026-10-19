@@ -110,7 +110,7 @@ function showReviewModal(app, save) {
     const sync = () => {
       const status = form.status.value;
       hint.classList.toggle('warn', status === 'rejected');
-      if (status === 'approved') hint.textContent = `Approving will set the member's grade to ${label(app.grade)} and mark them active.`;
+      if (status === 'approved') hint.textContent = `Approving will set the member's grade to ${label(app.grade)} and begin probationary membership.`;
       else if (status === 'rejected') hint.textContent = 'Please explain the rejection so it is on record.';
       else hint.textContent = '';
       optional.textContent = status === 'rejected' ? '(required)' : '(optional)';

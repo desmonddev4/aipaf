@@ -66,7 +66,7 @@ async function updateApplicationStatus(id, status, notes) {
       if (app.member_id) {
         await client.query(
           'UPDATE members SET membership_grade = $1, membership_status = $2, updated_at = NOW() WHERE id = $3',
-          [app.grade, 'active', app.member_id]
+          [app.grade, 'probationary', app.member_id]
         );
       }
     }

@@ -59,7 +59,8 @@ CREATE TABLE IF NOT EXISTS members (
   organisation TEXT,
   designation TEXT,
   membership_grade TEXT NOT NULL DEFAULT 'affiliate' CHECK (membership_grade IN ('student', 'affiliate', 'associate', 'member', 'fellow')),
-  membership_status TEXT NOT NULL DEFAULT 'unverified' CHECK (membership_status IN ('unverified', 'pending', 'active', 'suspended', 'expired')),
+  is_honorary BOOLEAN NOT NULL DEFAULT FALSE,
+  membership_status TEXT NOT NULL DEFAULT 'probationary' CHECK (membership_status IN ('unverified', 'pending', 'probationary', 'active', 'suspended', 'expired')),
   role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('member', 'secretariat', 'council')),
   email_verified BOOLEAN NOT NULL DEFAULT FALSE,
   profile_public BOOLEAN NOT NULL DEFAULT FALSE,
@@ -81,6 +82,11 @@ CREATE TABLE IF NOT EXISTS member_profiles (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Add probationary status to existing installations as well as fresh databases.
+ALTER TABLE members DROP CONSTRAINT IF EXISTS members_membership_status_check;
+ALTER TABLE members ADD CONSTRAINT members_membership_status_check
+  CHECK (membership_status IN ('unverified', 'pending', 'probationary', 'active', 'suspended', 'expired'));
 
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -117,6 +123,7 @@ CREATE TABLE IF NOT EXISTS member_invitations (
   email TEXT NOT NULL,
   full_name TEXT NOT NULL,
   proposed_grade TEXT NOT NULL CHECK (proposed_grade IN ('fellow', 'member', 'associate', 'affiliate', 'student')),
+  is_honorary BOOLEAN NOT NULL DEFAULT FALSE,
   qualification TEXT,
   affiliation TEXT,
   source TEXT,
@@ -174,6 +181,16 @@ CREATE TABLE IF NOT EXISTS payments (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS membership_fee_settings (
+  grade TEXT PRIMARY KEY CHECK (grade = 'fellow'),
+  annual_amount NUMERIC(12,2) NOT NULL CHECK (annual_amount > 0),
+  currency TEXT NOT NULL DEFAULT 'GHS' CHECK (currency ~ '^[A-Z]{3}$'),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE members ADD COLUMN IF NOT EXISTS is_honorary BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE member_invitations ADD COLUMN IF NOT EXISTS is_honorary BOOLEAN NOT NULL DEFAULT FALSE;
 
 CREATE TABLE IF NOT EXISTS examinations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

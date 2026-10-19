@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Create account | AIPAF</title>
-<meta name="description" content="Register for secure AIPAF member access.">
+<title>Register to become a member | AIPAF</title>
+<meta name="description" content="Create your AIPAF account and begin your membership application.">
 <link rel="icon" href="/media/AIPAF-LOGO.png" type="image/png">
 <style>
 :root {
@@ -179,8 +179,8 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
       <span class="ai-logo"><img src="/media/AIPAF-LOGO.png" alt="AIPAF logo" width="37" height="37"></span>
       <span><strong>AIPAF</strong><small>Member portal</small></span>
     </div>
-    <h1>Create your account</h1>
-    <p class="lead">Register for secure member access to AIPAF services.</p>
+    <h1>Register to become a member</h1>
+    <p class="lead">Create your AIPAF account to begin your membership application.</p>
     <ol class="stepper" id="stepper" aria-label="Progress"><li><b>1</b><span>Account</span></li><li><b>2</b><span>Security</span></li><li><b>3</b><span>Profile</span></li></ol>
     <form id="f" novalidate>
       <div class="step">
@@ -206,7 +206,7 @@ input:not([type]), input[type="password"], input[type="text"], input[type="email
           <div class="field"><label for="og">Organisation</label><input id="og" name="organisation" type="text" maxlength="150" autocomplete="organization"></div>
           <div class="field full"><label for="ds">Designation</label><input id="ds" name="designation" type="text" maxlength="150" autocomplete="organization-title"></div>
         </div>
-        <div class="step-actions"><button class="btn btn-ghost" type="button" data-back>Back</button><button class="btn" type="submit" id="b">Create account</button></div>
+        <div class="step-actions"><button class="btn btn-ghost" type="button" data-back>Back</button><button class="btn" type="submit" id="b">Register</button></div>
       </div>
       <p class="form-status" role="status" aria-live="polite"></p>
     </form>
@@ -272,7 +272,7 @@ f.addEventListener('submit', async (e) => {
     st.className = 'form-status ok'; st.textContent = p.message || 'Account created. Please check your email.';
     f.reset(); flow.go(0); setTimeout(() => { location.href = '/member-login'; }, 2500);
   } catch (err) { st.textContent = err.message; }
-  setBusy(b, false, 'Create account');
+  setBusy(b, false, 'Register');
 });
 </script>
 </body>

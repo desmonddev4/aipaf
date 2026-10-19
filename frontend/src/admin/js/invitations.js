@@ -87,7 +87,7 @@ function renderInvitationsTable(invitations) {
       : `<button class="btn btn-danger btn-sm" type="button" data-action="delete" data-id="${escapeHtml(inv.id)}" data-name="${escapeHtml(inv.full_name)}">Delete</button>`;
     return '<tr>'
       + cell('Invitee', `<span class="iv-person"><strong>${escapeHtml(inv.full_name)}</strong><small>${escapeHtml(inv.email)}</small></span>`)
-      + cell('Grade', `<span class="iv-grade">${escapeHtml(cap(inv.proposed_grade))}</span>`)
+      + cell('Grade', `<span class="iv-grade">${escapeHtml(inv.is_honorary ? 'Honorary Fellow' : cap(inv.proposed_grade))}</span>`)
       + cell('Qualification', escapeHtml(inv.qualification || '—'))
       + cell('Status', statusBadge(inv.status))
       + cell('Sent', inv.sent_at ? formatDate(inv.sent_at) : '—')
@@ -110,6 +110,7 @@ function showInvitationModal(save) {
         <div class="field"><label for="inv-email">Email *</label><input id="inv-email" name="email" type="email" autocomplete="off" placeholder="name@example.com"></div>
         <div class="field"><label for="inv-name">Full name *</label><input id="inv-name" name="fullName" type="text" autocomplete="off"></div>
         <div class="field"><label for="inv-grade">Proposed grade *</label><select id="inv-grade" name="grade">${GRADES.map((g) => `<option value="${g}" ${g === 'affiliate' ? 'selected' : ''}>${cap(g)}</option>`).join('')}</select></div>
+        <div class="field"><label><input type="checkbox" name="isHonorary"> Honorary Fellow (exempt from annual dues)</label></div>
         <div class="field"><label for="inv-qualification">Qualification <span class="opt">(optional)</span></label><input id="inv-qualification" name="qualification" type="text" autocomplete="off"></div>
         <div class="field"><label for="inv-affiliation">Affiliation <span class="opt">(optional)</span></label><input id="inv-affiliation" name="affiliation" type="text" autocomplete="off"></div>
         <p class="form-status" id="inv-error" role="alert"></p>
@@ -140,6 +141,7 @@ function showInvitationModal(save) {
       data.fullName = data.fullName.trim();
       data.qualification = data.qualification.trim() || null;
       data.affiliation = data.affiliation.trim() || null;
+      data.isHonorary = Boolean(data.isHonorary);
       if (!EMAIL_PATTERN.test(data.email)) { error.textContent = 'Enter a valid email address.'; form.email.focus(); return; }
       if (!data.fullName) { error.textContent = 'Enter the invitee\'s full name.'; form.fullName.focus(); return; }
       error.textContent = '';

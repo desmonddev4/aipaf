@@ -46,8 +46,8 @@ export default async function handler(request) {
           const passwordHash = createPasswordHash(validation.data.password);
           const member = await client.query(
             `INSERT INTO members (
-              email, password_hash, first_name, last_name, country, organisation, designation
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+              email, password_hash, first_name, last_name, country, organisation, designation, membership_status
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'probationary')
             RETURNING id, email, first_name, last_name, role, membership_grade, membership_status, email_verified`,
             [
               validation.data.email,

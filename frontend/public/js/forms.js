@@ -25,7 +25,7 @@ function validate(form) {
 }
 
 function toMailto(kind, data) {
-  const subject = kind === 'membership' ? 'Founding membership interest' : 'Message from the AIPAF website';
+  const subject = kind === 'membership' ? 'Membership registration interest' : 'Message from the AIPAF website';
   const body = Object.entries(data).filter(([k]) => !k.startsWith('_')).map(([k, v]) => `${k}: ${v}`).join('\n');
   return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

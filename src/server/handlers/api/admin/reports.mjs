@@ -7,6 +7,7 @@ export function buildAdminOverviewReport(data = {}) {
     total: Number(data.members?.total) || 0,
     active: Number(data.members?.active) || 0,
     pending: Number(data.members?.pending) || 0,
+    probationary: Number(data.members?.probationary) || 0,
     unverified: Number(data.members?.unverified) || 0,
   };
 
@@ -34,7 +35,7 @@ export function buildAdminOverviewReport(data = {}) {
     total: Number(data.certificates?.total) || 0,
   };
 
-  const pendingActions = members.pending + payments.pending + examinations.pending;
+  const pendingActions = members.pending + members.probationary + payments.pending + examinations.pending;
   const totalExamActions = examinations.completed + examinations.pending;
   const completionRate = totalExamActions
     ? Math.round((examinations.completed / totalExamActions) * 100)
@@ -61,6 +62,7 @@ async function fetchOverviewData() {
           COUNT(*) AS total,
           COUNT(*) FILTER (WHERE membership_status = 'active') AS active,
           COUNT(*) FILTER (WHERE membership_status = 'pending') AS pending,
+          COUNT(*) FILTER (WHERE membership_status = 'probationary') AS probationary,
           COUNT(*) FILTER (WHERE membership_status = 'unverified') AS unverified
         FROM members
       `),

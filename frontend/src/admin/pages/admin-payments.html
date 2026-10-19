@@ -248,6 +248,16 @@ td[data-label="Paid"] { white-space: nowrap; }
     </header>
 
     <main id="main">
+      <section class="card" id="fellow-dues-settings" hidden aria-labelledby="fellow-dues-title">
+        <h2 id="fellow-dues-title">Fellow annual dues</h2>
+        <p class="lead">Council sets the annual subscription under Article 10 of the Constitution.</p>
+        <form id="fellow-dues-form" class="toolbar-actions">
+          <div class="field"><label for="fellow-dues-amount">Annual amount</label><input id="fellow-dues-amount" name="amount" type="number" min="0.01" step="0.01" required></div>
+          <div class="field"><label for="fellow-dues-currency">Currency</label><input id="fellow-dues-currency" name="currency" value="GHS" maxlength="3" pattern="[A-Za-z]{3}" required></div>
+          <button class="btn" type="submit">Save Council fee</button>
+          <span id="fellow-dues-status" role="status" aria-live="polite"></span>
+        </form>
+      </section>
       <section class="dashboard is-open" id="admin-dashboard" aria-label="Admin dashboard">
         <div class="pay-stats" id="payments-summary"></div>
         <div class="toolbar">

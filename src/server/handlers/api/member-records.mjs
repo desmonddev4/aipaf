@@ -116,7 +116,7 @@ export default async function handler(request) {
     const eventName = String(event.event || '').trim();
     const reference = String(event.data?.reference || '').trim();
     const status = String(event.data?.status || '').trim().toLowerCase();
-    const provider = String(event.data?.gateway_response || '').toLowerCase().includes('paystack') ? 'paystack' : 'paystack';
+    const provider = 'paystack';
     if (!reference || !['charge.success', 'charge.failed', 'charge.dispute', 'transfer.failed'].includes(eventName) || !['success', 'failed', 'abandoned'].includes(status)) {
       return jsonResponse({ ok: false, message: 'Unsupported webhook event.' }, 400);
     }
@@ -125,7 +125,7 @@ export default async function handler(request) {
       const result = await withDb(async (client) => {
         const existing = await client.query(
           `SELECT id, status FROM payments WHERE provider_reference = $1 AND provider = $2`,
-          [reference, String(event.provider || 'manual').trim().toLowerCase() || 'manual'],
+          [reference, provider],
         );
         if (!existing.rowCount) return { ok: false, message: 'Payment not found.', status: 404 };
 
@@ -156,11 +156,87 @@ export default async function handler(request) {
   // Actions a signed-in member may use; each one re-checks the member session itself.
   const memberActions = new Set([
     'GET:examinations', 'GET:my-examinations', 'GET:my-cpd',
-    'POST:checkout', 'POST:register-examination', 'POST:cpd',
+    'GET:annual-dues', 'POST:checkout', 'POST:checkout-annual-dues', 'POST:register-examination', 'POST:cpd',
   ]);
   const auth = requireAdmin(request);
   if (auth.status && !memberActions.has(`${request.method}:${action}`)) {
     return jsonResponse({ ok: false, message: auth.message }, auth.status);
+  }
+
+  if (request.method === 'GET' && action === 'annual-dues') {
+    const session = getSessionFromRequest(request);
+    if (!session?.memberId) return jsonResponse({ ok: false, message: 'Authentication required.' }, 401);
+    const year = new Date().getUTCFullYear();
+    const result = await withDb(async (client) => {
+      const member = await client.query('SELECT membership_grade, is_honorary FROM members WHERE id = $1', [session.memberId]);
+      if (!member.rowCount) return { eligible: false };
+      const setting = await client.query(`SELECT annual_amount, currency FROM membership_fee_settings WHERE grade = 'fellow'`);
+      const paid = await client.query(
+        `SELECT id, paid_at FROM payments WHERE member_id = $1 AND status = 'paid'
+           AND purpose = 'subscription' AND metadata->>'subscription_type' = 'fellow_annual_dues'
+           AND metadata->>'dues_year' = $2 LIMIT 1`,
+        [session.memberId, String(year)],
+      );
+      return {
+        eligible: member.rows[0].membership_grade === 'fellow' && !member.rows[0].is_honorary,
+        year,
+        setting: setting.rows[0] || null,
+        paid: paid.rowCount > 0,
+      };
+    });
+    return jsonResponse({ ok: true, ...result });
+  }
+
+  if (request.method === 'POST' && action === 'checkout-annual-dues') {
+    const session = getSessionFromRequest(request);
+    if (!session?.memberId) return jsonResponse({ ok: false, message: 'Authentication required.' }, 401);
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+    if (!secret) return jsonResponse({ ok: false, message: 'Online annual dues payments are not configured yet.' }, 503);
+    const year = new Date().getUTCFullYear();
+    try {
+      const fee = await withDb(async (client) => {
+        const member = await client.query('SELECT email, membership_grade, is_honorary FROM members WHERE id = $1', [session.memberId]);
+        if (!member.rowCount || member.rows[0].membership_grade !== 'fellow' || member.rows[0].is_honorary) return { error: 'Annual dues are available to Fellow members only.' };
+        const setting = await client.query(`SELECT annual_amount, currency FROM membership_fee_settings WHERE grade = 'fellow'`);
+        if (!setting.rowCount) return { error: 'The Council has not set the annual Fellow dues yet.' };
+        const paid = await client.query(
+          `SELECT id FROM payments WHERE member_id = $1 AND status = 'paid'
+             AND purpose = 'subscription' AND metadata->>'subscription_type' = 'fellow_annual_dues'
+             AND metadata->>'dues_year' = $2 LIMIT 1`,
+          [session.memberId, String(year)],
+        );
+        if (paid.rowCount) return { error: `Your Fellow annual dues for ${year} are already paid.` };
+        const reference = randomUUID();
+        const payment = await client.query(
+          `INSERT INTO payments (member_id, provider, provider_reference, amount, currency, purpose, status, metadata)
+           VALUES ($1, 'paystack', $2, $3, $4, 'subscription', 'pending', $5)
+           RETURNING id, amount, currency, purpose, status, provider_reference`,
+          [session.memberId, reference, setting.rows[0].annual_amount, setting.rows[0].currency, { subscription_type: 'fellow_annual_dues', dues_year: String(year) }],
+        );
+        return { member: member.rows[0], payment: payment.rows[0] };
+      });
+      if (fee.error) return jsonResponse({ ok: false, message: fee.error }, 409);
+      const payment = fee.payment;
+      const callbackUrl = new URL('/member-payments', process.env.SITE_URL || 'http://localhost:3000');
+      const response = await fetch('https://api.paystack.co/transaction/initialize', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${secret}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: Math.round(Number(payment.amount) * 100), currency: payment.currency, email: fee.member.email,
+          reference: payment.provider_reference, callback_url: callbackUrl.toString(),
+          metadata: { memberId: session.memberId, purpose: 'subscription', subscription_type: 'fellow_annual_dues', dues_year: String(year) },
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.data?.authorization_url) return jsonResponse({ ok: false, message: result.message || 'Paystack checkout could not be initialized.' }, 502);
+      await withDb((client) => client.query(
+        `UPDATE payments SET metadata = COALESCE(metadata, '{}'::jsonb) || $1 WHERE provider_reference = $2`,
+        [{ paystackAuthorizationUrl: result.data.authorization_url }, payment.provider_reference],
+      ));
+      return jsonResponse({ ok: true, payment, checkout: { reference: payment.provider_reference, authorizationUrl: result.data.authorization_url } });
+    } catch {
+      return jsonResponse({ ok: false, message: 'Unable to create the annual dues payment.' }, 503);
+    }
   }
 
   if (request.method === 'GET' && action === 'payments') {

@@ -189,6 +189,7 @@ function showMemberDetailModal(memberData, onRefresh) {
             <div class="detail-item"><label>Email:</label><span>${escapeHtml(member.email)}</span></div>
             <div class="detail-item"><label>Name:</label><span>${escapeHtml(member.first_name)} ${escapeHtml(member.last_name)}</span></div>
             <div class="detail-item"><label>Grade:</label><span>${escapeHtml(member.membership_grade)}</span></div>
+            ${member.membership_grade === 'fellow' ? `<div class="detail-item"><label>Honorary Fellow:</label><span>${member.is_honorary ? 'Yes, exempt from dues' : 'No'}</span></div>` : ''}
             <div class="detail-item"><label>Status:</label><span>${escapeHtml(member.membership_status)}</span></div>
             <div class="detail-item"><label>Role:</label><span>${escapeHtml(member.role)}</span></div>
             <div class="detail-item"><label>Email Verified:</label><span>${member.email_verified ? 'Yes' : 'No'}</span></div>
@@ -276,6 +277,7 @@ function showMemberDetailModal(memberData, onRefresh) {
           <div class="action-buttons">
             <button class="btn btn-ghost" id="edit-details">Edit Details</button>
             <button class="btn btn-ghost" id="change-grade">Change Grade</button>
+            ${member.membership_grade === 'fellow' ? `<button class="btn btn-ghost" id="toggle-honorary">${member.is_honorary ? 'Mark as standard Fellow' : 'Mark as Honorary Fellow'}</button>` : ''}
             <button class="btn btn-ghost" id="change-role">Change Role</button>
             ${!member.email_verified ? '<button class="btn btn-ghost" id="verify-email">Verify Email</button>' : ''}
             <button class="btn btn-ghost" id="reset-password">Reset Password</button>
@@ -324,6 +326,23 @@ function showMemberDetailModal(memberData, onRefresh) {
         toast(error.message || 'Failed to change member grade.', 'err');
       }
     }
+  });
+
+  const honoraryBtn = modal.querySelector('#toggle-honorary');
+  if (honoraryBtn) honoraryBtn.addEventListener('click', async () => {
+    const nextValue = !member.is_honorary;
+    if (!confirm(nextValue ? 'Mark this member as an Honorary Fellow? Honorary Fellows are exempt from annual dues.' : 'Remove the Honorary Fellow classification?')) return;
+    try {
+      const response = await apiFetch('/api/admin/members', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update-honorary-status', id: member.id, isHonorary: nextValue }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.message || 'Unable to update honorary status.');
+      toast('Honorary Fellow status updated.', 'ok');
+      document.body.removeChild(modal);
+      onRefresh();
+    } catch (error) { toast(error.message || 'Unable to update honorary status.', 'err'); }
   });
 
   // Change role

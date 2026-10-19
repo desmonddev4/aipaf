@@ -41,7 +41,7 @@ export async function sendSubmissionEmails({ kind, data, recordId }) {
   const config = emailConfig();
   const subject = kind === 'contact'
     ? `Website contact: ${data.topic}`
-    : 'New founding membership interest';
+    : 'New membership registration interest';
   const text = [
     `Submission ID: ${recordId}`,
     '',
@@ -124,7 +124,7 @@ export async function sendAcknowledgementEmail({ kind, data }) {
       'Do not reply to this automated message.',
     ].join('\n');
   } else if (kind === 'membership') {
-    subject = 'Your founding membership interest has been received';
+    subject = 'Your membership registration interest has been received';
     text = [
       'Thank you for your interest in joining the African Institute of Project Assurance and Forensics.',
       '',

@@ -58,7 +58,7 @@ export function initSubmissions({ showLogin }) {
         }).join('');
 
       const action = isMembers
-        ? `<select aria-label="Member status" data-action="status" data-id="${escapeHtml(item.id)}"><option value="unverified">Unverified</option><option value="pending">Pending</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="expired">Expired</option></select>`
+        ? `<select aria-label="Member status" data-action="status" data-id="${escapeHtml(item.id)}"><option value="unverified">Unverified</option><option value="pending">Pending</option><option value="probationary">Probationary</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="expired">Expired</option></select>`
         : `<button type="button" data-action="handled" data-id="${escapeHtml(item.id)}" data-table="${escapeHtml(selectedTable())}">Mark handled</button>`;
 
       return `<tr>${cell('Select', '<input type="checkbox" aria-label="Select row" data-bulk-select data-id="' + escapeHtml(item.id) + '">')}${cells}${cell('Action', `<div class="row-actions">${action}</div>`)}</tr>`;
@@ -191,7 +191,7 @@ export function initSubmissions({ showLogin }) {
   });
 
 
-  const STATUSES = ['unverified', 'pending', 'active', 'suspended', 'expired'];
+  const STATUSES = ['unverified', 'pending', 'probationary', 'active', 'suspended', 'expired'];
 
   function openBulkDialog(selectedIds) {
     const overlay = document.createElement('div');

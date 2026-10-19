@@ -117,7 +117,7 @@ Features:
 | Member | member |
 | Associate | associate |
 | Affiliate | affiliate |
-| Honorary Fellow | fellow |
+| Honorary Fellow | fellow (honorary; exempt from annual dues) |
 | Student | student |
 
 ## Security Features

@@ -125,6 +125,40 @@ export function initPayments() {
   const summary = $('#payments-summary');
   const tableContainer = $('#payments-table-container');
 
+  const duesSettings = $('#fellow-dues-settings');
+  if (duesSettings) {
+    apiFetch('/api/admin/payments?action=dues-settings').then(async (response) => {
+      const data = await response.json();
+      if (!response.ok || !data.ok) return;
+      if (data.role !== 'council') return;
+      duesSettings.hidden = false;
+      if (data.setting) {
+        $('#fellow-dues-amount').value = data.setting.annual_amount;
+        $('#fellow-dues-currency').value = data.setting.currency;
+      }
+    }).catch(() => {});
+
+    $('#fellow-dues-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const status = $('#fellow-dues-status');
+      const button = event.currentTarget.querySelector('[type="submit"]');
+      setBusy(button, true);
+      try {
+        const response = await apiFetch('/api/admin/payments', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'set-fellow-dues', amount: $('#fellow-dues-amount').value, currency: $('#fellow-dues-currency').value }),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || 'Unable to save annual dues.');
+        status.textContent = 'Fellow annual dues saved.';
+      } catch (error) {
+        status.textContent = error.message;
+      } finally {
+        setBusy(button, false);
+      }
+    });
+  }
+
   let currentPayments = [];
   let requestId = 0;
 

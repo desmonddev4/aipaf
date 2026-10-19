@@ -113,6 +113,7 @@ to { opacity: 1; transform: none; }
 <div id="page-gate" class="login-required card"><h2>Loading your portal...</h2><p class="meta">If this takes long, you may need to sign in.</p><a class="btn" href="/member-login">Sign in</a></div>
 <div class="mp-main" id="page-content" hidden>
   <div class="page-head"><div><h1>Payments</h1><p>Pay securely for membership and services.</p></div><span class="who" id="who"></span></div>
+<section class="card" id="annual-dues-card" hidden><h2>Fellow annual dues</h2><p class="sub" id="annual-dues-copy">Annual subscription set by Council under Article 10 of the Constitution.</p><button class="btn" id="annual-dues-pay" type="button">Pay annual dues</button><p class="form-status" id="annual-dues-status" role="status" aria-live="polite"></p></section>
 <section class="card"><h2>Create a payment</h2><p class="sub">Processed securely through Paystack. You will be redirected to complete the transaction.</p>
 <form id="payment-form">
             <div class="field-grid">
@@ -131,6 +132,36 @@ to { opacity: 1; transform: none; }
 (async function () {
   var member = await window.Member.requireAuth();
   document.querySelector("#who").textContent = member.email;
+
+  var duesCard = document.querySelector('#annual-dues-card');
+  var duesButton = document.querySelector('#annual-dues-pay');
+  var duesStatus = document.querySelector('#annual-dues-status');
+  try {
+    var duesResponse = await window.apiFetch('/api/member-records?action=annual-dues');
+    var dues = await window.Member.json(duesResponse, 'Unable to load annual dues.');
+    if (dues.eligible) {
+      duesCard.hidden = false;
+      if (dues.paid) {
+        document.querySelector('#annual-dues-copy').textContent = 'Your Fellow annual dues for ' + dues.year + ' are paid.';
+        duesButton.hidden = true;
+      } else if (dues.setting) {
+        document.querySelector('#annual-dues-copy').textContent = 'Annual dues for ' + dues.year + ': ' + dues.setting.currency + ' ' + Number(dues.setting.annual_amount).toFixed(2) + '. Set by Council under Article 10 of the Constitution.';
+      } else {
+        document.querySelector('#annual-dues-copy').textContent = 'Council has not set the annual dues amount yet.';
+        duesButton.hidden = true;
+      }
+    }
+  } catch (error) { console.error('Unable to load Fellow dues:', error); }
+
+  duesButton.addEventListener('click', async function () {
+    duesButton.disabled = true;
+    duesStatus.textContent = '';
+    try {
+      var result = await window.Member.json(await window.Member.post('/api/member-records?action=checkout-annual-dues', {}), 'Unable to create the annual dues payment.');
+      if (result.checkout && result.checkout.authorizationUrl) { window.location.href = result.checkout.authorizationUrl; return; }
+      duesStatus.textContent = 'Payment record created. Reference: ' + result.checkout.reference + '. Awaiting provider confirmation.';
+    } catch (error) { duesStatus.textContent = error.message; duesButton.disabled = false; }
+  });
 
   document.querySelector('#payment-email').value = member.email || '';
   window.Member.bindForm(document.querySelector('#payment-form'), document.querySelector('#payment-status'), async function (data) {
