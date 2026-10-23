@@ -69,9 +69,9 @@
 #aipaf-header .ah-badge { width: 46px; height: 46px; border-radius: 50%; background: #fff; display: grid; place-items: center; flex: none; transition: transform .45s var(--ah-ease); }
 #aipaf-header .ah-badge img { width: 40px; height: 40px; display: block; object-fit: contain; padding: .12rem; }
 #aipaf-header .ah-brand:hover .ah-badge { transform: rotate(-8deg) scale(1.05); }
-#aipaf-header .ah-brand-text { display: grid; gap: .22rem; white-space: nowrap; }
+#aipaf-header .ah-brand-text { display: grid; gap: .22rem; min-width: 0; }
 #aipaf-header .ah-word { font: 600 1.35rem/1 "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif; letter-spacing: .06em; }
-#aipaf-header .ah-line { font-size: .74rem; line-height: 1; letter-spacing: .04em; color: var(--ah-gold-soft); }
+#aipaf-header .ah-line { max-width: 19rem; font-size: .74rem; line-height: 1.2; letter-spacing: .04em; color: var(--ah-gold-soft); }
 
 /* ---------- desktop nav ---------- */
 #aipaf-header .ah-nav { display: flex; align-items: center; gap: 1.1rem; min-width: 0; }
@@ -161,16 +161,15 @@
 #aipaf-header .ah-toggle[aria-expanded="true"] .ah-bars::after { transform: translateY(-6px) rotate(-45deg); }
 #aipaf-header .ah-sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- laptop: tighten, drop the tagline ---------- */
+/* ---------- laptop: keep the full name visible and compact the navigation ---------- */
 @media (max-width: 1239px) {
   #aipaf-header .ah-mega-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  #aipaf-header .ah-line { display: none; }
   #aipaf-header .ah-link, #aipaf-header .ah-trigger { padding: .6rem .7rem; font-size: .93rem; }
   #aipaf-header .ah-nav { gap: .8rem; }
 }
 
-/* ---------- tablet and phone: panel menu ---------- */
-@media (max-width: 1100px) {
+/* ---------- narrow viewports, including zoomed laptops: panel menu ---------- */
+@media (max-width: 1239px) {
   #aipaf-header { padding-top: 2.8rem; }
   #aipaf-header.is-scrolled { padding-top: 2.65rem; }
   #aipaf-header .ah-utility { height: 2.15rem; }
@@ -216,7 +215,7 @@
 
 /* ---------- small phones ---------- */
 @media (max-width: 420px) {
-  #aipaf-header .ah-line { display: none; }
+  #aipaf-header .ah-line { max-width: 15rem; }
   #aipaf-header .ah-word { font-size: 1.2rem; }
   #aipaf-header .ah-badge { width: 42px; height: 42px; }
   #aipaf-header .ah-badge img { width: 36px; height: 36px; }
