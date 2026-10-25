@@ -24,7 +24,7 @@
   --serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --sans: "Public Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 
-  --wrap: 1180px;
+  --wrap: 1280px;
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
   --section: clamp(4rem, 8vw, 7rem);
   --radius: 14px;

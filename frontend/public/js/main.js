@@ -15,13 +15,11 @@ const sealActive = sealVideo && sealVideo.isConnected ? sealVideo : null;
 if (heroVideo || sealActive) {
   const videos = [heroVideo, sealActive].filter(Boolean);
   if (heroVideo) { heroVideo.muted = true; heroVideo.defaultMuted = true; heroVideo.setAttribute('playsinline', ''); }
-  // The muted background loop is decorative, so it plays on phones even when reduced motion is on
-  const motionOff = () => reduceMotion.matches && !isMobile.matches;
   let heroIsVisible = false;
   let retryListenersAdded = false;
 
   const retryPlayback = () => {
-    if (heroIsVisible && !motionOff()) playVideos();
+    if (heroIsVisible) playVideos();
   };
   const addPlaybackRetryListeners = () => {
     if (retryListenersAdded) return;
@@ -46,7 +44,6 @@ if (heroVideo || sealActive) {
     });
   };
   const playVideos = () => {
-    if (motionOff()) return;
     const backgroundPlayback = playVideo(heroVideo || sealActive);
     if (heroVideo && sealActive) {
       backgroundPlayback.then(() => {
@@ -56,19 +53,15 @@ if (heroVideo || sealActive) {
   };
   const pauseVideos = () => videos.forEach((video) => video.pause());
 
-  if (motionOff()) {
-    pauseVideos();
-  } else {
-    const heroObserver = new IntersectionObserver((entries) => {
-      heroIsVisible = Boolean(entries[0]?.isIntersecting);
-      if (heroIsVisible) playVideos(); else pauseVideos();
-    }, { threshold: 0.2 });
-    heroObserver.observe(hero);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) pauseVideos();
-      else if (heroIsVisible) playVideos();
-    });
-  }
+  const heroObserver = new IntersectionObserver((entries) => {
+    heroIsVisible = Boolean(entries[0]?.isIntersecting);
+    if (heroIsVisible) playVideos(); else pauseVideos();
+  }, { threshold: 0.2 });
+  heroObserver.observe(hero);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) pauseVideos();
+    else if (heroIsVisible) playVideos();
+  });
 }
 
 /* Hero scroll animation: sets --p (0 to 1) as the hero scrolls away; CSS does the rest */
