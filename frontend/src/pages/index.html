@@ -97,7 +97,32 @@
   @keyframes mv-lens { 0% { transform: translate(300px, 60px); } 45% { transform: translate(190px, 105px); } 75%, 100% { transform: translate(215px, 175px); } }
   @keyframes mv-zoom { from { opacity: 0; transform: scale(.55) rotate(-50deg); } }
   @keyframes mv-spin { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .cx .mv-dot, .cx .mv-in::after { display: none; } }
+  /* The lifecycle panel is an intentional product animation and must keep
+     autoplaying even when the browser requests reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    .cx .mv { animation: mv-enter 1.1s var(--e) .3s both, mv-border 6s linear infinite, mv-float 8s ease-in-out infinite !important; }
+    .cx .mv-in::before { animation: mv-grid 12s linear infinite !important; }
+    .cx .mv-in::after { animation: mv-glare 8s ease-in-out 1.5s infinite !important; }
+    .cx .mv-live i { animation: mv-pulse 2s infinite !important; }
+    .cx .mv-dot { animation: mv-drift var(--t) linear var(--w) infinite !important; }
+    .cx .sc { transition: opacity .7s ease, transform .7s var(--e) !important; }
+    .cx .sc:is(.on,.leave) .bar { animation: mv-up .95s var(--e) var(--d) both !important; }
+    .cx .sc:is(.on,.leave) .draw { animation: mv-draw 1.3s ease var(--d, 0s) both !important; }
+    .cx .sc:is(.on,.leave) .pop { animation: mv-pop .6s cubic-bezier(.34,1.56,.64,1) var(--d) both !important; }
+    .cx .sc:is(.on,.leave) .fade { animation: mv-fade .8s ease var(--d) both !important; }
+    .cx .sc:is(.on,.leave) .ring { animation: mv-ring 2.4s ease-out var(--d) infinite !important; }
+    .cx .sc:is(.on,.leave) .scan { animation: mv-scan 1.7s ease-in-out 1.6s 2 alternate both !important; }
+    .cx .sc:is(.on,.leave) .ln { animation: mv-x .7s var(--e) var(--d) both !important; }
+    .cx .sc:is(.on,.leave) .hl { animation: mv-hl .5s ease 2.1s both !important; }
+    .cx .sc:is(.on,.leave) .lens { animation: mv-lens 3.2s cubic-bezier(.65,0,.35,1) .4s both !important; }
+    .cx .sc:is(.on,.leave) .zoom { animation: mv-zoom 1.4s var(--e) var(--d) both !important; }
+    .cx .spin { animation: mv-spin 40s linear infinite !important; }
+    .cx .spin.r { animation-duration: 55s !important; animation-direction: reverse !important; }
+    .cx .sc:is(.on,.leave) .rise { animation: mv-capin 1s var(--e) var(--d) both !important; }
+    .cx .mv-cap.swap b { animation: mv-capin .8s var(--e) both !important; }
+    .cx .mv-cap.swap span { animation: mv-capin .8s var(--e) .12s both !important; }
+    .cx .mv-bar i.run::after { animation: mv-fill var(--dur, 4.4s) linear forwards !important; }
+  }
 
   @media (max-width: 959px) {
     .cx .hero { min-height: 0; padding: calc(5rem + env(safe-area-inset-top, 0px)) 0 3.25rem; }
@@ -646,7 +671,7 @@
 (function () {
   var root = document.querySelector('.cx');
   if (!root) return;
-  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var calm = false;
 
   /* Hero motion piece: four scenes on a timer, paused while off-screen */
   var mv = root.querySelector('[data-mv]');
