@@ -82,7 +82,7 @@ body{overflow-x:hidden;}
 /* ---------- dropdown panel ---------- */
 #aipaf-header .ah-has-menu { position: relative; }
 #aipaf-header .ah-menu {
-  position: absolute; top: calc(100% + .6rem); left: 50%; min-width: 13.5rem; padding: .35rem;
+  position: absolute; top: calc(100% + .6rem); left: 50%; min-width: 13.5rem; max-width: min(24rem, calc(100vw - 2rem)); max-height: min(32rem, calc(100dvh - 7rem)); padding: .35rem; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
   border: 1px solid rgba(255,255,255,.14); border-radius: 16px;
   background: rgba(4,24,12,.97); box-shadow: 0 22px 40px -22px rgba(0,0,0,.85);
   opacity: 0; visibility: hidden; pointer-events: none;
@@ -94,7 +94,7 @@ body{overflow-x:hidden;}
 #aipaf-header .ah-has-menu.is-open > .ah-menu { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
 #aipaf-header .ah-menu li + li { margin-top: .1rem; }
 #aipaf-header .ah-menu a {
-  display: block; padding: .7rem .95rem; border-radius: 11px; white-space: nowrap;
+  display: block; padding: .7rem .95rem; border-radius: 11px; overflow-wrap: anywhere;
   font-weight: 500; font-size: .96rem; color: rgba(255,255,255,.86);
   transition: background .2s, color .2s, padding-left .25s var(--ah-ease);
 }
@@ -145,6 +145,7 @@ body{overflow-x:hidden;}
   #aipaf-header .ah-link, #aipaf-header .ah-trigger { padding: .5rem .45rem; font-size: .85rem; }
   #aipaf-header .ah-nav { gap: .35rem; }
   #aipaf-header .ah-nav > .ah-cta { padding: .65rem .9rem; font-size: .85rem; }
+  #aipaf-header .ah-menu { max-height: min(28rem, calc(100dvh - 6.5rem)); }
 }
 
 /* ---------- tablet and phone: panel menu ---------- */
