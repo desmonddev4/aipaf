@@ -137,11 +137,14 @@ body{overflow-x:hidden;}
 #aipaf-header .ah-toggle[aria-expanded="true"] .ah-bars::after { transform: translateY(-6px) rotate(-45deg); }
 #aipaf-header .ah-sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- laptop: tighten, drop the tagline ---------- */
-@media (max-width: 1239px) {
+/* ---------- medium laptops: compact the full navigation ---------- */
+@media (max-width: 1300px) {
   #aipaf-header .ah-line { display: none; }
-  #aipaf-header .ah-link, #aipaf-header .ah-trigger { padding: .6rem .7rem; font-size: .93rem; }
-  #aipaf-header .ah-nav { gap: .8rem; }
+  #aipaf-header .ah-shell { gap: .65rem; }
+  #aipaf-header .ah-brand { gap: .55rem; }
+  #aipaf-header .ah-link, #aipaf-header .ah-trigger { padding: .5rem .45rem; font-size: .85rem; }
+  #aipaf-header .ah-nav { gap: .35rem; }
+  #aipaf-header .ah-nav > .ah-cta { padding: .65rem .9rem; font-size: .85rem; }
 }
 
 /* ---------- tablet and phone: panel menu ---------- */
