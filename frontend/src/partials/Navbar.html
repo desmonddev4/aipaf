@@ -168,8 +168,8 @@
   #aipaf-header .ah-nav { gap: .8rem; }
 }
 
-/* ---------- narrow viewports, including zoomed laptops: panel menu ---------- */
-@media (max-width: 1300px) {
+/* ---------- narrow viewports: panel menu ---------- */
+@media (max-width: 1100px) {
   #aipaf-header { padding-top: 2.8rem; }
   #aipaf-header.is-scrolled { padding-top: 2.65rem; }
   #aipaf-header .ah-utility { height: 2.15rem; }
@@ -434,10 +434,8 @@
   var toggle = header.querySelector('[data-ah-toggle]');
   var nav = header.querySelector('[data-ah-nav]');
   var items = [].slice.call(header.querySelectorAll('.ah-has-menu'));
-  /* Keep this in sync with the CSS breakpoint above. The public navbar needs
-     the compact panel before the full desktop navigation can run out of room
-     on laptops or at increased browser zoom. */
-  var desktop = window.matchMedia('(min-width: 1301px)');
+  /* Keep this in sync with the CSS breakpoint above. */
+  var desktop = window.matchMedia('(min-width: 1101px)');
 
   /* darker glass once the page scrolls */
   function onScroll() { header.classList.toggle('is-scrolled', (window.scrollY || 0) > 24); }
