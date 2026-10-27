@@ -95,6 +95,8 @@
 #aipaf-header .ah-has-menu.is-open > .ah-trigger::after { transform: scaleX(1); }
 #aipaf-header .ah-link[aria-current="page"] { color: var(--ah-gold-hi); }
 #aipaf-header .ah-link[aria-current="page"]::after { transform: scaleX(1); }
+#aipaf-header .ah-link.ah-fees-link { color: var(--ah-gold-soft); font-weight: 700; }
+#aipaf-header .ah-link.ah-fees-link:hover { color: #fff; background: rgba(242,172,31,.13); }
 #aipaf-header .ah-has-menu:has([aria-current="page"]) > .ah-trigger { color: var(--ah-gold-hi); }
 #aipaf-header .ah-chev { width: 10px; height: 10px; flex: none; opacity: .75; transition: transform .3s var(--ah-ease); }
 #aipaf-header .ah-has-menu.is-open > .ah-trigger .ah-chev { transform: rotate(180deg); opacity: 1; }
@@ -433,6 +435,7 @@
           </div>
         </li>
 
+        <li><a class="ah-link ah-fees-link" href="/fees" {{cur:fees}}>Fees</a></li>
         <li><a class="ah-link" href="/contact" {{cur:contact}}>Contact</a></li>
       </ul>
       <a class="ah-cta" href="/membership#join">Join AIPAF</a>
