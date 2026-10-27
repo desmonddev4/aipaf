@@ -114,14 +114,15 @@ to { opacity: 1; transform: none; }
 <div class="mp-main" id="page-content" hidden>
   <div class="page-head"><div><h1>Payments</h1><p>Pay securely for membership and services.</p></div><span class="who" id="who"></span></div>
 <section class="card" id="annual-dues-card" hidden><h2>Fellow annual dues</h2><p class="sub" id="annual-dues-copy">Annual subscription set by Council under Article 10 of the Constitution.</p><button class="btn" id="annual-dues-pay" type="button">Pay annual dues</button><p class="form-status" id="annual-dues-status" role="status" aria-live="polite"></p></section>
-<section class="card"><h2>Create a payment</h2><p class="sub">Processed securely through Paystack. You will be redirected to complete the transaction.</p>
+  <section class="card"><h2>Pay an invoice</h2><p class="sub">Review the <a href="/fees">approved fees and charges</a>. For membership, certification and other services, use the amount shown on your invoice from the Secretariat. Certification assessments may require a written scope estimate.</p>
 <form id="payment-form">
             <div class="field-grid">
               <div class="field"><label for="payment-email">Email for payment receipt</label><input id="payment-email" name="email" type="email" autocomplete="email" required></div>
-              <div class="field"><label for="payment-amount">Amount</label><input id="payment-amount" name="amount" type="number" min="0.01" step="0.01" required></div>
+              <div class="field"><label for="payment-amount">Invoice amount</label><input id="payment-amount" name="amount" type="number" min="0.01" step="0.01" required></div>
+              <div class="field"><label for="payment-currency">Invoice currency</label><select id="payment-currency" name="currency"><option value="GHS">GHS</option><option value="USD">USD</option></select></div>
               <div class="field"><label for="payment-purpose">Purpose</label><select id="payment-purpose" name="purpose"><option value="membership">Membership</option><option value="examination">Examination</option><option value="subscription">Subscription</option><option value="other">Other</option></select></div>
             </div>
-            <p class="meta">Payments are processed securely through Paystack. You will be redirected to Paystack to complete the transaction.</p>
+            <p class="meta">Enter the amount and currency stated on your AIPAF invoice. Payments are processed securely through Paystack when online payments are enabled.</p>
             <button class="btn" type="submit">Pay with Paystack</button>
             <p class="form-status" id="payment-status" role="status" aria-live="polite"></p>
           </form></section>
